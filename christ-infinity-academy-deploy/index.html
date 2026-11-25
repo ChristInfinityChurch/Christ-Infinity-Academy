@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Christ Infinity Academy — Flagship Classical &amp; Modern Homeschool Platform (Grades 6–12)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Top Institutional Banner & Role Switcher -->
+  <div class="institutional-bar">
+    <div class="container institutional-bar-inner">
+      <div class="inst-left">
+        <span class="inst-badge">ACADEMIC YEAR 2026–2027</span>
+        <span class="inst-divider">•</span>
+        <span class="inst-meta">Accredited Classical &amp; STEM Honors Curriculum · Grades 6–12</span>
+      </div>
+      <div class="role-switcher-wrap" aria-label="Workspace Perspective Switcher">
+        <span class="role-label">Active Portal:</span>
+        <div class="role-pills" role="tablist">
+          <button class="role-pill active" data-view="home" role="tab" aria-selected="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Academy Home
+          </button>
+          <button class="role-pill" data-view="pathways" role="tab" aria-selected="false">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            6–12 Pathways
+          </button>
+          <button class="role-pill" data-view="catalog" role="tab" aria-selected="false">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            Course Catalog
+          </button>
+          <button class="role-pill" data-view="library" role="tab" aria-selected="false">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            Academy Library
+          </button>
+          <button class="role-pill" data-view="bible" role="tab" aria-selected="false">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M5 7h14"/></svg>
+            Scripture Hub
+          </button>
+          <button class="role-pill" data-view="student" role="tab" aria-selected="false">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            Student Portal
+          </button>
+          <button class="role-pill" data-view="lesson" role="tab" aria-selected="false">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Lesson Studio
+          </button>
+          <button class="role-pill" data-view="schedule" role="tab" aria-selected="false">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Weekly Schedule
+          </button>
+          <button class="role-pill" data-view="parent" role="tab" aria-selected="false">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Parent Portal
+          </button>
+          <button class="role-pill" data-view="teacher" role="tab" aria-selected="false">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Teacher / Admin
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Primary Navigation Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#home" class="brand-logo" data-nav="home">
+        <div class="crest-mark" aria-hidden="true">
+          <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="2" width="40" height="40" rx="10" fill="#0F1E36" stroke="#C59B27" stroke-width="1.5"/>
+            <path d="M22 8V36M14 15H30" stroke="#C59B27" stroke-width="1.6" stroke-linecap="round" opacity="0.45"/>
+            <path d="M15.5 24.5C12.5 24.5 10.5 22.5 10.5 20C10.5 17.5 12.5 15.5 15.5 15.5C18.8 15.5 21.2 20 22 20C22.8 20 25.2 24.5 28.5 24.5C31.5 24.5 33.5 22.5 33.5 20C33.5 17.5 31.5 15.5 28.5 15.5C25.2 15.5 22.8 20 22 20C21.2 20 18.8 24.5 15.5 24.5Z" stroke="#FAF8F5" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">Christ Infinity Academy</span>
+          <span class="brand-subtitle">SCHOLA CLASSICA ET SCIENTIA · GRADES 6–12</span>
+        </div>
+      </a>
+
+      <nav class="main-nav" id="mainNav" aria-label="Main Navigation">
+        <button class="nav-link active" data-nav="home">Overview</button>
+        <button class="nav-link" data-nav="pathways">6–12 Pathways</button>
+        <button class="nav-link" data-nav="catalog">Course Catalog</button>
+        <button class="nav-link" data-nav="library">Academy Library</button>
+        <button class="nav-link" data-nav="bible">Scripture Hub</button>
+        <button class="nav-link" data-nav="student">Student Hub</button>
+        <button class="nav-link" data-nav="lesson">Lesson Studio</button>
+        <button class="nav-link" data-nav="schedule">Schedule</button>
+        <button class="nav-link" data-nav="parent">Parent Portal</button>
+        <button class="nav-link" data-nav="teacher">Faculty Studio</button>
+      </nav>
+
+      <div class="header-actions">
+        <button class="btn btn-secondary btn-sm" id="openAuthModalBtn" title="Sign In, Verify Invite Code, or Switch Role Access">
+          🔒 Sign In / Role Gate
+        </button>
+        <button class="btn btn-outline btn-sm" id="openPlacementAdvisorBtn" title="Find the right grade pathway">
+          Placement Advisor
+        </button>
+        <div class="active-profile-chip" id="activeProfileChip" title="Click to switch role or verify Parent PIN">
+          <span class="status-dot"></span>
+          <div class="profile-chip-meta">
+            <span class="profile-chip-name" id="headerProfileName">Micah Vance</span>
+            <span class="profile-chip-role" id="headerProfileRole">Student Session · Grade 6</span>
+          </div>
+        </div>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle Menu" aria-expanded="false">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Dynamic Application Container -->
+  <main id="appRoot">
+    <!-- ==================== 1. HOMEPAGE VIEW ==================== -->
+    <section class="view-section active" id="view-home">
+      <div class="hero-section">
+        <div class="container hero-grid">
+          <div class="hero-copy">
+            <div class="eyebrow-pill">
+              <span class="gold-dot"></span>
+              <span>ACCREDITED CLASSICAL &amp; HONORS HOMESCHOOL ACADEMY · GRADES 6–12</span>
+            </div>
+            <h1 class="hero-headline">
+              Where timeless <span class="serif-italic">Christian wisdom</span> meets rigorous modern scholarship.
+            </h1>
+            <p class="hero-lead">
+              Christ Infinity Academy provides a complete, step-by-step **Grade 6 through Grade 12** academic pathway—uniting classical Great Books, formal logic, and biblical worldview with honors mathematics, laboratory sciences, and university-ready transcripts.
+            </p>
+            <div class="hero-cta-row">
+              <button class="btn btn-primary btn-lg" data-nav="pathways">
+                Explore Grade 6–12 Pathways
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </button>
+              <button class="btn btn-secondary btn-lg" data-nav="student">
+                Open Student Hub
+              </button>
+              <button class="btn btn-ghost btn-lg" id="heroPlacementBtn">
+                Take Placement Diagnostic
+              </button>
+            </div>
+
+            <div class="hero-metrics">
+              <div class="metric-item">
+                <span class="metric-num">7 Pathways</span>
+                <span class="metric-caption">Complete Grade 6 → Grade 12 Progression</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-num">36 Weeks</span>
+                <span class="metric-caption">Structured 4-Quarter Annual Rhythm</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-num">100%</span>
+                <span class="metric-caption">Carnegie Credit &amp; Transcript Ready</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Live Platform Preview Card -->
+          <div class="hero-showcase">
+            <div class="showcase-card">
+              <div style="margin-bottom: 0.9rem; border-radius: 8px; overflow: hidden; border: 2px solid var(--gold-500); position: relative;">
+                <img src="academy_hero.jpg" alt="Christ Infinity Academy Classical Rotunda &amp; Observatory" style="width: 100%; height: 185px; object-fit: cover; display: block;" />
+                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(10,25,47,0.92)); padding: 0.55rem 0.85rem; display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--gold-400); font-weight: 700; letter-spacing: 0.08em;">🏛️ THE GREAT ROTUNDA · SCRIPTORIUM &amp; OBSERVATORY</span>
+                  <span class="badge badge-gold">Grades 6–12</span>
+                </div>
+              </div>
+              <div class="showcase-header">
+                <div class="showcase-title-group">
+                  <span class="badge badge-gold">FLAGSHIP ARCHITECTURE</span>
+                  <h3>Complete Ecosystem at a Glance</h3>
+                </div>
+                <span class="mono-tag">TERM I · 2026–2027</span>
+              </div>
+
+              <div class="showcase-portal-cards">
+                <div class="mini-portal-card" data-nav="pathways">
+                  <div class="mini-portal-icon gold">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                  </div>
+                  <div class="mini-portal-body">
+                    <div class="mini-portal-top">
+                      <strong>Grade 6 → 12 Pathway Blueprint</strong>
+                      <span class="badge badge-gold">Start at Grade 6</span>
+                    </div>
+                    <p>Inspect the 36-week roadmap, vertical scope &amp; sequence, and 6-course core for each grade.</p>
+                  </div>
+                  <span class="arrow-indicator">→</span>
+                </div>
+
+                <div class="mini-portal-card" data-nav="student">
+                  <div class="mini-portal-icon navy">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                  </div>
+                  <div class="mini-portal-body">
+                    <div class="mini-portal-top">
+                      <strong>Scholar Learning Hub (Grades 6, 7 &amp; 10)</strong>
+                      <span class="badge badge-emerald">3 Profiles</span>
+                    </div>
+                    <p>Switch between Micah (6th), Hannah (7th), and Lucas (10th) to view courses, grades &amp; pacing.</p>
+                  </div>
+                  <span class="arrow-indicator">→</span>
+                </div>
+
+                <div class="mini-portal-card" data-nav="lesson">
+                  <div class="mini-portal-icon emerald">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  </div>
+                  <div class="mini-portal-body">
+                    <div class="mini-portal-top">
+                      <strong>Interactive Seminar &amp; Quiz Studio</strong>
+                      <span class="badge badge-navy">Live Labs</span>
+                    </div>
+                    <p>Video seminars, Scripture &amp; wisdom anchors, downloadable packets, and auto-graded quizzes.</p>
+                  </div>
+                  <span class="arrow-indicator">→</span>
+                </div>
+
+                <div class="mini-portal-card" data-nav="parent">
+                  <div class="mini-portal-icon slate">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                  </div>
+                  <div class="mini-portal-body">
+                    <div class="mini-portal-top">
+                      <strong>Parent Oversight &amp; Faculty Studio</strong>
+                      <span class="badge badge-emerald">Verified</span>
+                    </div>
+                    <p>Approve state attendance hours, export official GPA transcripts, and manage gradebooks.</p>
+                  </div>
+                  <span class="arrow-indicator">→</span>
+                </div>
+              </div>
+
+              <div class="scripture-footer">
+                <blockquote>
+                  “In whom are hid all the treasures of wisdom and knowledge.”
+                </blockquote>
+                <cite>— Colossians 2:3 · Academy Motto</cite>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Grade 6–12 Pathway Ribbon on Homepage -->
+      <div class="section-block bg-ivory-alt">
+        <div class="container">
+          <div class="section-header-split">
+            <div>
+              <span class="section-eyebrow">STEP-BY-STEP PROGRESSION</span>
+              <h2 class="section-title">The 7-Year Academic Ladder (Grades 6–12)</h2>
+            </div>
+            <button class="btn btn-primary" data-nav="pathways">Open Interactive Pathway Explorer →</button>
+          </div>
+
+          <div class="pathway-ladder-grid">
+            <div class="ladder-card highlight-g6" data-jump-pathway="6">
+              <span class="ladder-grade">GRADE 6</span>
+              <h4>Foundation of Wonder &amp; Order</h4>
+              <p>Creation &amp; Covenants, Number Theory &amp; Ratios, Celestial Astronomy, Ancient World, Heroic Grammar &amp; Latin Roots.</p>
+              <span class="ladder-cta">Explore 6th Grade Pathway →</span>
+            </div>
+            <div class="ladder-card" data-jump-pathway="7">
+              <span class="ladder-grade">GRADE 7</span>
+              <h4>School of Formal Logic</h4>
+              <p>Gospels &amp; Wisdom, Pre-Algebra Mastery, Life Science &amp; Microscopy, Christendom, Categorical Syllogisms &amp; Latin I.</p>
+              <span class="ladder-cta">Explore 7th Grade Pathway →</span>
+            </div>
+            <div class="ladder-card" data-jump-pathway="8">
+              <span class="ladder-grade">GRADE 8</span>
+              <h4>Pre-Rhetoric &amp; Algebra I</h4>
+              <p>Early Church, Honors Algebra I (HS Credit), Physical Science Mechanics, U.S. Founding, Debate Refutation &amp; Latin II.</p>
+              <span class="ladder-cta">Explore 8th Grade Pathway →</span>
+            </div>
+            <div class="ladder-card" data-jump-pathway="9">
+              <span class="ladder-grade gold">GRADES 9–12</span>
+              <h4>Collegiate Rhetoric &amp; Honors</h4>
+              <p>Euclidean Geometry to AP Calculus BC, Biology/Chemistry/Physics Labs, Homer/Dante/Milton, and Senior Capstone Thesis.</p>
+              <span class="ladder-cta">Explore High School 9–12 →</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Three Pillars + Unified Ecosystem Preview -->
+      <div class="section-block">
+        <div class="container">
+          <div class="section-header-center">
+            <span class="section-eyebrow">THREE ROLE DASHBOARDS · ONE UNIFIED PLATFORM</span>
+            <h2 class="section-title">Built for Scholars, Parents, and Educators</h2>
+            <p class="section-desc">Switch seamlessly between any role below to inspect the full functionality of Christ Infinity Academy.</p>
+          </div>
+
+          <div class="role-preview-cards">
+            <div class="role-feature-card">
+              <div class="role-feature-num">01 / STUDENT</div>
+              <h3>Focused Scholar Workspace</h3>
+              <p>Distraction-free daily agenda, mastery progress bars, interactive video &amp; reading lessons, downloadable study packets, and immediate quiz feedback.</p>
+              <button class="btn btn-secondary btn-full" data-nav="student">Open Student Dashboard</button>
+            </div>
+            <div class="role-feature-card">
+              <div class="role-feature-num">02 / PARENT</div>
+              <h3>Complete Family Oversight</h3>
+              <p>Switch between Micah (6th), Hannah (7th), and Lucas (10th), approve weekly pacing compliance, inspect graded work, and export official transcripts.</p>
+              <button class="btn btn-secondary btn-full" data-nav="parent">Open Parent Dashboard</button>
+            </div>
+            <div class="role-feature-card">
+              <div class="role-feature-num">03 / TEACHER &amp; ADMIN</div>
+              <h3>Curriculum &amp; Gradebook Studio</h3>
+              <p>Build courses and multi-part lessons, configure auto-graded quizzes, score student essays with rubric comments, and track mastery analytics across grades 6–12.</p>
+              <button class="btn btn-secondary btn-full" data-nav="teacher">Open Teacher Dashboard</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 1B. GRADE 6–12 PATHWAYS & SCOPE MATRIX VIEW ==================== -->
+    <section class="view-section" id="view-pathways">
+      <div class="page-banner">
+        <div class="container page-banner-inner">
+          <div>
+            <span class="section-eyebrow">ARCHITECTURAL BLUEPRINT · GRADES 6 TO 12</span>
+            <h1 class="page-title">Grade-by-Grade Academic Pathways &amp; Scope Matrix</h1>
+            <p class="page-subtitle">Select any grade below (starting with Grade 6) to inspect its 36-week quarterly roadmap, required daily pacing, and 6-course core curriculum.</p>
+          </div>
+          <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+            <button class="btn btn-outline" style="background:rgba(255,255,255,0.1); color:#FFF; border-color:rgba(255,255,255,0.28);" id="exportAccreditationPacketBtn">↓ Export State &amp; Private Accreditation Packet</button>
+            <button class="btn btn-secondary" id="pathwayPlacementBtn">Launch Placement Diagnostic</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="container section-pad">
+        <!-- Grade Stepper Bar (Grades 6 -> 12) -->
+        <div class="pathway-stepper" id="pathwayGradeStepper" role="tablist">
+          <button class="pathway-step-btn active" data-pathway-grade="6">
+            <span class="step-tag">STAGE I · BRIDGE</span>
+            <strong>Grade 6 Pathway</strong>
+          </button>
+          <button class="pathway-step-btn" data-pathway-grade="7">
+            <span class="step-tag">STAGE II · LOGIC</span>
+            <strong>Grade 7 Pathway</strong>
+          </button>
+          <button class="pathway-step-btn" data-pathway-grade="8">
+            <span class="step-tag">STAGE III · PRE-RHETORIC</span>
+            <strong>Grade 8 Pathway</strong>
+          </button>
+          <button class="pathway-step-btn" data-pathway-grade="9">
+            <span class="step-tag">FRESHMAN HONORS</span>
+            <strong>Grade 9 Pathway</strong>
+          </button>
+          <button class="pathway-step-btn" data-pathway-grade="10">
+            <span class="step-tag">SOPHOMORE HONORS</span>
+            <strong>Grade 10 Pathway</strong>
+          </button>
+          <button class="pathway-step-btn" data-pathway-grade="11">
+            <span class="step-tag">JUNIOR COLLEGIATE</span>
+            <strong>Grade 11 Pathway</strong>
+          </button>
+          <button class="pathway-step-btn" data-pathway-grade="12">
+            <span class="step-tag">SENIOR CAPSTONE</span>
+            <strong>Grade 12 Pathway</strong>
+          </button>
+        </div>
+
+        <!-- Dynamic Pathway Detail Container -->
+        <div id="pathwayDetailContainer"></div>
+
+        <!-- 36-Week Multimodal Online Assignments Overview (Beyond Quizzes) -->
+        <div class="card-panel mt-lg" id="assignmentModalitiesPanel"></div>
+
+        <!-- State DOE, Private Academy & University Accreditation Verification Center -->
+        <div class="card-panel mt-lg" id="accreditationCenterPanel"></div>
+
+        <!-- Master Vertical Scope & Sequence Table (Grades 6–12) -->
+        <div class="card-panel mt-lg">
+          <div class="panel-header">
+            <div>
+              <span class="mono-label">VERTICAL CURRICULUM ALIGNMENT</span>
+              <h2 class="panel-title">Master Scope &amp; Sequence Matrix (Grades 6–12)</h2>
+            </div>
+            <span class="badge badge-gold">6 Core Departments × 7 Years</span>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table scope-matrix-table" id="scopeMatrixTable">
+              <thead>
+                <tr>
+                  <th>Department</th>
+                  <th>Grade 6</th>
+                  <th>Grade 7</th>
+                  <th>Grade 8</th>
+                  <th>Grade 9</th>
+                  <th>Grade 10</th>
+                  <th>Grade 11</th>
+                  <th>Grade 12</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 2. COURSE CATALOG VIEW ==================== -->
+    <section class="view-section" id="view-catalog">
+      <div class="page-banner">
+        <div class="container page-banner-inner">
+          <div>
+            <span class="section-eyebrow">ACADEMIC CATALOG · 2026–2027</span>
+            <h1 class="page-title">Grades 6–12 Course Catalog</h1>
+            <p class="page-subtitle">Filter by grade level (6–12), academic department, or honors credit track. Enroll directly or launch a sample lesson.</p>
+          </div>
+          <div class="catalog-summary-box">
+            <div>
+              <span class="mono-label">ENROLLED CREDITS</span>
+              <strong id="catalogEnrolledCount">6 Courses (6.0 Credits)</strong>
+            </div>
+            <button class="btn btn-primary btn-sm" data-nav="student">Go to My Courses</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="container section-pad">
+        <!-- Filter Bar -->
+        <div class="catalog-controls">
+          <div class="search-input-wrap">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" id="catalogSearch" placeholder="Search by course title, code, instructor, or topic..." />
+          </div>
+
+          <div class="filter-group">
+            <label for="gradeFilter" class="filter-label">Grade Band:</label>
+            <select id="gradeFilter" class="select-control">
+              <option value="all">All Grades (6–12)</option>
+              <option value="6">Grade 6 Pathway</option>
+              <option value="7">Grade 7 Pathway</option>
+              <option value="8">Grade 8 Pathway</option>
+              <option value="9">Grade 9 Pathway</option>
+              <option value="10">Grade 10 Pathway</option>
+              <option value="11">Grade 11 Pathway</option>
+              <option value="12">Grade 12 Pathway</option>
+              <option value="middle">All Middle School (6–8)</option>
+              <option value="high">All High School (9–12)</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="subjectFilter" class="filter-label">Department:</label>
+            <select id="subjectFilter" class="select-control">
+              <option value="all">All Subjects</option>
+              <option value="Theology & Worldview">Theology &amp; Worldview</option>
+              <option value="Mathematics">Mathematics</option>
+              <option value="Natural Sciences">Natural Sciences</option>
+              <option value="Literature & Rhetoric">Literature &amp; Rhetoric</option>
+              <option value="History & Civilization">History &amp; Civilization</option>
+              <option value="Classical Languages & Arts">Classical Languages &amp; Arts (Latin, Greek &amp; Spanish)</option>
+              <option value="Career, Finance & Trades">Career, Finance, Real Estate &amp; Trades</option>
+              <option value="Technology & Engineering">Computer Science, AI &amp; Cybersecurity</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Subject Quick Chips -->
+        <div class="subject-chips" id="subjectQuickChips">
+          <button class="chip active" data-subject="all">All Departments</button>
+          <button class="chip" data-subject="Career, Finance & Trades">💼 Real Estate, Investing &amp; Skilled Trades</button>
+          <button class="chip" data-subject="Technology & Engineering">💻 Coding, AI &amp; Cybersecurity</button>
+          <button class="chip" data-subject="Theology & Worldview">Theology &amp; Worldview</button>
+          <button class="chip" data-subject="Mathematics">Mathematics</button>
+          <button class="chip" data-subject="Natural Sciences">Natural Sciences (Labs)</button>
+          <button class="chip" data-subject="Literature & Rhetoric">Great Books &amp; Rhetoric</button>
+          <button class="chip" data-subject="History & Civilization">History &amp; Civilization</button>
+          <button class="chip" data-subject="Classical Languages & Arts">Languages (Latin, Greek &amp; Spanish)</button>
+        </div>
+
+        <!-- Dynamic Course Grid -->
+        <div class="catalog-grid" id="catalogGrid"></div>
+      </div>
+    </section>
+
+    <!-- ==================== 2B. ACADEMY DIGITAL LIBRARY (TEXTBOOKS, ADVENTURE, MYSTERY & PUZZLE SHELVES) ==================== -->
+    <section class="view-section" id="view-library">
+      <div class="page-banner">
+        <div class="container page-banner-inner">
+          <div>
+            <span class="section-eyebrow">BIBLIOTHECA INFINITA · GRADES 6 TO 12 DIGITAL REPOSITORY</span>
+            <h1 class="page-title">Christ Infinity Digital Library &amp; Reading Shelves</h1>
+            <p class="page-subtitle">Explore complete Digital Course Textbooks alongside curated Grade 6–12 shelves of Adventure &amp; Expedition stories, Mystery &amp; Detective cases, Puzzle &amp; Cipher books, Historical Fiction, and Classical Great Books.</p>
+          </div>
+          <div style="display:flex; gap:0.6rem; flex-wrap:wrap; align-items:center;">
+            <span class="badge badge-gold" id="libraryTotalBooksBadge" style="font-size:0.82rem; padding:0.45rem 0.85rem;">📚 30+ Full Multi-Chapter Books · Grades 6–12</span>
+            <button class="btn btn-secondary btn-sm" data-nav="bible">📖 Open Scripture Hub (Greek / Hebrew / Cross-Refs) →</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="container section-pad">
+        <!-- Library Filter & Shelf Selector -->
+        <div class="catalog-filter-bar" style="grid-template-columns: 1.4fr 1.1fr 1fr; margin-bottom: 0.9rem;">
+          <div class="filter-group search-group">
+            <label for="librarySearchInput" class="mono-label">SEARCH BOOKS, GENRES, AUTHORS OR TOPICS</label>
+            <input type="search" id="librarySearchInput" class="input-control" placeholder="Search adventure, mystery, puzzle, cipher, or course textbooks..." />
+          </div>
+          <div class="filter-group">
+            <label for="libraryShelfFilter" class="mono-label">GENRE / LIBRARY SHELF</label>
+            <select id="libraryShelfFilter" class="select-control">
+              <option value="all">All Library Shelves &amp; Genres</option>
+              <option value="Core Course Textbook">1. Core Course Digital Textbooks (Grades 6–12)</option>
+              <option value="Adventure & Expedition">2. Adventure &amp; Expedition Stories (Grades 6–12)</option>
+              <option value="Mystery & Detective">3. Mystery &amp; Detective Stories (Grades 6–12)</option>
+              <option value="Puzzle, Logic & Cipher">4. Puzzle, Logic &amp; Cipher Stories (Grades 6–12)</option>
+              <option value="Historical & Science Narrative">5. Historical &amp; Science Living Books (Grades 6–12)</option>
+              <option value="Classical Great Book">6. Classical Great Books &amp; Allegory (Grades 6–12)</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="libraryGradeFilter" class="mono-label">READING LEVEL EXTENT (GRADES 6–12)</label>
+            <select id="libraryGradeFilter" class="select-control">
+              <option value="all">All Reading Levels (Grades 6–12)</option>
+              <option value="6">Grade 6 Reading Level &amp; Textbooks</option>
+              <option value="7">Grade 7 Reading Level &amp; Textbooks</option>
+              <option value="8">Grade 8 Reading Level &amp; Textbooks</option>
+              <option value="9">Grade 9 Reading Level &amp; Textbooks</option>
+              <option value="10">Grade 10 Reading Level &amp; Textbooks</option>
+              <option value="11">Grade 11 Reading Level &amp; Textbooks</option>
+              <option value="12">Grade 12 Reading Level &amp; Textbooks</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Quick Genre Shelf Pills -->
+        <div class="subject-chips" id="libraryGenreQuickChips" style="margin-bottom: 1.35rem;">
+          <button type="button" class="chip active" data-library-shelf="all">All Books</button>
+          <button type="button" class="chip" data-library-shelf="Core Course Textbook">📘 Digital Textbooks</button>
+          <button type="button" class="chip" data-library-shelf="Adventure & Expedition">🧭 Adventure Stories</button>
+          <button type="button" class="chip" data-library-shelf="Mystery & Detective">🔍 Mystery Stories</button>
+          <button type="button" class="chip" data-library-shelf="Puzzle, Logic & Cipher">🧩 Puzzle &amp; Cipher Books</button>
+          <button type="button" class="chip" data-library-shelf="Historical & Science Narrative">🏛️ Historical &amp; Science</button>
+          <button type="button" class="chip" data-library-shelf="Classical Great Book">📜 Classical Great Books</button>
+        </div>
+
+        <!-- Interactive Full-Book Reader Stage (Opens when a book is clicked) -->
+        <div id="libraryBookReaderStage" class="card-panel" style="margin-bottom: 1.5rem; border-top: 4px solid var(--gold-500);"></div>
+
+        <!-- Library Bookshelf Grid -->
+        <div class="catalog-grid" id="libraryBooksGrid"></div>
+      </div>
+    </section>
+
+    <!-- ==================== 2C. SCRIPTURE HUB (BIBLE HUB STYLE: HEBREW, GREEK, ENGLISH, APOCRYPHA & CROSS-REFERENCES) ==================== -->
+    <section class="view-section" id="view-bible">
+      <div class="page-banner">
+        <div class="container page-banner-inner">
+          <div>
+            <span class="section-eyebrow">BIBLIA SACRA POLYGLOTTA · HEBREW MASORETIC · KOINE GREEK · SEPTUAGINT · APOCRYPHA</span>
+            <h1 class="page-title">Christ Infinity Scripture Hub &amp; Interlinear Lexicon</h1>
+            <p class="page-subtitle">Integrated Bible Hub workstation: study Old Testament (Hebrew to English), New Testament (Koine Greek to English), and the Deuterocanonical Apocrypha with Strong’s Concordance parsing, Treasury of Scripture Knowledge cross-references, and historical geography.</p>
+          </div>
+          <div style="display:flex; gap:0.6rem; flex-wrap:wrap; align-items:center;">
+            <span class="badge badge-gold">81 Books · 1,463 Chs · 37,750 Verses (100% Offline)</span>
+            <span class="badge badge-emerald">Easy-to-Read (Kids) + KJV + Apocrypha &amp; 1 Enoch</span>
+            <button class="btn btn-outline btn-sm" data-nav="lesson">← Return to Lesson Studio</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="container section-pad">
+        <!-- Testament / Canon, 81-Book, Chapter & Translation Selector Bar -->
+        <div class="catalog-filter-bar" style="grid-template-columns: 1fr 1.15fr 0.8fr 1.15fr 1fr; margin-bottom: 1rem;">
+          <div class="filter-group">
+            <label for="bibleCanonSelect" class="mono-label">1. TESTAMENT / CANON (81 BOOKS)</label>
+            <select id="bibleCanonSelect" class="select-control">
+              <option value="all">All 81 Books (OT + Apocrypha + 1 Enoch + NT · 1,463 Chs)</option>
+              <option value="OT">Old Testament · Hebrew / Aramaic Tanakh (39 Books)</option>
+              <option value="APOC">Apocrypha / LXX + Book of Enoch (15 Books)</option>
+              <option value="NT">New Testament · Koine Greek Textus (27 Books)</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="bibleBookSelect" class="mono-label">2. SELECT ANY OF THE 81 BOOKS</label>
+            <select id="bibleBookSelect" class="select-control"></select>
+          </div>
+          <div class="filter-group">
+            <label for="bibleChapterSelect" class="mono-label">3. CHAPTER (1–150)</label>
+            <select id="bibleChapterSelect" class="select-control"></select>
+          </div>
+          <div class="filter-group">
+            <label for="bibleTranslationSelect" class="mono-label">4. ENGLISH TRANSLATION (KID-FRIENDLY / KJV)</label>
+            <select id="bibleTranslationSelect" class="select-control">
+              <option value="parallel" selected>📖 Parallel: Easy-to-Read (Kids) + Classic KJV</option>
+              <option value="easy">✨ Easy-to-Read Modern English (Kid-Friendly · BBE)</option>
+              <option value="kjv">📜 Classic King James Version (KJV)</option>
+            </select>
+          </div>
+          <div class="filter-group search-group">
+            <label for="bibleSearchInput" class="mono-label">5. SEARCH BOOK, THEME OR STRONG'S #</label>
+            <input type="search" id="bibleSearchInput" class="input-control" placeholder="Search 'Enoch', 'Psalm 23', 'Wisdom', 'Logos'..." />
+          </div>
+        </div>
+
+        <!-- Quick Canon & Feature Pills -->
+        <div class="subject-chips" id="bibleQuickCanonChips" style="margin-bottom: 1rem;">
+          <button type="button" class="chip active" data-bible-canon="all">All 81 Books (1,463 Chs · 37,750 Verses Offline)</button>
+          <button type="button" class="chip" data-bible-canon="OT">📜 Old Testament (39 Books · Hebrew → English)</button>
+          <button type="button" class="chip" data-bible-canon="APOC">🏛️ Apocrypha &amp; Book of Enoch (15 Books)</button>
+          <button type="button" class="chip" data-bible-canon="NT">✝️ New Testament (27 Books · Koine Greek → English)</button>
+        </div>
+
+        <!-- Interactive 80-Book & Chapter Navigator Drawer -->
+        <div class="card-panel" style="margin-bottom: 1.25rem; padding: 1.1rem 1.25rem;" id="bible80BooksQuickGridBox"></div>
+
+        <!-- Main Interactive Bible Hub Workstation (Rendered by app.js) -->
+        <div id="bibleHubWorkstationContainer"></div>
+
+        <!-- Complete 80-Book Canonical & Apocryphal Atlas Directory -->
+        <div class="card-panel" style="margin-top: 1.5rem;" id="bibleFullCanonDirectoryBox"></div>
+      </div>
+    </section>
+
+    <!-- ==================== 3. STUDENT DASHBOARD VIEW ==================== -->
+    <section class="view-section" id="view-student">
+      <div class="page-banner student-banner">
+        <div class="container page-banner-inner">
+          <div>
+            <span class="section-eyebrow" id="studentBannerEyebrow">SCHOLAR WORKSPACE · GRADE 6 PATHWAY</span>
+            <h1 class="page-title" id="studentGreeting">Good morning, Micah Vance</h1>
+            <p class="page-subtitle" id="studentSubGreeting">“The fear of the Lord is the beginning of wisdom.” — Your Grade 6 Pathway is on pace.</p>
+          </div>
+          <div class="student-switcher-bar">
+            <label for="activeStudentSelect" class="mono-label">SWITCH ACTIVE SCHOLAR PROFILE</label>
+            <div class="student-switcher-controls">
+              <select id="activeStudentSelect" class="select-control">
+                <option value="micah">Micah Vance (Grade 6 · Foundation Pathway)</option>
+                <option value="hannah">Hannah Vance (Grade 7 · Logic School)</option>
+                <option value="lucas">Lucas Vance (Grade 10 · Collegiate Honors)</option>
+              </select>
+              <button class="btn btn-secondary btn-sm" data-nav="lesson">Resume Lesson →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container section-pad">
+        <!-- KPI Row -->
+        <div class="kpi-grid" id="studentKpiGrid"></div>
+
+        <!-- Full-Week 5-Day Workload & 85% Mastery Gatekeeper Matrix -->
+        <div class="card-panel" style="margin-bottom: 1.5rem;" id="studentWeeklyMasteryMatrix"></div>
+
+        <!-- Main Student 2-Column Workspace -->
+        <div class="dashboard-split">
+          <!-- Left Primary Column: Enrolled Courses & Progress -->
+          <div class="dashboard-main-col">
+            <div class="card-panel">
+              <div class="panel-header">
+                <div>
+                  <span class="mono-label">ENROLLED PATHWAY COURSES &amp; MASTERY</span>
+                  <h2 class="panel-title">Current Term Coursework</h2>
+                </div>
+                <div style="display:flex; gap:0.5rem;">
+                  <button class="btn btn-outline btn-sm" data-nav="pathways">View Pathway Roadmap</button>
+                  <button class="btn btn-outline btn-sm" data-nav="catalog">+ Catalog</button>
+                </div>
+              </div>
+              <div class="enrolled-courses-list" id="studentEnrolledList"></div>
+            </div>
+
+            <!-- Academic Gradebook & Mastery Breakdown Table -->
+            <div class="card-panel">
+              <div class="panel-header">
+                <div>
+                  <span class="mono-label">ACADEMIC RECORD</span>
+                  <h2 class="panel-title">Term Gradebook &amp; Mastery Analytics</h2>
+                </div>
+                <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                  <button class="btn btn-secondary btn-sm" id="studentPrintableCertBtn">🖨️ Official Certificate &amp; Transcript</button>
+                  <button class="btn btn-ghost btn-sm" id="exportStudentReportBtn">Download Term Report (.txt)</button>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table" id="studentGradesTable">
+                  <thead>
+                    <tr>
+                      <th>Course</th>
+                      <th>Department</th>
+                      <th>Units Completed</th>
+                      <th>Quiz Avg</th>
+                      <th>Term Grade</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Upcoming Assignments, Daily Pacing & Recent Feedback -->
+          <div class="dashboard-side-col">
+            <div class="card-panel">
+              <div class="panel-header">
+                <div>
+                  <span class="mono-label">DUE SOON</span>
+                  <h2 class="panel-title">Assignments &amp; Quizzes</h2>
+                </div>
+                <button class="btn btn-ghost btn-sm" data-nav="schedule">Full Calendar</button>
+              </div>
+              <div class="assignment-filter-tabs">
+                <button class="mini-tab active" data-assign-filter="pending">Pending</button>
+                <button class="mini-tab" data-assign-filter="completed">Completed</button>
+                <button class="mini-tab" data-assign-filter="all">All</button>
+              </div>
+              <div class="assignments-stack" id="studentAssignmentsList"></div>
+            </div>
+
+            <div class="card-panel">
+              <div class="panel-header">
+                <div>
+                  <span class="mono-label">WEEKLY PACING GOAL</span>
+                  <h2 class="panel-title">Weekly Study Hours</h2>
+                </div>
+                <span class="badge badge-emerald" id="weeklyGoalBadge">17.0 / 18 hrs</span>
+              </div>
+              <div class="weekly-bars" id="studentWeeklyHoursChart"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 4. LESSON VIEWER & QUIZ STUDIO ==================== -->
+    <section class="view-section" id="view-lesson">
+      <div class="lesson-top-bar">
+        <div class="container lesson-top-inner">
+          <div class="lesson-breadcrumb" style="flex-wrap:wrap; gap:0.5rem;">
+            <button class="btn btn-ghost btn-sm" data-nav="student">← Student Hub</button>
+            <span class="breadcrumb-sep">/</span>
+            <select id="lessonCourseSelect" class="select-control select-compact" aria-label="Select Course"></select>
+            <span class="breadcrumb-sep">/</span>
+            <select id="lessonWeekSelect" class="select-control select-compact" aria-label="Select Week 1 to 36"></select>
+            <select id="lessonTrackTierSelect" class="select-control select-compact" aria-label="Select Standard or Honors Track">
+              <option value="standard" selected>Standard / College-Prep (4.0)</option>
+              <option value="honors">Honors Track (4.5 Weighted)</option>
+              <option value="ap">AP / Dual-Credit (5.0 Weighted)</option>
+            </select>
+            <button class="btn btn-primary btn-sm" id="toggleLessonGuidedModeBtn" data-toggle-lesson-mode="true">
+              🎯 Guided 4-Step Student View (Active)
+            </button>
+            <button class="btn btn-outline btn-sm" id="toggle36WeekMapBtn">
+              📅 36-Week Map
+            </button>
+            <button class="btn btn-secondary btn-sm" id="openCourseDigitalTextbookBtn">
+              📖 Digital Textbook
+            </button>
+            <button class="btn btn-outline btn-sm" id="readLessonAloudBtn">
+              🔊 Read Aloud
+            </button>
+          </div>
+          <div class="lesson-progress-pill">
+            <span id="lessonProgressSummary">Module 1 of 2</span>
+            <button class="btn btn-emerald btn-sm" id="markLessonCompleteBtn">
+              ✓ Mark Day Complete
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="container section-pad">
+        <!-- Expandable 36-Week (180-Day) Complete Course Curriculum Navigator (Hidden by default in clean Student Guided Mode) -->
+        <div id="lessonFull36WeekMapBox" class="card-panel hidden" style="margin-bottom: 1.5rem;"></div>
+
+        <!-- CLEAN, DISTRACTION-FREE 4-STEP STUDENT GUIDED FLOW (1. Objective -> 2. Learn -> 3. Practice -> 4. Exit Ticket) -->
+        <div id="studentGuidedFlowContainer"></div>
+
+        <div class="lesson-studio-grid" id="lessonFullStudioGrid">
+          <!-- Left Sidebar: Course Modules & Lesson Outline -->
+          <aside class="lesson-sidebar card-panel">
+            <div class="lesson-sidebar-head">
+              <span class="mono-label" id="lessonSidebarCode">THEO-601 · GRADE 6</span>
+              <h3 id="lessonSidebarCourseTitle">Creation, Covenants &amp; the Biblical Worldview</h3>
+              <div class="progress-track-wrap">
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" id="lessonCourseProgressBar" style="width: 88%"></div>
+                </div>
+                <span class="progress-caption" id="lessonCourseProgressLabel">88% Course Mastery</span>
+              </div>
+            </div>
+            <div class="lesson-module-list" id="lessonModuleList"></div>
+          </aside>
+
+          <!-- Main Content Stage: Video, Reading, Resources, Quiz -->
+          <div class="lesson-stage card-panel">
+            <div class="lesson-stage-header">
+              <div>
+                <span class="badge badge-gold" id="activeLessonUnitBadge">UNIT 1 · CREATION &amp; ORDER</span>
+                <h1 class="lesson-main-title" id="activeLessonTitle">Cosmos out of Chaos: The Architecture of Creation</h1>
+                <p class="lesson-instructor-meta" id="activeLessonMeta">Instructor: Rev. Dr. Marcus Vance · Est. Time: 35 mins · Theology &amp; Worldview</p>
+              </div>
+            </div>
+
+            <!-- Lesson Mode Tabs: Lecture Video | Reading & Notes | Downloads | Interactive Quiz -->
+            <div class="lesson-mode-tabs" role="tablist">
+              <button class="lesson-tab active" data-lesson-tab="lecture">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                1. Video Seminar &amp; Text
+              </button>
+              <button class="lesson-tab" data-lesson-tab="resources">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                2. Downloadable Resources (<span id="resourceCountBadge">2</span>)
+              </button>
+              <button class="lesson-tab" data-lesson-tab="quiz">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                3. Mastery Quiz (<span id="quizCountBadge">2 Qs</span>)
+              </button>
+              <button class="lesson-tab" data-lesson-tab="assignments">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                4. Discussion, Paper &amp; Lab Studio
+              </button>
+              <button class="lesson-tab" data-lesson-tab="notes">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                5. Scholar Notebook
+              </button>
+              <button class="lesson-tab" data-lesson-tab="parentguide">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                6. Parent Guide &amp; Answer Key
+              </button>
+              <button class="lesson-tab" data-lesson-tab="quarterexam">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                7. Timed Quarter Exam (Wks 9, 18, 27, 36)
+              </button>
+            </div>
+
+            <!-- Tab 1: Video Seminar & Structured Reading -->
+            <div class="lesson-tab-pane active" id="lessonPane-lecture">
+              <div class="video-stage" id="videoStage">
+                <div class="video-canvas">
+                  <div class="video-geometry-art" id="videoVisualArt">
+                    <svg viewBox="0 0 500 220" class="lecture-diagram-svg">
+                      <defs>
+                        <pattern id="gridPattern" width="20" height="20" patternUnits="userSpaceOnUse">
+                          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+                        </pattern>
+                      </defs>
+                      <rect width="500" height="220" fill="url(#gridPattern)" />
+                      <circle cx="250" cy="110" r="76" fill="none" stroke="rgba(197,155,39,0.35)" stroke-width="1.5" stroke-dasharray="4 4"/>
+                      <polygon points="190,150 280,150 190,85" fill="rgba(197,155,39,0.22)" stroke="#C59B27" stroke-width="2.5"/>
+                      <rect x="190" y="150" width="90" height="55" fill="rgba(31,110,88,0.22)" stroke="#47B897" stroke-width="1.5"/>
+                      <rect x="125" y="85" width="65" height="65" fill="rgba(255,255,255,0.08)" stroke="#FAF8F5" stroke-width="1.5"/>
+                      <text x="230" y="143" fill="#FAF8F5" font-size="12" font-family="JetBrains Mono">a</text>
+                      <text x="176" y="122" fill="#FAF8F5" font-size="12" font-family="JetBrains Mono">b</text>
+                      <text x="242" y="112" fill="#C59B27" font-size="13" font-weight="bold" font-family="JetBrains Mono">LOGOS · ORDO · RATIO</text>
+                    </svg>
+                  </div>
+                  <div class="video-overlay-info">
+                    <span class="video-chapter-pill" id="videoChapterLabel">SEMINAR LECTURE · HD 1080P · CAPTIONS ENABLED</span>
+                    <h3 id="videoOverlayTitle">Lecture Seminar Presentation</h3>
+                  </div>
+                  <button class="video-play-button" id="videoPlayToggle" aria-label="Play or Pause Seminar Video">
+                    <svg id="playIconSvg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+                  </button>
+                </div>
+
+                <div class="video-controls-bar">
+                  <button class="video-ctrl-btn" id="videoCtrlPlayBtn">▶ Play Seminar</button>
+                  <div class="video-timeline" id="videoTimelineTrack">
+                    <div class="video-timeline-fill" id="videoTimelineFill" style="width: 34%"></div>
+                  </div>
+                  <span class="video-time-mono" id="videoTimeDisplay">08:14 / 24:00</span>
+                  <select class="video-speed-select" id="videoSpeedSelect" aria-label="Playback Speed">
+                    <option value="1">1.0x</option>
+                    <option value="1.25">1.25x</option>
+                    <option value="1.5">1.5x</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Reading Content -->
+              <article class="lesson-reading-body" id="lessonReadingBody"></article>
+
+              <!-- Comprehensive Topic of the Day Deep Teaching Exposition (Step-by-Step Textbook Lesson, Vocabulary Table & Worked Examples) -->
+              <div id="lessonDeepTeachingContainer" style="margin-top: 1.5rem;"></div>
+
+              <!-- Inline Parent Co-Teacher Companion Summary & Quick Access -->
+              <div id="lessonParentInlineCompanion" style="margin-top: 1.5rem;"></div>
+
+              <!-- Interactive Daily Practice Problem Set & Spiral Review Workbench -->
+              <div class="card-panel" style="margin-top: 1.5rem; background: var(--bg-ivory);" id="lessonDailyPracticeBox"></div>
+
+              <div class="lesson-bottom-cta">
+                <button class="btn btn-secondary" data-switch-lesson-tab="resources">View Lesson Packet &amp; Downloads →</button>
+                <button class="btn btn-primary" data-switch-lesson-tab="quiz">Proceed to Mastery Quiz →</button>
+              </div>
+            </div>
+
+            <!-- Tab 2: Downloadable Resources -->
+            <div class="lesson-tab-pane" id="lessonPane-resources">
+              <div class="pane-intro">
+                <h3>Downloadable Study Packets, Primary Sources &amp; Lab Sheets</h3>
+                <p>Click any resource below to generate and download a formatted study sheet or syllabus packet for offline binder work.</p>
+              </div>
+              <div class="resources-grid" id="lessonResourcesList"></div>
+            </div>
+
+            <!-- Tab 3: Interactive Graded Quiz -->
+            <div class="lesson-tab-pane" id="lessonPane-quiz">
+              <div class="quiz-header-card">
+                <div>
+                  <span class="mono-label">FORMATIVE &amp; SUMMATIVE ASSESSMENT</span>
+                  <h3 id="quizHeaderTitle">Lesson Mastery Check</h3>
+                  <p>Answer all questions below. Immediate explanation and classical commentary are provided upon submission.</p>
+                </div>
+                <div class="quiz-score-badge" id="quizScoreBadge">Not Submitted</div>
+              </div>
+
+              <form id="lessonQuizForm" class="quiz-questions-list"></form>
+
+              <div class="quiz-actions-bar">
+                <button type="button" class="btn btn-primary btn-lg" id="submitQuizBtn">Submit &amp; Grade Quiz</button>
+                <button type="button" class="btn btn-outline" id="resetQuizBtn">Reset Attempt</button>
+              </div>
+              <div id="quizFeedbackBanner" class="quiz-feedback-banner hidden"></div>
+            </div>
+
+            <!-- Tab 4: Online Assignments (Socratic Discussion, Essay/Paper Studio & Lab/Proof Workbench) -->
+            <div class="lesson-tab-pane" id="lessonPane-assignments">
+              <div class="pane-intro">
+                <span class="mono-label">36-WEEK MULTIMODAL ONLINE ASSESSMENTS (BEYOND QUIZZES)</span>
+                <h3>Socratic Discussion Forum, Essay Composition &amp; Lab/Proof Workbench</h3>
+                <p>Select an assignment modality below to complete your weekly seminar discussion post, compose a formal essay/paper, or submit a quantitative lab/proof report directly to the Faculty Gradebook.</p>
+              </div>
+
+              <!-- Sub-mode selector pills -->
+              <div class="assignment-filter-tabs" style="margin-bottom: 1.25rem;">
+                <button type="button" class="mini-tab active" data-studio-mode="discussion">1. Socratic Discussion Post</button>
+                <button type="button" class="mini-tab" data-studio-mode="paper">2. Essay / Research Paper Studio</button>
+                <button type="button" class="mini-tab" data-studio-mode="lab">3. Science Lab &amp; Two-Column Proof</button>
+                <button type="button" class="mini-tab" data-studio-mode="recitation">4. Oral Recitation &amp; Speech Log</button>
+              </div>
+
+              <!-- Sub-pane A: Socratic Discussion Board -->
+              <div class="studio-subpane" id="studioSubpane-discussion">
+                <div class="lesson-callout" id="discussionPromptBox"></div>
+                <div class="assignments-stack" id="discussionPostsList" style="margin-bottom: 1.25rem;"></div>
+                <form id="discussionPostForm" class="card-panel" style="background:var(--bg-ivory);">
+                  <h4 style="font-family:var(--font-serif); font-size:1.25rem; color:var(--navy-900); margin-bottom:0.5rem;">Post Your Seminar Response or Peer Reply</h4>
+                  <textarea id="discussionPostInput" class="notes-textarea" rows="4" placeholder="Write your 150–300 word Socratic response citing primary texts or geometric/scientific evidence..." required></textarea>
+                  <div class="notes-footer">
+                    <span class="mono-label" id="discussionWordCount">0 words (Recommended: 100–300 words)</span>
+                    <button type="submit" class="btn btn-primary btn-sm">Publish to Seminar Thread &amp; Log Credit</button>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Sub-pane B: Essay / Paper Composition Studio -->
+              <div class="studio-subpane hidden" id="studioSubpane-paper">
+                <div class="quiz-header-card">
+                  <div>
+                    <span class="mono-label">CLASSICAL PROGYMNASMATA &amp; MLA RESEARCH PAPER STUDIO</span>
+                    <h4 style="font-family:var(--font-serif); font-size:1.3rem; color:var(--navy-900);">Formal Essay &amp; Paper Submission</h4>
+                    <p style="font-size:0.84rem; color:var(--text-secondary);">Evaluated on Classical Invention (Thesis &amp; Evidence · 30%), Arrangement (Structure · 25%), Style &amp; Elocution (25%), and Grammar/Citations (20%).</p>
+                  </div>
+                  <span class="badge badge-gold">25% of Term Grade</span>
+                </div>
+                <form id="paperSubmissionForm" class="form-grid">
+                  <div class="form-group">
+                    <label>Paper / Essay Title</label>
+                    <input type="text" id="paperTitleInput" class="input-control" placeholder="e.g., Ordered Harmony in Genesis 1 and Kepler’s Laws" required />
+                  </div>
+                  <div class="form-group">
+                    <label>Paper Category</label>
+                    <select id="paperTypeInput" class="select-control">
+                      <option value="Progymnasmata Narrative / Chreia Essay">Progymnasmata Narrative / Chreia Essay (Grades 6–8)</option>
+                      <option value="Persuasive & Refutation Essay">Persuasive &amp; Refutation Essay (Grades 7–10)</option>
+                      <option value="Primary Source Analytical Paper (MLA)">Primary Source Analytical Paper — MLA Format (Grades 9–12)</option>
+                      <option value="Senior Rhetoric Capstone Thesis Draft">Senior Rhetoric Capstone Thesis Draft (Grade 12)</option>
+                    </select>
+                  </div>
+                  <div class="form-group full-width">
+                    <label>Central Thesis Statement (Proposition to be Defended)</label>
+                    <input type="text" id="paperThesisInput" class="input-control" placeholder="State your governing thesis clearly in one declarative sentence..." required />
+                  </div>
+                  <div class="form-group full-width">
+                    <label>Essay Body &amp; Works Cited / Bibliography</label>
+                    <textarea id="paperBodyInput" class="notes-textarea" rows="8" placeholder="Compose your introduction, body paragraphs with textual citations, refutation of counterarguments, and conclusion..." required></textarea>
+                  </div>
+                  <div class="form-actions full-width" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
+                    <span class="mono-label" id="paperWordCount">0 words</span>
+                    <div style="display:flex; gap:0.6rem;">
+                      <button type="button" class="btn btn-outline btn-sm" id="downloadPaperDraftBtn">Download Manuscript (.txt)</button>
+                      <button type="submit" class="btn btn-primary">Submit Paper to Faculty Gradebook</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Sub-pane C: Science Lab & Two-Column Proof Workbench -->
+              <div class="studio-subpane hidden" id="studioSubpane-lab">
+                <div class="quiz-header-card">
+                  <div>
+                    <span class="mono-label">QUANTITATIVE LAB REPORT &amp; DEDUCTIVE PROOF WORKBENCH</span>
+                    <h4 style="font-family:var(--font-serif); font-size:1.3rem; color:var(--navy-900);">Submit Lab Investigation or Two-Column Mathematical Proof</h4>
+                    <p style="font-size:0.84rem; color:var(--text-secondary);">Satisfies State &amp; University Lab Science portfolio documentation and Honors Mathematics proof standards.</p>
+                  </div>
+                  <span class="badge badge-emerald">State Lab Portfolio Verified</span>
+                </div>
+                <form id="labProofSubmissionForm" class="form-grid">
+                  <div class="form-group">
+                    <label>Investigation / Proof Title</label>
+                    <input type="text" id="labTitleInput" class="input-control" placeholder="e.g., Lab #1: Keplerian Elliptical Eccentricity / Prop. I.47 Proof" required />
+                  </div>
+                  <div class="form-group">
+                    <label>Submission Type</label>
+                    <select id="labTypeInput" class="select-control">
+                      <option value="Scientific Lab Report">Formal Scientific Lab Report (Hypothesis, Data &amp; Error Analysis)</option>
+                      <option value="Two-Column Geometric / Algebraic Proof">Two-Column Deductive Mathematical Proof</option>
+                    </select>
+                  </div>
+                  <div class="form-group full-width">
+                    <label>Hypothesis / Given &amp; To Prove (Q.E.D.)</label>
+                    <input type="text" id="labHypothesisInput" class="input-control" placeholder="State your testable hypothesis or Given / To Prove statements..." required />
+                  </div>
+                  <div class="form-group full-width">
+                    <label>Quantitative Data Measurements / Two-Column Statements &amp; Reasons</label>
+                    <textarea id="labDataInput" class="notes-textarea" rows="6" placeholder="1. Statement ... | Reason: Definition / Postulate / Measured Trial 1, Trial 2, Trial 3..." required></textarea>
+                  </div>
+                  <div class="form-actions full-width">
+                    <button type="submit" class="btn btn-emerald">Submit Lab / Proof to Gradebook &amp; State Binder</button>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Sub-pane D: Oral Recitation & Rhetoric Declamation Log -->
+              <div class="studio-subpane hidden" id="studioSubpane-recitation">
+                <div class="quiz-header-card">
+                  <div>
+                    <span class="mono-label">CLASSICAL MEMORY, POETICS &amp; ORATORY</span>
+                    <h4 style="font-family:var(--font-serif); font-size:1.3rem; color:var(--navy-900);">Oral Recitation, Latin Declamation &amp; Rhetoric Speech Log</h4>
+                    <p style="font-size:0.84rem; color:var(--text-secondary);">Scholars recite memorized Scripture, Latin paradigms, poetry, or persuasive speeches before a parent or faculty evaluator.</p>
+                  </div>
+                  <span class="badge badge-navy">10% of Term Grade</span>
+                </div>
+                <form id="recitationSubmissionForm" class="form-grid">
+                  <div class="form-group">
+                    <label>Recitation Passage / Speech Title</label>
+                    <input type="text" id="recitationTitleInput" class="input-control" placeholder="e.g., Psalm 19:1–6 / 1st Declension Latin Chant / Patrick Henry Oration" required />
+                  </div>
+                  <div class="form-group">
+                    <label>Delivery Mode &amp; Evaluator</label>
+                    <select id="recitationModeInput" class="select-control">
+                      <option value="Live Recitation Verified by Parent">Live Recitation Verified by Parent</option>
+                      <option value="Live Seminar Declamation before Faculty">Live Seminar Declamation before Faculty</option>
+                      <option value="Recorded Audio/Video Submission">Recorded Audio/Video Portfolio Submission</option>
+                    </select>
+                  </div>
+                  <div class="form-group full-width">
+                    <label>Memorized Text / Speech Outline &amp; Elocution Notes</label>
+                    <textarea id="recitationNotesInput" class="notes-textarea" rows="4" placeholder="Paste the recited passage or speech outline and note accuracy, posture, and vocal projection..." required></textarea>
+                  </div>
+                  <div class="form-actions full-width">
+                    <button type="submit" class="btn btn-primary">Log Completed Recitation to Gradebook</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- Tab 5: Scholar Notebook -->
+            <div class="lesson-tab-pane" id="lessonPane-notes">
+              <div class="pane-intro">
+                <h3>Personal Commonplace &amp; Seminar Notes</h3>
+                <p>Your notes automatically persist in your browser for this lesson and can be exported for essay preparation.</p>
+              </div>
+              <textarea id="lessonNotesTextarea" class="notes-textarea" rows="10" placeholder="Record definitions, key syllogisms, proofs, or reflections from today's reading..."></textarea>
+              <div class="notes-footer">
+                <span class="notes-status" id="notesSavedIndicator">All changes saved locally.</span>
+                <div class="notes-btn-group">
+                  <button class="btn btn-outline btn-sm" id="exportNotesBtn">Download Notes (.txt)</button>
+                  <button class="btn btn-primary btn-sm" id="saveNotesBtn">Save Notebook Entry</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 6: Parent Co-Teacher Guide, Coaching Script & Complete Answer Key -->
+            <div class="lesson-tab-pane" id="lessonPane-parentguide">
+              <div id="lessonParentGuideFullBox"></div>
+            </div>
+
+            <!-- Tab 7: Proctored Timed Quarter Midterm & Final Examination (Weeks 9, 18, 27 & 36) -->
+            <div class="lesson-tab-pane" id="lessonPane-quarterexam">
+              <div id="lessonQuarterExamBox"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 5. WEEKLY SCHEDULE & CALENDAR VIEW ==================== -->
+    <section class="view-section" id="view-schedule">
+      <div class="page-banner">
+        <div class="container page-banner-inner">
+          <div>
+            <span class="section-eyebrow">STRUCTURED RHYTHM &amp; PACING</span>
+            <h1 class="page-title">Weekly Learning Schedule &amp; Assignment Calendar</h1>
+            <p class="page-subtitle">Balanced seminar blocks, independent study periods, science labs, and assignment deadlines for Grades 6–12.</p>
+          </div>
+          <div class="schedule-controls-top">
+            <select id="scheduleStudentSelect" class="select-control">
+              <option value="micah">Micah Vance (Grade 6 Schedule)</option>
+              <option value="hannah">Hannah Vance (Grade 7 Schedule)</option>
+              <option value="lucas">Lucas Vance (Grade 10 Schedule)</option>
+            </select>
+            <button class="btn btn-primary btn-sm" id="openAddEventModalBtn">+ Add Study Block</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="container section-pad">
+        <!-- Day Filter Pills for Mobile & Quick Focus -->
+        <div class="day-selector-bar" id="daySelectorBar">
+          <button class="day-pill active" data-day="all">Full Week (Mon–Fri)</button>
+          <button class="day-pill" data-day="Monday">Monday</button>
+          <button class="day-pill" data-day="Tuesday">Tuesday</button>
+          <button class="day-pill" data-day="Wednesday">Wednesday</button>
+          <button class="day-pill" data-day="Thursday">Thursday</button>
+          <button class="day-pill" data-day="Friday">Friday</button>
+        </div>
+
+        <!-- 5-Day Weekly Timetable Grid -->
+        <div class="weekly-timetable-grid" id="weeklyTimetableGrid"></div>
+
+        <!-- Monthly Assignment & Milestone Calendar -->
+        <div class="card-panel mt-lg">
+          <div class="panel-header">
+            <div>
+              <span class="mono-label">NOVEMBER 2026 · ACADEMIC CALENDAR</span>
+              <h2 class="panel-title">Upcoming Deadlines, Exams &amp; Seminar Milestones</h2>
+            </div>
+            <div class="legend-pills">
+              <span class="legend-dot navy">Seminar</span>
+              <span class="legend-dot gold">Quiz / Exam</span>
+              <span class="legend-dot emerald">Essay / Lab Due</span>
+            </div>
+          </div>
+          <div class="calendar-month-grid" id="calendarMonthGrid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 6. PARENT DASHBOARD VIEW ==================== -->
+    <section class="view-section" id="view-parent">
+      <div class="page-banner parent-banner">
+        <div class="container page-banner-inner">
+          <div>
+            <span class="section-eyebrow">FAMILY STEWARDSHIP &amp; ACADEMIC OVERSIGHT</span>
+            <h1 class="page-title">Vance Family Parent Portal</h1>
+            <p class="page-subtitle">Monitor Micah (Grade 6), Hannah (Grade 7), and Lucas (Grade 10), verify completed coursework, and download official transcripts.</p>
+          </div>
+          <div class="parent-actions-top">
+            <button class="btn btn-secondary btn-sm" id="approvePacingBtn">✓ Approve Weekly Pacing Log</button>
+            <button class="btn btn-outline btn-sm" id="openPrintableCertificateBtn">🖨️ Print Official Certificate &amp; Transcript</button>
+            <button class="btn btn-primary btn-sm" id="downloadTranscriptBtn">Download Official Transcript (.txt)</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="container section-pad">
+        <!-- Parent Student Switcher Cards -->
+        <div class="parent-children-grid" id="parentChildrenGrid"></div>
+
+        <!-- Parent Co-Teacher & Home Facilitation Guide Hub -->
+        <div class="card-panel mt-lg" id="parentCoTeacherHub"></div>
+
+        <!-- Detailed View for Selected Child -->
+        <div class="dashboard-split mt-lg">
+          <div class="dashboard-main-col">
+            <div class="card-panel">
+              <div class="panel-header">
+                <div>
+                  <span class="mono-label">COURSE-BY-COURSE PERFORMANCE</span>
+                  <h2 class="panel-title" id="parentSelectedChildHeading">Micah Vance (Grade 6) — Academic Standing</h2>
+                </div>
+                <span class="badge badge-emerald" id="parentChildStandingBadge">Headmaster’s Commendation · 4.00 GPA</span>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table" id="parentCourseTable">
+                  <thead>
+                    <tr>
+                      <th>Course Title</th>
+                      <th>Instructor</th>
+                      <th>Pacing</th>
+                      <th>Current Grade</th>
+                      <th>Recent Assessment</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card-panel">
+              <div class="panel-header">
+                <div>
+                  <span class="mono-label">ASSIGNMENT &amp; SUBMISSION AUDIT</span>
+                  <h2 class="panel-title">Upcoming &amp; Recently Graded Work</h2>
+                </div>
+              </div>
+              <div class="assignments-stack" id="parentAssignmentsAudit"></div>
+            </div>
+          </div>
+
+          <div class="dashboard-side-col">
+            <div class="card-panel">
+              <div class="panel-header">
+                <div>
+                  <span class="mono-label">ATTENDANCE &amp; HOMESCHOOL COMPLIANCE</span>
+                  <h2 class="panel-title">State Hour Log (2026–2027)</h2>
+                </div>
+              </div>
+              <div class="compliance-summary" id="parentComplianceBox"></div>
+            </div>
+
+            <div class="card-panel">
+              <div class="panel-header">
+                <div>
+                  <span class="mono-label">FACULTY COMMENDATIONS</span>
+                  <h2 class="panel-title">Instructor Notes to Parents</h2>
+                </div>
+              </div>
+              <div class="faculty-notes-list" id="parentFacultyNotes"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 7. TEACHER / ADMIN DASHBOARD VIEW ==================== -->
+    <section class="view-section" id="view-teacher">
+      <div class="page-banner teacher-banner">
+        <div class="container page-banner-inner">
+          <div>
+            <span class="section-eyebrow">FACULTY &amp; CURRICULUM ADMINISTRATION</span>
+            <h1 class="page-title">Teacher &amp; Dean Studio</h1>
+            <p class="page-subtitle">Manage Grades 6–12 courses, publish new lessons &amp; quizzes, and update student grades in real time.</p>
+          </div>
+          <div class="teacher-actions-top">
+            <button class="btn btn-secondary btn-sm" id="openNewLessonModalBtn">+ Add Lesson &amp; Quiz</button>
+            <button class="btn btn-primary btn-sm" id="openNewCourseModalBtn">+ Create New Course</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="container section-pad">
+        <!-- Teacher KPI Metrics -->
+        <div class="kpi-grid" id="teacherKpiGrid"></div>
+
+        <!-- Teacher Sub-navigation Tabs -->
+        <div class="teacher-tabs-bar">
+          <button class="teacher-tab active" data-teacher-tab="gradebook">Gradebook &amp; Submissions</button>
+          <button class="teacher-tab" data-teacher-tab="courses">Course &amp; Lesson Manager</button>
+          <button class="teacher-tab" data-teacher-tab="quizbuilder">Interactive Quiz Builder</button>
+          <button class="teacher-tab" data-teacher-tab="security">🔒 Invite Codes &amp; Access Control</button>
+        </div>
+
+        <!-- Teacher Tab 1: Gradebook & Student Submissions -->
+        <div class="teacher-pane active" id="teacherPane-gradebook">
+          <div class="card-panel">
+            <div class="panel-header">
+              <div>
+                <span class="mono-label">LIVE GRADEBOOK MANAGEMENT</span>
+                <h2 class="panel-title">Student Grades &amp; Assignment Scoring</h2>
+              </div>
+              <span class="text-muted-sm">Edits save immediately and sync to the Student &amp; Parent portals.</span>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table" id="teacherGradebookTable">
+                <thead>
+                  <tr>
+                    <th>Scholar</th>
+                    <th>Grade Level</th>
+                    <th>Course</th>
+                    <th>Assignment / Assessment</th>
+                    <th>Status</th>
+                    <th>Score (%)</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Teacher Tab 2: Course & Lesson Manager -->
+        <div class="teacher-pane" id="teacherPane-courses">
+          <div class="card-panel">
+            <div class="panel-header">
+              <div>
+                <span class="mono-label">CURRICULUM REPOSITORY</span>
+                <h2 class="panel-title">Active Courses &amp; Lesson Modules</h2>
+              </div>
+              <button class="btn btn-primary btn-sm" id="teacherCreateCourseInlineBtn">+ New Course</button>
+            </div>
+            <div class="teacher-courses-grid" id="teacherCoursesManagerGrid"></div>
+          </div>
+        </div>
+
+        <!-- Teacher Tab 3: Quiz Builder -->
+        <div class="teacher-pane" id="teacherPane-quizbuilder">
+          <div class="card-panel">
+            <div class="panel-header">
+              <div>
+                <span class="mono-label">ASSESSMENT AUTHORING</span>
+                <h2 class="panel-title">Add Question to Any Course Lesson Quiz</h2>
+              </div>
+            </div>
+            <form id="teacherQuizBuilderForm" class="form-grid">
+              <div class="form-group">
+                <label for="qbCourseSelect">Target Course</label>
+                <select id="qbCourseSelect" class="select-control" required></select>
+              </div>
+              <div class="form-group">
+                <label for="qbLessonSelect">Target Lesson Module</label>
+                <select id="qbLessonSelect" class="select-control" required></select>
+              </div>
+              <div class="form-group full-width">
+                <label for="qbQuestionPrompt">Question Prompt</label>
+                <input type="text" id="qbQuestionPrompt" class="input-control" placeholder="e.g., Why does Euclid begin Book I with definitions, postulates, and common notions?" required />
+              </div>
+              <div class="form-group">
+                <label for="qbOptA">Option A (Correct Answer)</label>
+                <input type="text" id="qbOptA" class="input-control" placeholder="Enter correct answer choice..." required />
+              </div>
+              <div class="form-group">
+                <label for="qbOptB">Option B</label>
+                <input type="text" id="qbOptB" class="input-control" placeholder="Enter distractor choice..." required />
+              </div>
+              <div class="form-group">
+                <label for="qbOptC">Option C</label>
+                <input type="text" id="qbOptC" class="input-control" placeholder="Enter distractor choice..." required />
+              </div>
+              <div class="form-group">
+                <label for="qbOptD">Option D</label>
+                <input type="text" id="qbOptD" class="input-control" placeholder="Enter distractor choice..." required />
+              </div>
+              <div class="form-group full-width">
+                <label for="qbExplanation">Classical Commentary / Answer Explanation</label>
+                <input type="text" id="qbExplanation" class="input-control" placeholder="Displayed to the student after grading..." required />
+              </div>
+              <div class="form-actions full-width">
+                <button type="submit" class="btn btn-primary">Publish Quiz Question to Lesson</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Teacher Tab 4: Invite Codes & Role-Based Access Security -->
+        <div class="teacher-pane" id="teacherPane-security">
+          <div id="teacherAccessControlBox"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal Dialog for Creating Course / Lesson / Schedule Block / Placement Diagnostic -->
+  <div class="modal-backdrop hidden" id="appModalBackdrop" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalTitle">Create New Item</h3>
+        <button class="modal-close-btn" id="modalCloseBtn" aria-label="Close Modal">✕</button>
+      </div>
+      <div class="modal-body" id="modalBodyContent"></div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <div class="brand-logo">
+          <div class="crest-mark">
+            <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="2" width="40" height="40" rx="10" fill="#0F1E36" stroke="#C59B27" stroke-width="1.5"/>
+              <path d="M22 8V36M14 15H30" stroke="#C59B27" stroke-width="1.6" stroke-linecap="round" opacity="0.45"/>
+              <path d="M15.5 24.5C12.5 24.5 10.5 22.5 10.5 20C10.5 17.5 12.5 15.5 15.5 15.5C18.8 15.5 21.2 20 22 20C22.8 20 25.2 24.5 28.5 24.5C31.5 24.5 33.5 22.5 33.5 20C33.5 17.5 31.5 15.5 28.5 15.5C25.2 15.5 22.8 20 22 20C21.2 20 18.8 24.5 15.5 24.5Z" stroke="#FAF8F5" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <span class="brand-title">Christ Infinity Academy</span>
+            <span class="brand-subtitle">GRADES 6–12 HOMESCHOOL ACADEMY</span>
+          </div>
+        </div>
+        <p class="footer-mission">
+          Cultivating wisdom, eloquence, and scientific inquiry in middle and high school homeschool scholars worldwide.
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Portals</h4>
+        <ul>
+          <li><button class="footer-link" data-nav="pathways">Grade 6–12 Pathways</button></li>
+          <li><button class="footer-link" data-nav="student">Student Dashboard</button></li>
+          <li><button class="footer-link" data-nav="parent">Parent Oversight</button></li>
+          <li><button class="footer-link" data-nav="teacher">Teacher &amp; Admin Studio</button></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Grade Pathways</h4>
+        <ul>
+          <li><button class="footer-link" data-jump-pathway="6">Grade 6 Pathway (Foundation)</button></li>
+          <li><button class="footer-link" data-jump-pathway="7">Grade 7 Pathway (Formal Logic)</button></li>
+          <li><button class="footer-link" data-jump-pathway="8">Grade 8 Pathway (Pre-Rhetoric)</button></li>
+          <li><button class="footer-link" data-jump-pathway="10">Grades 9–12 Collegiate Honors</button></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Accreditation &amp; Standards</h4>
+        <p class="footer-note">NCAA-aligned core tracks, Dual-Credit University Partnerships, and Classical Christian Consortium standards.</p>
+        <span class="mono-tag">SOLI DEO GLORIA · EST. MMXXVI</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="curriculum_7_12.js"></script>
+  <script src="career_electives.js"></script>
+  <script src="bible_offline_80books.js"></script>
+  <script src="bible_offline_bbe.js"></script>
+  <script src="bible_full_chapters.js"></script>
+  <script src="visuals.js"></script>
+  <script src="cloud_sync.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
