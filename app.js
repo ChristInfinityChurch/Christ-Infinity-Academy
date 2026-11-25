@@ -3016,14 +3016,8 @@
     if (authBtn) {
       if (cloudSess) {
         authBtn.textContent = `☁️ ${cloudSess.family_name || "Cloud Family"} (${role === "student" ? "Student" : role === "teacher" ? "Admin" : "Parent"})`;
-      } else if (role === "student") {
-        authBtn.textContent = state.authConfig.parentPinVerified
-          ? "🔓 Student Mode (PIN Unlocked)"
-          : "🔒 Student Login (Keys Locked)";
-      } else if (role === "parent") {
-        authBtn.textContent = "☁️ Parent Login / Cloud Auth";
       } else {
-        authBtn.textContent = "☁️ Faculty / Admin Login";
+        authBtn.textContent = "🔒 Sign In / Enroll";
       }
     }
     if (nameEl && roleEl) {
@@ -3031,16 +3025,9 @@
         const handle = window.ACADEMY_CLOUD?.getDisplayUsername?.() || cloudSess.username || "";
         nameEl.textContent = cloudSess.family_name || (handle ? `@${handle}` : "Cloud Family");
         roleEl.textContent = `☁️ Cloud Synced${handle ? ` · @${handle}` : ""} · ${role.toUpperCase()}`;
-      } else if (role === "student") {
-        const stu = state.students[activeStudentId] || state.students.micah;
-        nameEl.textContent = stu.name;
-        roleEl.textContent = `Student Login · Answer Keys Locked`;
-      } else if (role === "parent") {
-        nameEl.textContent = "David & Sarah Vance";
-        roleEl.textContent = "Verified Parent · PIN 2026 Active";
       } else {
-        nameEl.textContent = "Dr. Alistair Sterling";
-        roleEl.textContent = "Dean of Academics · Admin";
+        nameEl.textContent = "Guest Preview";
+        roleEl.textContent = "Not Signed In · Click to Sign In";
       }
     }
   }

@@ -70,22 +70,18 @@
   <header class="site-header">
     <div class="container header-inner header-top-row">
       <a href="#home" class="brand-logo" data-nav="home">
-        <div class="crest-mark" aria-hidden="true">
-          <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="2" y="2" width="40" height="40" rx="10" fill="#0F1E36" stroke="#C59B27" stroke-width="1.5"/>
-            <path d="M22 8V36M14 15H30" stroke="#C59B27" stroke-width="1.6" stroke-linecap="round" opacity="0.45"/>
-            <path d="M15.5 24.5C12.5 24.5 10.5 22.5 10.5 20C10.5 17.5 12.5 15.5 15.5 15.5C18.8 15.5 21.2 20 22 20C22.8 20 25.2 24.5 28.5 24.5C31.5 24.5 33.5 22.5 33.5 20C33.5 17.5 31.5 15.5 28.5 15.5C25.2 15.5 22.8 20 22 20C21.2 20 18.8 24.5 15.5 24.5Z" stroke="#FAF8F5" stroke-width="2" stroke-linecap="round"/>
-          </svg>
+        <div class="crest-mark" aria-hidden="true" style="width:46px; height:46px; border-radius:10px; overflow:hidden; border:1.5px solid var(--gold-500); background:#FAF8F5; box-shadow:0 2px 6px rgba(15,30,54,0.12);">
+          <img src="griffin_mascot.jpg" alt="Christ Infinity Griffins Official Crest" style="width:100%; height:100%; object-fit:cover; display:block;" />
         </div>
         <div class="brand-text">
           <span class="brand-title">Christ Infinity Academy</span>
-          <span class="brand-subtitle">SCHOLA CLASSICA ET SCIENTIA · GRADES 6–12</span>
+          <span class="brand-subtitle">HOME OF THE GRIFFINS · GRADES 6–12</span>
         </div>
       </a>
 
       <div class="header-actions">
         <button class="btn btn-secondary btn-sm" id="openAuthModalBtn" title="Sign In, Verify Invite Code, or Switch Role Access">
-          🔒 Sign In / Role Gate
+          🔒 Sign In / Enroll
         </button>
         <button class="btn btn-outline btn-sm" id="headerQuickSignOutBtn" style="display:none; border-color:#DC2626; color:#B91C1C; font-weight:600;" title="Sign out of your account">
           ↪ Sign Out
@@ -93,11 +89,11 @@
         <button class="btn btn-outline btn-sm" id="openPlacementAdvisorBtn" title="Find the right grade pathway">
           Placement Advisor
         </button>
-        <div class="active-profile-chip" id="activeProfileChip" title="Click to switch role or verify Parent PIN">
+        <div class="active-profile-chip" id="activeProfileChip" title="Click to sign in or manage account">
           <span class="status-dot"></span>
           <div class="profile-chip-meta">
-            <span class="profile-chip-name" id="headerProfileName">Micah Vance</span>
-            <span class="profile-chip-role" id="headerProfileRole">Student Session · Grade 6</span>
+            <span class="profile-chip-name" id="headerProfileName">Guest Preview</span>
+            <span class="profile-chip-role" id="headerProfileRole">Not Signed In · Click to Sign In</span>
           </div>
         </div>
         <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle Menu" aria-expanded="false">
