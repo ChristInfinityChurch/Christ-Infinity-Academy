@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Christ Infinity Academy — Flagship Classical &amp; Modern Homeschool Platform (Grades 6–12)</title>
+  <title>Christ Infinity Academy — Flagship Classical &amp; Modern Homeschool Platform (Grades K–12)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20261125c" />
+  <link rel="stylesheet" href="styles.css?v=20261125e" />
 </head>
 <body>
   <!-- Top Institutional Banner -->
@@ -16,7 +16,7 @@
       <div class="inst-left">
         <span class="inst-badge">ACADEMIC YEAR 2026–2027</span>
         <span class="inst-divider">•</span>
-        <span class="inst-meta">Home of the Christ Infinity Griffins · Accredited Classical &amp; STEM Honors · Grades 6–12</span>
+        <span class="inst-meta">Home of the Christ Infinity Griffins · Accredited Classical &amp; STEM Honors · Grades K–12</span>
       </div>
       <div class="inst-right" style="display:flex; align-items:center; gap:0.65rem; font-size:0.75rem; color:#CBD5E1;">
         <span>🔒 Invite-Only Family Enrollment · Private Cloud Vault</span>
@@ -33,7 +33,7 @@
         </div>
         <div class="brand-text">
           <span class="brand-title">Christ Infinity Academy</span>
-          <span class="brand-subtitle">HOME OF THE GRIFFINS · GRADES 6–12</span>
+          <span class="brand-subtitle">HOME OF THE GRIFFINS · GRADES K–12</span>
         </div>
       </a>
 
@@ -380,8 +380,8 @@
         <div class="container page-banner-inner">
           <div>
             <span class="section-eyebrow">ACADEMIC CATALOG · 2026–2027</span>
-            <h1 class="page-title">Grades 6–12 Course Catalog</h1>
-            <p class="page-subtitle">Filter by grade level (6–12), academic department, or honors credit track. Enroll directly or launch a sample lesson.</p>
+            <h1 class="page-title">Grades K–12 Course Catalog</h1>
+            <p class="page-subtitle">Filter by grade level (K–12), core department, or electives (Coding, ASL, Art, Music, Real Estate, Finance &amp; Trades).</p>
           </div>
           <div class="catalog-summary-box">
             <div>
@@ -404,7 +404,14 @@
           <div class="filter-group">
             <label for="gradeFilter" class="filter-label">Grade Band:</label>
             <select id="gradeFilter" class="select-control">
-              <option value="all">All Grades (6–12)</option>
+              <option value="all">All Grades (K–12)</option>
+              <option value="elementary">All Elementary (Grades K–5)</option>
+              <option value="0">Kindergarten (K)</option>
+              <option value="1">Grade 1</option>
+              <option value="2">Grade 2</option>
+              <option value="3">Grade 3</option>
+              <option value="4">Grade 4</option>
+              <option value="5">Grade 5</option>
               <option value="6">Grade 6 Pathway</option>
               <option value="7">Grade 7 Pathway</option>
               <option value="8">Grade 8 Pathway</option>
@@ -420,29 +427,33 @@
           <div class="filter-group">
             <label for="subjectFilter" class="filter-label">Department:</label>
             <select id="subjectFilter" class="select-control">
-              <option value="all">All Subjects</option>
+              <option value="all">All Subjects &amp; Electives</option>
               <option value="Theology & Worldview">Theology &amp; Worldview</option>
               <option value="Mathematics">Mathematics</option>
               <option value="Natural Sciences">Natural Sciences</option>
-              <option value="Literature & Rhetoric">Literature &amp; Rhetoric</option>
-              <option value="History & Civilization">History &amp; Civilization</option>
-              <option value="Classical Languages & Arts">Classical Languages &amp; Arts (Latin, Greek &amp; Spanish)</option>
-              <option value="Career, Finance & Trades">Career, Finance, Real Estate &amp; Trades</option>
-              <option value="Technology & Engineering">Computer Science, AI &amp; Cybersecurity</option>
+              <option value="Literature & Rhetoric">Literature, Reading &amp; Writing</option>
+              <option value="History & Civilization">History &amp; Civics</option>
+              <option value="Computer Science & AI">Coding, Game Design, AI &amp; Cybersecurity</option>
+              <option value="Modern Languages">American Sign Language (ASL) &amp; Spanish</option>
+              <option value="Fine Arts & Music">Fine Arts, Drawing &amp; Music Studio</option>
+              <option value="Classical Languages & Arts">Classical Languages (Latin &amp; Greek)</option>
+              <option value="Career, Finance & Trades">Career, Real Estate, Finance, Trades &amp; Life Skills</option>
             </select>
           </div>
         </div>
 
         <!-- Subject Quick Chips -->
         <div class="subject-chips" id="subjectQuickChips">
-          <button class="chip active" data-subject="all">All Departments</button>
-          <button class="chip" data-subject="Career, Finance & Trades">💼 Real Estate, Investing &amp; Skilled Trades</button>
-          <button class="chip" data-subject="Technology & Engineering">💻 Coding, AI &amp; Cybersecurity</button>
-          <button class="chip" data-subject="Theology & Worldview">Theology &amp; Worldview</button>
+          <button class="chip active" data-subject="all">All K–12 Courses</button>
+          <button class="chip" data-subject="Computer Science & AI">💻 Coding &amp; AI</button>
+          <button class="chip" data-subject="Modern Languages">🤟 ASL &amp; Spanish</button>
+          <button class="chip" data-subject="Fine Arts & Music">🎨 Art &amp; Music</button>
+          <button class="chip" data-subject="Career, Finance & Trades">💼 Career, Finance &amp; Life Skills</button>
+          <button class="chip" data-subject="Theology & Worldview">Theology</button>
           <button class="chip" data-subject="Mathematics">Mathematics</button>
-          <button class="chip" data-subject="Natural Sciences">Natural Sciences (Labs)</button>
-          <button class="chip" data-subject="Literature & Rhetoric">Great Books &amp; Rhetoric</button>
-          <button class="chip" data-subject="History & Civilization">History &amp; Civilization</button>
+          <button class="chip" data-subject="Natural Sciences">Science</button>
+          <button class="chip" data-subject="Literature & Rhetoric">Reading &amp; Writing</button>
+          <button class="chip" data-subject="History & Civilization">History &amp; Civics</button>
           <button class="chip" data-subject="Classical Languages & Arts">Languages (Latin, Greek &amp; Spanish)</button>
         </div>
 
@@ -595,19 +606,18 @@
       <div class="page-banner student-banner">
         <div class="container page-banner-inner">
           <div>
-            <span class="section-eyebrow" id="studentBannerEyebrow">SCHOLAR WORKSPACE · GRADE 6 PATHWAY</span>
-            <h1 class="page-title" id="studentGreeting">Good morning, Micah Vance</h1>
-            <p class="page-subtitle" id="studentSubGreeting">“The fear of the Lord is the beginning of wisdom.” — Your Grade 6 Pathway is on pace.</p>
+            <span class="section-eyebrow" id="studentBannerEyebrow">SCHOLAR WORKSPACE · GRADES K–12</span>
+            <h1 class="page-title" id="studentGreeting">Welcome to Your Student Hub</h1>
+            <p class="page-subtitle" id="studentSubGreeting">“The fear of the Lord is the beginning of wisdom.” — Select or add a student in Parent Portal to begin Week 1.</p>
           </div>
           <div class="student-switcher-bar">
             <label for="activeStudentSelect" class="mono-label">SWITCH ACTIVE SCHOLAR PROFILE</label>
             <div class="student-switcher-controls">
               <select id="activeStudentSelect" class="select-control">
-                <option value="micah">Micah Vance (Grade 6 · Foundation Pathway)</option>
-                <option value="hannah">Hannah Vance (Grade 7 · Logic School)</option>
-                <option value="lucas">Lucas Vance (Grade 10 · Collegiate Honors)</option>
+                <option value="">No students enrolled yet</option>
               </select>
               <button class="btn btn-secondary btn-sm" data-nav="lesson">Resume Lesson →</button>
+              <button type="button" class="btn btn-primary btn-sm" onclick="window.openEogEocExamCenter && window.openEogEocExamCenter()">🏛️ EOG / EOC Final Exams</button>
             </div>
           </div>
         </div>
@@ -1129,7 +1139,8 @@
           </div>
           <div class="parent-actions-top">
             <button type="button" class="btn btn-emerald btn-sm" id="openAddStudentModalBtn" onclick="window.openAcademyAddStudentModal && window.openAcademyAddStudentModal()">+ Add Child &amp; Choose Courses</button>
-            <button class="btn btn-secondary btn-sm" id="approvePacingBtn">✓ Approve Weekly Pacing Log</button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="window.openEogEocExamCenter && window.openEogEocExamCenter()">🏛️ EOG / EOC Final Exams</button>
+            <button class="btn btn-outline btn-sm" id="approvePacingBtn">✓ Approve Weekly Pacing Log</button>
             <button class="btn btn-outline btn-sm" id="openPrintableCertificateBtn">🖨️ Print Official Certificate &amp; Transcript</button>
             <button class="btn btn-primary btn-sm" id="downloadTranscriptBtn">Download Official Transcript (.txt)</button>
           </div>
@@ -1401,14 +1412,17 @@
     </div>
   </footer>
 
-  <script src="data.js"></script>
-  <script src="curriculum_7_12.js"></script>
-  <script src="career_electives.js"></script>
+  <script src="data.js?v=20261125e"></script>
+  <script src="curriculum_7_12.js?v=20261125e"></script>
+  <script src="career_electives.js?v=20261125e"></script>
+  <script src="k12_expansion.js?v=20261125e"></script>
+  <script src="student_curriculum_engine.js?v=20261125e"></script>
+  <script src="eog_eoc_exams.js?v=20261125e"></script>
   <script src="bible_offline_80books.js"></script>
   <script src="bible_offline_bbe.js"></script>
   <script src="bible_full_chapters.js"></script>
   <script src="visuals.js"></script>
-  <script src="cloud_sync.js?v=20261125c"></script>
-  <script src="app.js?v=20261125c"></script>
+  <script src="cloud_sync.js?v=20261125e"></script>
+  <script src="app.js?v=20261125e"></script>
 </body>
 </html>

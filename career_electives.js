@@ -543,44 +543,53 @@
     const completedCount = (tasks.blankDone ? 1 : 0) + (tasks.writingDone ? 1 : 0) + (tasks.quizDone ? 1 : 0);
 
     const stepPills = [
-      { num: 1, icon: "🎯", label: "1. Today’s Objective", sub: "What & Why" },
-      { num: 2, icon: "📘", label: "2. Guided Lesson", sub: "Learn & Visuals" },
-      { num: 3, icon: "✍️", label: "3. Practice", sub: "Try It Yourself" },
-      { num: 4, icon: "🎟️", label: "4. Exit Ticket", sub: "Prove Mastery (≥85%)" }
+      { num: 1, icon: "🎯", label: "1. Today’s Goal", sub: "What You'll Learn" },
+      { num: 2, icon: "📘", label: "2. Guided Lesson", sub: "Clear Teaching" },
+      { num: 3, icon: lesson.isMathProblemSet ? "🔢" : "✍️", label: lesson.isMathProblemSet ? "3. Math Problems" : "3. Practice", sub: lesson.isMathProblemSet ? "Solve 5 Problems" : "Try It Yourself" },
+      { num: 4, icon: lesson.isWeeklyUnitTest ? "📝" : "🎟️", label: lesson.isWeeklyUnitTest ? "4. Weekly Unit Test" : "4. Exit Quiz", sub: `${quiz.length} Qs · ≥85%` }
     ];
 
     let stepBodyHtml = "";
 
     if (step === 1) {
-      // STEP 1: DEDICATED OBJECTIVE + GRAPHIC + BIG PICTURE CONNECTION
+      // STEP 1: STUDENT-FRIENDLY OBJECTIVES + VISUAL WARM-UP
       const visualGraphic =
         typeof window.renderCourseInteractiveDiagramHTML === "function"
           ? window.renderCourseInteractiveDiagramHTML(course, lesson, weekObj?.weekNum || 1)
           : "";
+      const objectivesList = Array.isArray(lesson.studentObjectives) && lesson.studentObjectives.length > 0
+        ? lesson.studentObjectives
+        : [`Understand ${cleanWeekTopic} clearly`, "Walk through a step-by-step example", `Pass today's ${quiz.length}-question check at ≥85%`];
       stepBodyHtml = `
         <div style="background: linear-gradient(135deg, #0A192F 0%, #162E52 100%); color:#FFFFFF; padding:1.5rem 1.75rem; border-radius:var(--radius-md); border:2px solid var(--gold-500); margin-bottom:1.15rem;">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.65rem;">
-            <span class="badge badge-gold">STEP 1 OF 4 · TODAY'S MISSION (${course.code} · WEEK ${weekObj?.weekNum || 1} · DAY ${dayIdx})</span>
+            <span class="badge badge-gold">STEP 1 OF 4 · ${course.code} · WEEK ${weekObj?.weekNum || 1} OF 36 · DAY ${dayIdx} OF 5</span>
             <span class="badge badge-emerald">${trackBadge}</span>
           </div>
           <h2 style="font-family:var(--font-serif); font-size:1.75rem; color:#FFFFFF; margin:0.2rem 0 0.55rem;">
-            🎯 Today’s Objective: Master “${cleanWeekTopic}”
+            🎯 Today’s Lesson: ${cleanWeekTopic}
           </h2>
-          <p style="font-size:0.98rem; line-height:1.68; color:#E2E8F0; max-width:840px; margin-bottom:1rem;">
-            <strong>What You Will Be Able to Do by the End of Today:</strong> You will understand the core rule behind <em>${cleanWeekTopic}</em>, walk through a clear visual example, practice it yourself, and pass your quick <strong>Exit Ticket</strong> so you're one step closer to mastering <strong>${course.title}</strong>.
+          <p style="font-size:0.98rem; line-height:1.65; color:#E2E8F0; max-width:860px; margin-bottom:0.85rem;">
+            <strong>Big Idea:</strong> ${dt.bigIdea || `Let's learn ${cleanWeekTopic} step by step in plain, clear language!`}
           </p>
+          <div style="background:rgba(255,255,255,0.09); padding:0.9rem 1.1rem; border-radius:8px; border-left:3px solid var(--gold-400); margin-bottom:1rem;">
+            <div style="font-family:var(--font-mono); font-size:0.72rem; color:var(--gold-400); margin-bottom:0.4rem;">BY THE END OF TODAY, YOU WILL BE ABLE TO:</div>
+            <ul style="margin:0; padding-left:1.2rem; display:flex; flex-direction:column; gap:0.3rem; font-size:0.9rem; color:#FFFFFF;">
+              ${objectivesList.map((o) => `<li>${o}</li>`).join("")}
+            </ul>
+          </div>
           <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap:0.65rem;">
-            <div style="background:rgba(255,255,255,0.08); padding:0.75rem 0.9rem; border-radius:6px; border-left:3px solid var(--gold-400);">
-              <div style="font-family:var(--font-mono); font-size:0.7rem; color:var(--gold-400);">HOW THIS FITS THE BIG PICTURE</div>
-              <div style="font-size:0.86rem; margin-top:0.2rem; color:#FFFFFF;">Quarter ${weekObj?.quarter || 1} of 4 · Week ${weekObj?.weekNum || 1} of 36 toward full ${course.credits.toFixed(1)} Carnegie Credit.</div>
+            <div style="background:rgba(255,255,255,0.08); padding:0.7rem 0.9rem; border-radius:6px; border-left:3px solid var(--gold-400);">
+              <div style="font-family:var(--font-mono); font-size:0.7rem; color:var(--gold-400);">WHERE YOU ARE</div>
+              <div style="font-size:0.86rem; margin-top:0.2rem; color:#FFFFFF;">Quarter ${weekObj?.quarter || 1} · Week ${weekObj?.weekNum || 1}, Day ${dayIdx} of 5</div>
             </div>
-            <div style="background:rgba(255,255,255,0.08); padding:0.75rem 0.9rem; border-radius:6px; border-left:3px solid #4FD1C5;">
-              <div style="font-family:var(--font-mono); font-size:0.7rem; color:#4FD1C5;">COURSE &amp; DEPARTMENT</div>
-              <div style="font-size:0.86rem; margin-top:0.2rem; color:#FFFFFF;">${course.title} (${course.department})</div>
+            <div style="background:rgba(255,255,255,0.08); padding:0.7rem 0.9rem; border-radius:6px; border-left:3px solid #4FD1C5;">
+              <div style="font-family:var(--font-mono); font-size:0.7rem; color:#4FD1C5;">TODAY'S ASSESSMENT</div>
+              <div style="font-size:0.86rem; margin-top:0.2rem; color:#FFFFFF;">${lesson.isWeeklyUnitTest ? "📝 20-Question Weekly Unit Test" : `🎟️ ${quiz.length}-Question Daily Quiz`} (≥85%)</div>
             </div>
-            <div style="background:rgba(255,255,255,0.08); padding:0.75rem 0.9rem; border-radius:6px; border-left:3px solid #68D391;">
-              <div style="font-family:var(--font-mono); font-size:0.7rem; color:#68D391;">ESTIMATED TIME TO FINISH</div>
-              <div style="font-size:0.86rem; margin-top:0.2rem; color:#FFFFFF;">${lesson.duration || "45 mins"} · Clear 4-Step Path (No Guessing!)</div>
+            <div style="background:rgba(255,255,255,0.08); padding:0.7rem 0.9rem; border-radius:6px; border-left:3px solid #68D391;">
+              <div style="font-family:var(--font-mono); font-size:0.7rem; color:#68D391;">ESTIMATED TIME</div>
+              <div style="font-size:0.86rem; margin-top:0.2rem; color:#FFFFFF;">${lesson.duration || "40 mins"} · Clear 4-Step Path</div>
             </div>
           </div>
         </div>
@@ -590,7 +599,7 @@
 
         <div style="display:flex; justify-content:flex-end; margin-top:1rem;">
           <button type="button" class="btn btn-primary btn-lg" data-set-guided-step="2">
-            Start Step 2: Guided Lesson &amp; Walkthrough →
+            Start Step 2: Read the Guided Lesson →
           </button>
         </div>
       `;
@@ -686,26 +695,37 @@
             </span>
           </div>
 
-          <!-- Practice Part A: Concept Check Fill-in-the-Blank -->
+          <!-- Practice Part A: Real Numerical Math Problems OR Concept Check Cloze -->
           <div class="quiz-q-card" style="background:var(--bg-ivory); margin-bottom:1rem;">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.65rem;">
-              <strong style="color:var(--navy-900);">Part A · Quick Concept Cloze (Click a Word Bank Chip or Type)</strong>
+              <strong style="color:var(--navy-900);">${lesson.isMathProblemSet ? "Part A · Interactive Math Problem Set (Solve & Check)" : "Part A · Concept Check (Click a Word Bank Chip or Type)"}</strong>
               <span class="badge ${tasks.blankDone ? "badge-emerald" : "badge-navy"}" id="clozeStatusBadge">${tasks.blankDone ? "✓ Done" : "In Progress"}</span>
             </div>
-            <div style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.75rem;">
-              ${(lesson.wordBank || [])
-                .map((w) => `<button type="button" class="chip" data-fill-word="${w}">${w}</button>`)
-                .join("")}
-            </div>
+            ${
+              !lesson.isMathProblemSet && (lesson.wordBank || []).length > 0
+                ? `<div style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.75rem;">
+                    ${(lesson.wordBank || [])
+                      .map((w) => `<button type="button" class="chip" data-fill-word="${w}">${w}</button>`)
+                      .join("")}
+                  </div>`
+                : ""
+            }
             <div class="assignments-stack" style="gap:0.65rem; margin-bottom:0.85rem;">
               ${blanks
                 .map(
                   (b, i) => `
-                <div style="font-size:0.93rem; line-height:1.75; background:#FFFFFF; padding:0.65rem 0.85rem; border-radius:6px; border:1px solid var(--border-subtle);">
-                  ${b.before}
-                  <input type="text" class="input-control cloze-blank-input" data-expected="${b.answer}" value="${tasks.blankDone ? b.answer : ""}" placeholder="${b.hint}" style="display:inline-block; width:165px; padding:0.25rem 0.5rem; margin:0 0.25rem; font-weight:700;" />
-                  ${b.after}
-                  <span id="clozeFeedback_${i}" style="margin-left:0.4rem; font-size:0.8rem; font-weight:700;"></span>
+                <div style="font-size:0.93rem; line-height:1.75; background:#FFFFFF; padding:0.75rem 0.9rem; border-radius:8px; border:1px solid var(--border-subtle);">
+                  <div>
+                    <strong style="color:var(--navy-900);">${b.before}</strong>
+                    <input type="text" class="input-control cloze-blank-input" data-expected="${b.answer}" value="${tasks.blankDone ? b.answer : ""}" placeholder="${lesson.isMathProblemSet ? "Type answer..." : b.hint}" style="display:inline-block; width:${lesson.isMathProblemSet ? "135px" : "165px"}; padding:0.28rem 0.55rem; margin:0 0.3rem; font-weight:700;" />
+                    ${b.after}
+                    <span id="clozeFeedback_${i}" style="margin-left:0.4rem; font-size:0.82rem; font-weight:700;"></span>
+                  </div>
+                  ${
+                    lesson.isMathProblemSet && b.hint
+                      ? `<details style="margin-top:0.35rem; font-size:0.8rem; color:var(--text-secondary);"><summary style="cursor:pointer; color:var(--navy-700); font-weight:600;">💡 Need a step hint?</summary><div style="margin-top:0.2rem;">${b.hint}</div></details>`
+                      : ""
+                  }
                 </div>
               `
                 )
@@ -713,8 +733,8 @@
             </div>
             <div id="clozeSummaryBanner" class="lesson-callout hidden" style="margin-bottom:0.65rem;"></div>
             <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem; flex-wrap:wrap;">
-              <button type="button" class="btn btn-primary btn-sm" data-grade-cloze="true">✓ Check My Answers</button>
-              <span style="font-size:0.78rem; color:var(--text-secondary);">🔒 Full Answer Keys are secured exclusively in the <strong>Parent Portal</strong>.</span>
+              <button type="button" class="btn btn-primary btn-sm" data-grade-cloze="true">✓ Check My ${lesson.isMathProblemSet ? "Math Answers" : "Answers"}</button>
+              <span style="font-size:0.78rem; color:var(--text-secondary);">🔒 Full step-by-step Answer Keys are kept exclusively in the <strong>Parent Portal</strong>.</span>
             </div>
           </div>
 
@@ -744,30 +764,36 @@
         </div>
       `;
     } else {
-      // STEP 4: EXIT TICKET & MASTERY CONFIRMATION
+      // STEP 4: DAILY EXIT QUIZ (12 Qs) OR DAY 5 WEEKLY UNIT TEST (20 Qs) + REMEDIATION FLOW
+      const isUnitTest = !!lesson.isWeeklyUnitTest;
       stepBodyHtml = `
-        <div class="card-panel" style="border-top:4px solid var(--emerald-600);">
+        <div class="card-panel" style="border-top:4px solid ${isUnitTest ? "var(--gold-500)" : "var(--emerald-600)"};">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.9rem;">
             <div>
-              <span class="mono-label" style="color:var(--emerald-700);">STEP 4 OF 4 · DAILY EXIT TICKET &amp; MASTERY CONFIRMATION</span>
+              <span class="mono-label" style="color:${isUnitTest ? "var(--gold-600)" : "var(--emerald-700)"};">
+                STEP 4 OF 4 · ${isUnitTest ? `WEEK ${weekObj?.weekNum || 1} COMPREHENSIVE UNIT TEST (${quiz.length} QUESTIONS)` : `DAILY MASTERY QUIZ (${quiz.length} QUESTIONS)`}
+              </span>
               <h3 style="font-family:var(--font-serif); font-size:1.5rem; color:var(--navy-900); margin:0.15rem 0 0;">
-                🎟️ Exit Ticket: Confirm You Mastered “${cleanWeekTopic}”
+                ${isUnitTest ? "📝 Weekly Unit Test" : "🎟️ Daily Quiz"}: ${cleanWeekTopic}
               </h3>
               <p style="font-size:0.86rem; color:var(--text-secondary); margin-top:0.2rem;">
-                Pass this quick Exit Ticket at <strong>≥ 85%</strong> to officially complete Day ${dayIdx} of Week ${weekObj?.weekNum || 1} and advance toward your overall ${course.code} goal!
+                Score <strong>≥ 85%</strong> to pass ${isUnitTest ? `Week ${weekObj?.weekNum || 1} and unlock Week ${Math.min(36, (weekObj?.weekNum || 1) + 1)}` : `Day ${dayIdx}`}. If you score under 85%, you’ll review Step 2 and retry missed questions—and your parent gets a helpful coaching note in the Parent Portal.
               </p>
             </div>
             <span class="badge ${tasks.quizDone ? "badge-emerald" : "badge-gold"}" id="guidedExitStatusBadge">
-              ${tasks.quizDone ? "✓ EXIT TICKET PASSED — DAY COMPLETE!" : `Daily Progress: ${completedCount}/3 Done`}
+              ${tasks.quizDone ? `✓ PASSED (${lesson.masteryScore || 100}%) — COMPLETE!` : `${quiz.length} Questions · ≥85% Needed`}
             </span>
           </div>
 
-          <div class="assignments-stack" style="gap:0.85rem; margin-bottom:1rem;">
+          <div class="assignments-stack" style="gap:0.8rem; margin-bottom:1rem;">
             ${quiz
               .map(
                 (qItem, qIdx) => `
-              <div class="quiz-q-card" data-guided-q="${qIdx}" style="background:var(--bg-ivory);">
-                <div class="quiz-q-prompt" style="font-weight:700; color:var(--navy-900); margin-bottom:0.55rem;">Exit Question ${qIdx + 1}: ${qItem.q}</div>
+              <div class="quiz-q-card" id="guidedQuizCard_${qIdx}" data-guided-q="${qIdx}" style="background:var(--bg-ivory); border:1px solid var(--border-subtle);">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
+                  <div class="quiz-q-prompt" style="font-weight:700; color:var(--navy-900);">Question ${qIdx + 1} of ${quiz.length}: ${qItem.q}</div>
+                  <span id="guidedExitStatus_${qIdx}" style="font-size:0.76rem; font-weight:700; white-space:nowrap;"></span>
+                </div>
                 <div class="quiz-options">
                   ${qItem.options
                     .map(
@@ -781,7 +807,7 @@
                     .join("")}
                 </div>
                 <div class="quiz-explanation hidden" id="guidedExitExp_${qIdx}" style="margin-top:0.5rem;">
-                  <strong>Confirmation Note:</strong> ${qItem.explanation}
+                  <strong>Explanation:</strong> ${qItem.explanation}
                 </div>
               </div>
             `
@@ -792,22 +818,33 @@
           <div id="guidedExitResultBanner" class="lesson-callout ${tasks.quizDone ? "" : "hidden"}" style="margin-bottom:1rem; background:#F4FAF7; border-left-color:var(--emerald-600);">
             ${
               tasks.quizDone
-                ? `<strong>🎉 Exit Ticket Confirmed!</strong> You hit today’s objective for <em>${cleanWeekTopic}</em>! Click <strong>Next Day →</strong> below or head to your next subject.`
+                ? `<strong>🎉 Awesome work!</strong> You passed ${isUnitTest ? "this Weekly Unit Test" : "today's Quiz"} at <strong>${lesson.masteryScore || 100}%</strong>! Ready for the next step.`
                 : ""
             }
           </div>
 
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.65rem; padding-top:0.85rem; border-top:1px solid var(--border-subtle);">
-            <button type="button" class="btn btn-outline" data-set-guided-step="3">← Back to Step 3 (Practice)</button>
+            <button type="button" class="btn btn-outline" data-set-guided-step="2">📘 Review Step 2 Lesson</button>
             <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
               <button type="button" class="btn btn-emerald btn-lg" data-submit-guided-exit-ticket="true">
-                🎟️ Submit Exit Ticket &amp; Finish Today
+                ${isUnitTest ? "📝 Submit 20-Question Unit Test" : `🎟️ Submit ${quiz.length}-Question Quiz`}
               </button>
-              ${
-                dayIdx < (course.lessons || []).length
-                  ? `<button type="button" class="btn btn-primary btn-lg" data-select-lesson="${course.lessons[dayIdx].id}">Next Day (Day ${dayIdx + 1}) →</button>`
-                  : `<button type="button" class="btn btn-primary btn-lg" data-select-36week="${Math.min(36, (weekObj?.weekNum || 1) + 1)}">Advance to Week ${Math.min(36, (weekObj?.weekNum || 1) + 1)} →</button>`
-              }
+              <button
+                type="button"
+                id="guidedNextAdvanceBtn"
+                class="btn btn-primary btn-lg ${tasks.quizDone ? "" : "hidden"}"
+                ${
+                  dayIdx < (course.lessons || []).length
+                    ? `data-select-lesson="${course.lessons[dayIdx].id}"`
+                    : `data-select-36week="${Math.min(36, (weekObj?.weekNum || 1) + 1)}"`
+                }
+              >
+                ${
+                  dayIdx < (course.lessons || []).length
+                    ? `Next Day (Day ${dayIdx + 1}) →`
+                    : `Advance to Week ${Math.min(36, (weekObj?.weekNum || 1) + 1)} →`
+                }
+              </button>
             </div>
           </div>
         </div>

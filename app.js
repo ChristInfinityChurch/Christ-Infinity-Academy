@@ -13,7 +13,7 @@
   let activeAssignmentFilter = "pending";
   let activeCourseIdForLesson = "theo-601";
   let activeLessonId = "theo-601-d1";
-  let activeLessonWeekNum = 11;
+  let activeLessonWeekNum = 1;
   let showFull36WeekMap = false;
   let lessonViewMode = "guided"; // "guided" (Clean 4-Step Student Flow) | "full" (Full Syllabus & Studio Tabs)
   let activeGuidedStep = 1; // 1: Objective | 2: Guided Lesson | 3: Practice | 4: Exit Ticket
@@ -79,6 +79,18 @@
           parsed.students &&
           typeof parsed.students === "object"
         ) {
+          // Automatically merge any newly added K–12 & Elective courses into saved state
+          if (Array.isArray(INITIAL_ACADEMY_DATA.courses)) {
+            if (!Array.isArray(parsed.courses)) parsed.courses = [];
+            INITIAL_ACADEMY_DATA.courses.forEach((freshCourse) => {
+              const existingC = parsed.courses.find((c) => c.id === freshCourse.id);
+              if (!existingC) {
+                parsed.courses.push(JSON.parse(JSON.stringify(freshCourse)));
+              } else if (Array.isArray(freshCourse.gradeLevels)) {
+                existingC.gradeLevels = freshCourse.gradeLevels;
+              }
+            });
+          }
           return parsed;
         }
       }
@@ -114,6 +126,33 @@
     }
     return null;
   }
+  window.getAcademyActiveStudent = getActiveStudent;
+  window.recordAcademyEogResult = function (examLabel, correct, total, pct, levelLabel) {
+    const stu = getActiveStudent();
+    if (!stu) return;
+    if (!Array.isArray(stu.facultyNotes)) stu.facultyNotes = [];
+    stu.facultyNotes.unshift({
+      instructor: "🏛️ State EOG / EOC Benchmark Record",
+      date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+      note: `${stu.name} completed "${examLabel}": ${correct}/${total} (${pct}%) — ${levelLabel}.`
+    });
+    if (!Array.isArray(state.assignments)) state.assignments = [];
+    state.assignments.unshift({
+      id: "eog-" + Date.now(),
+      studentId: stu.id,
+      courseId: "eog-benchmark",
+      courseTitle: "State EOG / EOC Final Benchmark",
+      title: `${examLabel} (${levelLabel.split("—")[0].trim()})`,
+      dueDate: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+      type: "EOG / EOC Final",
+      status: "completed",
+      score: pct
+    });
+    saveState(true);
+    renderParentDashboard();
+    renderStudentDashboard();
+    showToast(`🏛️ EOG/EOC Score (${pct}%) saved to ${stu.name}'s official record!`);
+  };
 
   function isOnlyDemoVanceStudents() {
     const keys = Object.keys(state.students || {});
@@ -153,46 +192,61 @@
     }
   }
 
+  function formatGradeLabel(g) {
+    const n = Number(g);
+    return n === 0 ? "Kindergarten" : `Grade ${n}`;
+  }
+
   function getRecommendedCourseIdsForGrade(gradeNum) {
-    const g = Number(gradeNum) || 6;
+    const g = Number(gradeNum);
+    const electiveDepts = new Set([
+      "Career, Finance & Trades",
+      "Computer Science & AI",
+      "Modern Languages",
+      "Fine Arts & Music"
+    ]);
     const core = (state.courses || []).filter(
       (c) =>
         Array.isArray(c.gradeLevels) &&
         c.gradeLevels.includes(g) &&
-        c.department !== "Career, Finance & Trades" &&
-        c.department !== "Computer Science & AI" &&
-        c.department !== "Modern Languages"
+        !electiveDepts.has(c.department) &&
+        c.id !== "pe-612"
     );
-    if (core.length > 0) return core.slice(0, 7).map((c) => c.id);
-    return (state.courses || []).slice(0, 6).map((c) => c.id);
+    if (core.length > 0) return core.slice(0, 6).map((c) => c.id);
+    return (state.courses || []).slice(0, 5).map((c) => c.id);
   }
 
   function renderCourseChecklistHtml(gradeNum, preselectedIds) {
-    const g = Number(gradeNum) || 6;
+    const g = Number(gradeNum);
+    const gradeDisplay = formatGradeLabel(g);
     const selectedSet = new Set(
       Array.isArray(preselectedIds) && preselectedIds.length > 0
         ? preselectedIds
         : getRecommendedCourseIdsForGrade(g)
     );
+    const electiveDepts = new Set([
+      "Career, Finance & Trades",
+      "Computer Science & AI",
+      "Modern Languages",
+      "Fine Arts & Music"
+    ]);
     const coreCourses = (state.courses || []).filter(
       (c) =>
         Array.isArray(c.gradeLevels) &&
         c.gradeLevels.includes(g) &&
-        c.department !== "Career, Finance & Trades" &&
-        c.department !== "Computer Science & AI" &&
-        c.department !== "Modern Languages"
+        !electiveDepts.has(c.department) &&
+        c.id !== "pe-612"
     );
     const coreIds = new Set(coreCourses.map((c) => c.id));
-    const electivesAndCareers = (state.courses || []).filter(
+    const electivesForGrade = (state.courses || []).filter(
       (c) =>
         !coreIds.has(c.id) &&
-        (c.department === "Career, Finance & Trades" ||
-          c.department === "Computer Science & AI" ||
-          c.department === "Modern Languages" ||
-          c.id === "pe-612")
+        Array.isArray(c.gradeLevels) &&
+        c.gradeLevels.includes(g) &&
+        (electiveDepts.has(c.department) || c.id === "pe-612")
     );
-    const otherGradeCourses = (state.courses || []).filter(
-      (c) => !coreIds.has(c.id) && !electivesAndCareers.some((e) => e.id === c.id)
+    const otherElectivesAndCourses = (state.courses || []).filter(
+      (c) => !coreIds.has(c.id) && !electivesForGrade.some((e) => e.id === c.id)
     );
 
     const renderGroup = (title, items) => {
@@ -208,7 +262,7 @@
                 <input type="checkbox" name="studentCourseIds" value="${c.id}" ${selectedSet.has(c.id) ? "checked" : ""} style="margin-top:0.2rem;" />
                 <span>
                   <strong style="color:var(--navy-900);">${c.code}</strong>: ${c.title}
-                  <span style="display:block; font-size:0.72rem; color:var(--text-muted);">${c.department || "Academy"} · Grade ${Array.isArray(c.gradeLevels) ? c.gradeLevels.join(", ") : c.gradeLevels || g}</span>
+                  <span style="display:block; font-size:0.72rem; color:var(--text-muted);">${c.department || "Academy"} · ${Array.isArray(c.gradeLevels) ? (c.gradeLevels.length > 3 ? `Grades ${c.gradeLevels[0] === 0 ? "K" : c.gradeLevels[0]}–${c.gradeLevels[c.gradeLevels.length - 1]}` : c.gradeLevels.map((lv) => (lv === 0 ? "K" : `G${lv}`)).join(", ")) : gradeDisplay}</span>
                 </span>
               </label>
             `
@@ -220,10 +274,10 @@
     };
 
     return (
-      renderGroup(`RECOMMENDED CORE COURSES FOR GRADE ${g}`, coreCourses) +
-      renderGroup("CAREER LICENSING, STOCKS/CRYPTO, TRADES, TECH & ELECTIVES", electivesAndCareers) +
-      (otherGradeCourses.length
-        ? `<details style="margin-top:0.35rem;"><summary style="cursor:pointer; font-size:0.8rem; font-weight:600; color:var(--navy-800);">+ Browse Additional Grades 6–12 Courses (${otherGradeCourses.length})</summary><div style="margin-top:0.5rem;">${renderGroup("ALL OTHER ACADEMY COURSES", otherGradeCourses)}</div></details>`
+      renderGroup(`RECOMMENDED CORE COURSES FOR ${gradeDisplay.toUpperCase()}`, coreCourses) +
+      renderGroup(`ELECTIVES FOR ${gradeDisplay.toUpperCase()} (CODING, ASL, ART, MUSIC, LIFE SKILLS, CAREER & PE)`, electivesForGrade) +
+      (otherElectivesAndCourses.length
+        ? `<details style="margin-top:0.35rem;"><summary style="cursor:pointer; font-size:0.8rem; font-weight:600; color:var(--navy-800);">+ Browse All Other K–12 Courses &amp; Advanced Electives (${otherElectivesAndCourses.length})</summary><div style="margin-top:0.5rem;">${renderGroup("ALL OTHER K–12 ACADEMY COURSES", otherElectivesAndCourses)}</div></details>`
         : "")
     );
   }
@@ -275,10 +329,10 @@
             <input type="text" id="addStudentNameInput" class="input-control" value="${existing ? existing.name : ""}" placeholder="e.g., Jordan Miller" required />
           </div>
           <div class="form-group">
-            <label>Grade Level</label>
+            <label>Grade Level (K–12)</label>
             <select id="addStudentGradeSelect" class="select-control">
-              ${[6, 7, 8, 9, 10, 11, 12]
-                .map((g) => `<option value="${g}" ${Number(defaultGrade) === g ? "selected" : ""}>Grade ${g}</option>`)
+              ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                .map((g) => `<option value="${g}" ${Number(defaultGrade) === g ? "selected" : ""}>${g === 0 ? "Kindergarten (K)" : `Grade ${g}`}</option>`)
                 .join("")}
             </select>
           </div>
@@ -411,7 +465,7 @@
 
     const pathway = state.gradePathways[String(activePathwayGrade)] || state.gradePathways["6"];
     const detailContainer = document.getElementById("pathwayDetailContainer");
-    const stu = state.students[activeStudentId] || state.students.micah;
+    const stu = getActiveStudent();
 
     if (detailContainer && pathway) {
       const pathwayCourses = state.courses.filter((c) => pathway.courseIds.includes(c.id));
@@ -828,11 +882,13 @@
     const subjectVal = document.getElementById("subjectFilter")?.value || "all";
     const grid = document.getElementById("catalogGrid");
     const enrolledCountEl = document.getElementById("catalogEnrolledCount");
-    const student = state.students[activeStudentId] || state.students.micah;
+    const student = getActiveStudent();
 
-    if (enrolledCountEl && student) {
-      const count = student.enrolledCourseIds.length;
-      enrolledCountEl.textContent = `${count} Courses (${count.toFixed(1)} Credits)`;
+    if (enrolledCountEl) {
+      const count = student ? (student.enrolledCourseIds || []).length : 0;
+      enrolledCountEl.textContent = student
+        ? `${count} Courses (${count.toFixed(1)} Credits)`
+        : `${state.courses.length} K–12 Courses Available`;
     }
 
     if (!grid) return;
@@ -846,16 +902,25 @@
         course.instructor.toLowerCase().includes(searchVal);
 
       let matchesGrade = true;
-      if (gradeVal === "middle") {
-        matchesGrade = course.division === "middle";
+      if (gradeVal === "elementary") {
+        matchesGrade = Array.isArray(course.gradeLevels) && course.gradeLevels.some((g) => g >= 0 && g <= 5);
+      } else if (gradeVal === "middle") {
+        matchesGrade = Array.isArray(course.gradeLevels) && course.gradeLevels.some((g) => g >= 6 && g <= 8);
       } else if (gradeVal === "high") {
-        matchesGrade = course.division === "high";
+        matchesGrade = Array.isArray(course.gradeLevels) && course.gradeLevels.some((g) => g >= 9 && g <= 12);
       } else if (gradeVal !== "all") {
         const gNum = parseInt(gradeVal, 10);
-        matchesGrade = course.gradeLevels.includes(gNum);
+        matchesGrade = Array.isArray(course.gradeLevels) && course.gradeLevels.includes(gNum);
       }
 
-      const matchesSubject = subjectVal === "all" || course.department === subjectVal;
+      let matchesSubject = subjectVal === "all" || course.department === subjectVal;
+      if (!matchesSubject && subjectVal === "Literature & Rhetoric") {
+        matchesSubject = (course.department || "").includes("Literature");
+      } else if (!matchesSubject && subjectVal === "History & Civilization") {
+        matchesSubject = (course.department || "").includes("History");
+      } else if (!matchesSubject && subjectVal === "Computer Science & AI") {
+        matchesSubject = (course.department || "").includes("Computer") || (course.department || "").includes("Technology");
+      }
       return matchesSearch && matchesGrade && matchesSubject;
     });
 
@@ -863,7 +928,7 @@
       grid.innerHTML = `
         <div class="card-panel" style="grid-column: 1 / -1; text-align:center; padding: 2.5rem;">
           <h3>No matching courses found</h3>
-          <p style="color: var(--text-secondary); margin-top: 0.4rem;">Try clearing your search filter or selecting "All Grades (6–12)".</p>
+          <p style="color: var(--text-secondary); margin-top: 0.4rem;">Try clearing your search filter or selecting "All Grades (K–12)".</p>
         </div>
       `;
       return;
@@ -871,11 +936,15 @@
 
     grid.innerHTML = filtered
       .map((c) => {
-        const isEnrolled = student.enrolledCourseIds.includes(c.id);
+        const isEnrolled = student ? (student.enrolledCourseIds || []).includes(c.id) : false;
+        const gFirst = c.gradeLevels[0] === 0 ? "K" : c.gradeLevels[0];
+        const gLast = c.gradeLevels[c.gradeLevels.length - 1] === 0 ? "K" : c.gradeLevels[c.gradeLevels.length - 1];
         const gradesLabel =
           c.gradeLevels.length > 1
-            ? `Grades ${c.gradeLevels[0]}–${c.gradeLevels[c.gradeLevels.length - 1]}`
-            : `Grade ${c.gradeLevels[0]}`;
+            ? `Grades ${gFirst}–${gLast}`
+            : c.gradeLevels[0] === 0
+              ? "Kindergarten"
+              : `Grade ${gFirst}`;
 
         return `
           <article class="course-card">
@@ -1321,8 +1390,8 @@
             ${syllabus36
               .map((w) => {
                 const isSelected = w.weekNum === activeLessonWeekNum;
-                const badgeClass =
-                  w.weekNum < 11 ? "badge-emerald" : w.weekNum === 11 ? "badge-gold" : "badge-navy";
+                const isDone = (w.daysCompleted || 0) >= 5;
+                const badgeClass = isDone ? "badge-emerald" : isSelected ? "badge-gold" : "badge-navy";
                 return `
                 <button
                   type="button"
@@ -1334,7 +1403,7 @@
                   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.25rem;">
                     <span class="mono-label" style="color:var(--navy-900);">Q${w.quarter} · WEEK ${w.weekNum}</span>
                     <span class="badge ${badgeClass}" style="font-size:0.62rem; padding:0.12rem 0.4rem;">
-                      ${w.weekNum < 11 ? "✓ 5/5 Days" : w.weekNum === 11 ? "Active" : "5 Days Ready"}
+                      ${isDone ? "✓ 5/5 Days" : isSelected ? "Current Week" : "5 Days Ready"}
                     </span>
                   </div>
                   <div style="font-size:0.8rem; font-weight:700; color:var(--navy-900); line-height:1.35;">
@@ -1803,11 +1872,9 @@
 
             <div style="margin-top:0.85rem; display:flex; gap:0.6rem; flex-wrap:wrap; align-items:center;">
               <button type="button" class="btn btn-primary btn-sm" data-grade-cloze="true">
-                ✓ Grade Fill-in-the-Blank (Assignment 1 of 3)
+                ✓ Check Practice Answers (Assignment 1 of 3)
               </button>
-              <button type="button" class="btn btn-outline btn-sm" data-autofill-cloze="true">
-                Reveal Key &amp; Auto-Fill Blanks
-              </button>
+              <span style="font-size:0.78rem; color:var(--text-secondary);">🔒 Answer Keys are locked in the Parent Portal.</span>
             </div>
             <div class="quiz-explanation hidden" id="clozeSummaryBanner" style="margin-top:0.65rem;"></div>
           </div>
@@ -3983,38 +4050,98 @@
         const lesson = course?.lessons.find((l) => l.id === activeLessonId) || course?.lessons[0];
         if (!lesson || !lesson.quiz) return;
         let correct = 0;
+        let unanswered = 0;
+        const missedNums = [];
+
         lesson.quiz.forEach((qItem, qIdx) => {
           const sel = document.querySelector(`input[name="guided_exit_q_${qIdx}"]:checked`);
           const chosen = sel ? parseInt(sel.value, 10) : -1;
-          if (chosen === qItem.correct) correct++;
+          const cardEl = document.getElementById(`guidedQuizCard_${qIdx}`);
+          const statusEl = document.getElementById(`guidedExitStatus_${qIdx}`);
+          const expEl = document.getElementById(`guidedExitExp_${qIdx}`);
+          if (chosen === -1) unanswered++;
+
           if (chosen === qItem.correct) {
-            document.getElementById(`guidedExitExp_${qIdx}`)?.classList.remove("hidden");
+            correct++;
+            if (cardEl) cardEl.style.borderColor = "var(--emerald-600)";
+            if (statusEl) {
+              statusEl.style.color = "var(--emerald-700)";
+              statusEl.textContent = "✓ Correct";
+            }
+            if (expEl) expEl.classList.remove("hidden");
+          } else {
+            missedNums.push(qIdx + 1);
+            if (cardEl) cardEl.style.borderColor = "#DC2626";
+            if (statusEl) {
+              statusEl.style.color = "#B91C1C";
+              statusEl.textContent = chosen === -1 ? "⚠️ Unanswered" : "✗ Try Again";
+            }
+            // Keep answer explanation hidden when missed so student reviews Step 2 and retries genuinely
+            if (expEl) expEl.classList.add("hidden");
           }
         });
-        const pct = Math.round((correct / lesson.quiz.length) * 100);
+
+        const totalQ = lesson.quiz.length;
+        const pct = Math.round((correct / totalQ) * 100);
         const banner = document.getElementById("guidedExitResultBanner");
+        const nextBtn = document.getElementById("guidedNextAdvanceBtn");
+        const stu = getActiveStudent();
+        const quizLabel = lesson.isWeeklyUnitTest
+          ? `Week ${activeLessonWeekNum} Unit Test (${totalQ} Qs)`
+          : `Week ${activeLessonWeekNum} Day Quiz (${totalQ} Qs)`;
+
         if (pct >= 85) {
           if (!lesson.dailyTasks) lesson.dailyTasks = { blankDone: true, writingDone: true, quizDone: true };
           lesson.dailyTasks.quizDone = true;
           lesson.completed = true;
           lesson.masteryScore = pct;
-          saveState();
+          course.quizAvg = pct;
+          course.termGrade = Math.max(course.termGrade || 0, pct);
+          const doneDays = (course.lessons || []).filter((l) => l.completed).length;
+          course.progress = Math.min(100, Math.round((doneDays / Math.max(1, course.lessons.length)) * 100));
+          if (stu) {
+            stu.loggedClockHours = Number(stu.loggedClockHours ?? 0) + 1;
+            stu.attendanceDays = Math.min(180, Number(stu.attendanceDays ?? 0) + 1);
+            if (!Array.isArray(stu.facultyNotes)) stu.facultyNotes = [];
+            stu.facultyNotes.unshift({
+              instructor: `${course.code} Mastery Log`,
+              date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+              note: `✓ Passed ${quizLabel} with ${correct}/${totalQ} (${pct}%)!`
+            });
+          }
+          saveState(true);
+          if (nextBtn) nextBtn.classList.remove("hidden");
           if (banner) {
             banner.classList.remove("hidden");
             banner.style.background = "#F4FAF7";
             banner.style.borderLeftColor = "var(--emerald-600)";
-            banner.innerHTML = `<strong>🎉 Exit Ticket Passed (${pct}%)!</strong> You mastered today’s objective! Ready for the next day or your next course.`;
+            banner.innerHTML = `<strong>🎉 Passed ${quizLabel} — ${correct}/${totalQ} (${pct}%)!</strong> You unlocked the next step and your progress is synced to the Parent Portal.`;
           }
-          showToast(`🎉 Exit Ticket Passed (${pct}%)! Day marked complete.`);
-          setTimeout(() => renderLessonStudio(), 900);
+          showToast(`🎉 Passed (${pct}%)! Next lesson unlocked.`);
+          renderParentDashboard();
+          renderStudentDashboard();
         } else {
+          if (nextBtn) nextBtn.classList.add("hidden");
+          if (stu) {
+            if (!Array.isArray(stu.facultyNotes)) stu.facultyNotes = [];
+            stu.facultyNotes.unshift({
+              instructor: `⚠️ Parent Coaching Alert (${course.code})`,
+              date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+              note: `${stu.name} scored ${correct}/${totalQ} (${pct}%) on ${quizLabel} (missed Q: ${missedNums.slice(0, 8).join(", ")}${missedNums.length > 8 ? "..." : ""}). Review Step 2 together using the Parent Co-Teacher Guide, then retry!`
+            });
+            saveState(true);
+            renderParentDashboard();
+          }
           if (banner) {
             banner.classList.remove("hidden");
-            banner.style.background = "var(--amber-100)";
-            banner.style.borderLeftColor = "var(--amber-600)";
-            banner.innerHTML = `<strong>Almost there (${pct}%)!</strong> Review <strong>Step 2 (Guided Lesson)</strong> and try again to hit the ≥85% mastery check. (Parents can view full keys in the Parent Portal.)`;
+            banner.style.background = "#FEF2F2";
+            banner.style.borderLeftColor = "#DC2626";
+            banner.innerHTML = `
+              <strong>Keep going — you scored ${correct}/${totalQ} (${pct}%)</strong> (≥85% is needed to advance${unanswered > 0 ? ` · ${unanswered} unanswered` : ""}).<br/>
+              <span style="font-size:0.85rem;">The questions highlighted in red need another look. Click <strong>📘 Review Step 2 Lesson</strong> below, double-check those concepts, and change your answers right here to retry! A helpful coaching note was also sent to the Parent Portal.</span>
+            `;
           }
-          showToast(`Scored ${pct}% — review Step 2 and retry your Exit Ticket to hit ≥85%!`);
+          showToast(`Scored ${pct}% (${correct}/${totalQ}) — review Step 2 & retry missed questions to hit ≥85%!`);
         }
         return;
       }
@@ -4194,11 +4321,18 @@
         if (!lesson || inputs.length === 0) return;
 
         let correct = 0;
+        const normAns = (v) =>
+          String(v || "")
+            .trim()
+            .toLowerCase()
+            .replace(/^[a-z]\s*=\s*/i, "")
+            .replace(/[$%,°¢\s]/g, "")
+            .replace(/×/g, "x");
         inputs.forEach((inp, idx) => {
           const expected = (inp.getAttribute("data-expected") || "").trim();
           const actual = (inp.value || "").trim();
           const fb = document.getElementById(`clozeFeedback_${idx}`);
-          if (actual.toLowerCase() === expected.toLowerCase()) {
+          if (actual && normAns(actual) === normAns(expected)) {
             correct++;
             inp.style.borderColor = "var(--emerald-600)";
             inp.style.background = "var(--emerald-100)";
@@ -4272,7 +4406,7 @@
       if (submitDailyWritingBtn) {
         const course = state.courses.find((c) => c.id === activeCourseIdForLesson);
         const lesson = course?.lessons.find((l) => l.id === activeLessonId);
-        const stu = state.students[activeStudentId] || state.students.micah;
+        const stu = getActiveStudent();
         const box = document.getElementById("dailyWritingInput");
         if (!course || !lesson || !box) return;
 
@@ -4677,7 +4811,7 @@
         qExam.completed = true;
         qExam.score = pct;
 
-        const stu = state.students[activeStudentId] || state.students.micah;
+        const stu = getActiveStudent();
         state.assignments.unshift({
           id: "asg-qexam-" + Date.now(),
           studentId: stu.id,
@@ -4727,7 +4861,8 @@
 
     document.addEventListener("change", (e) => {
       if (e.target && e.target.id === "addStudentGradeSelect") {
-        const gradeVal = Number(e.target.value) || 6;
+        const rawG = e.target.value;
+        const gradeVal = rawG === "" ? 6 : Number(rawG);
         const checklistEl = document.getElementById("addStudentCourseChecklist");
         if (checklistEl) {
           checklistEl.innerHTML = renderCourseChecklistHtml(gradeVal, null);
@@ -4740,7 +4875,8 @@
         e.preventDefault();
         const editId = e.target.getAttribute("data-edit-student-id") || "";
         const nameVal = (document.getElementById("addStudentNameInput")?.value || "").trim();
-        const gradeVal = Number(document.getElementById("addStudentGradeSelect")?.value) || 6;
+        const rawG = document.getElementById("addStudentGradeSelect")?.value;
+        const gradeVal = rawG === "" || rawG === undefined ? 6 : Number(rawG);
         const trackVal = document.getElementById("addStudentTrackSelect")?.value || "Standard / College-Prep (4.0)";
         const checkedBoxes = Array.from(e.target.querySelectorAll('input[name="studentCourseIds"]:checked'));
         let courseIds = checkedBoxes.map((b) => b.value);
@@ -5021,7 +5157,7 @@
       const inputEl = document.getElementById("discussionPostInput");
       const text = (inputEl?.value || "").trim();
       if (!text) return;
-      const stu = state.students[activeStudentId] || state.students.micah;
+      const stu = getActiveStudent();
       const course = state.courses.find((c) => c.id === activeCourseIdForLesson) || state.courses[0];
       let thread = state.discussionThreads.find((t) => t.courseId === course.id);
       if (thread) {
@@ -5052,7 +5188,7 @@
 
     document.getElementById("paperSubmissionForm")?.addEventListener("submit", (e) => {
       e.preventDefault();
-      const stu = state.students[activeStudentId] || state.students.micah;
+      const stu = getActiveStudent();
       const course = state.courses.find((c) => c.id === activeCourseIdForLesson) || state.courses[0];
       const title = document.getElementById("paperTitleInput").value;
       const type = document.getElementById("paperTypeInput").value;
@@ -5086,7 +5222,7 @@
 
     document.getElementById("labProofSubmissionForm")?.addEventListener("submit", (e) => {
       e.preventDefault();
-      const stu = state.students[activeStudentId] || state.students.micah;
+      const stu = getActiveStudent();
       const course = state.courses.find((c) => c.id === activeCourseIdForLesson) || state.courses[0];
       const title = document.getElementById("labTitleInput").value;
       const type = document.getElementById("labTypeInput").value;
@@ -5108,7 +5244,7 @@
 
     document.getElementById("recitationSubmissionForm")?.addEventListener("submit", (e) => {
       e.preventDefault();
-      const stu = state.students[activeStudentId] || state.students.micah;
+      const stu = getActiveStudent();
       const course = state.courses.find((c) => c.id === activeCourseIdForLesson) || state.courses[0];
       const title = document.getElementById("recitationTitleInput").value;
       const mode = document.getElementById("recitationModeInput").value;
@@ -5349,14 +5485,18 @@
       if (course && lesson) {
         const dt = lesson.deepTeaching;
         const textToRead = dt
-          ? `${course.code}: ${lesson.title}. Core Concept: ${dt.overview} ${dt.sections.map((s) => s.heading + ". " + s.body).join(" ")}`
-          : `${course.code}: ${lesson.title}. ${lesson.readingHtml}`;
+          ? `${course.code}: ${lesson.title}. ${dt.bigIdea || dt.overview || ""} ${(dt.sections || []).map((s) => s.heading + ". " + String(s.body || "").replace(/<[^>]+>/g, " ")).join(" ")}`
+          : `${course.code}: ${lesson.title}. ${String(lesson.readingHtml || "").replace(/<[^>]+>/g, " ")}`;
         speakTextAloud(textToRead, `${course.code} — ${lesson.title}`);
       }
     });
 
     function openOfficialPrintableCertificateModal(stuId) {
-      const stu = state.students[stuId] || state.students[activeParentChildId] || state.students.micah;
+      const stu = getActiveStudent(stuId) || getActiveStudent(activeParentChildId);
+      if (!stu) {
+        showToast("Please add a student in the Parent Portal first.");
+        return;
+      }
       const enrolled = state.courses.filter((c) => stu.enrolledCourseIds.includes(c.id));
       const totalCredits = enrolled.reduce((acc, c) => acc + (c.credits || 1.0), 0).toFixed(1);
 
