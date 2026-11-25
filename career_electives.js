@@ -636,6 +636,8 @@
             <strong>Wisdom &amp; Anchor:</strong> <em>${dt.anchorVerse || "Proverbs 2:6 — For the LORD giveth wisdom."}</em>
           </div>
 
+          ${window.renderEnglishAssignedBookCard ? window.renderEnglishAssignedBookCard(course, weekObj?.weekNum || 1) : ""}
+
           ${window.renderLessonVideoHelperCard ? window.renderLessonVideoHelperCard(course, lesson, weekObj?.weekNum || 1) : ""}
 
           <div class="assignments-stack" style="gap:0.85rem; margin-bottom:1.15rem;">

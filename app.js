@@ -246,6 +246,11 @@
     // Ensure retired bundled K-2 / 3-5 IDs are migrated cleanly to separate K, 1, 2, 3, 4, 5 courses
     migrateBundledElementaryCourses(loaded);
 
+    // Ensure every single Digital Library book in cached state is expanded to 6 rich full chapters!
+    if (typeof window.ensureAcademyBooksExpanded === "function" && Array.isArray(loaded.libraryBooks)) {
+      window.ensureAcademyBooksExpanded(loaded.libraryBooks);
+    }
+
     return loaded;
   }
 
@@ -1165,7 +1170,7 @@
         courseGrid.innerHTML = `
           <div class="card-panel" style="grid-column:1 / -1; text-align:center; padding:2rem;">
             <h3>Ready to Enroll Your First Scholar?</h3>
-            <p style="color:var(--text-secondary); margin:0.4rem 0 1rem;">Add your child's name, grade (6–12), and courses to populate their Student Hub and Daily Lesson Studio.</p>
+            <p style="color:var(--text-secondary); margin:0.4rem 0 1rem;">Add your child's name, grade (K–12), and courses to populate their Student Hub and Daily Lesson Studio.</p>
             <button type="button" class="btn btn-emerald" data-open-add-student>+ Add Child &amp; Choose Courses</button>
           </div>
         `;
@@ -2425,7 +2430,7 @@
           <span class="badge badge-emerald" style="margin-bottom:0.5rem;">PRIVATE HOUSEHOLD VAULT READY</span>
           <h2 style="margin:0.25rem 0 0.45rem; color:var(--navy-900);">Add Your First Child &amp; Choose Their Courses</h2>
           <p style="max-width:560px; margin:0 auto 1.15rem; color:var(--text-secondary); font-size:0.9rem;">
-            Create a profile for each of your children (Grades 6–12), customize their core classes and career electives, and everything will sync privately to your account.
+            Create a profile for each of your children (Grades K–12), customize their core classes and electives, and everything will sync privately to your account.
           </p>
           <button type="button" class="btn btn-emerald" data-open-add-student>+ Add Child &amp; Choose Courses</button>
         </div>
@@ -2461,7 +2466,7 @@
           return `
         <div class="child-selector-card ${isSelected ? "active" : ""}" data-select-parent-child="${child.id}">
           <div>
-            <span class="mono-label">GRADE ${child.grade} · ${(child.track || "Standard").toUpperCase()}</span>
+            <span class="mono-label">${Number(child.grade) === 0 ? "KINDERGARTEN" : `GRADE ${child.grade}`} · ${(child.track || "Standard").toUpperCase()}</span>
             <h3>${child.name}</h3>
             <p style="font-size:0.84rem; color:var(--text-secondary);">Enrolled in ${cList.length} Courses (${cList.length * 5} Weekly Modules) · Clock Hours: ${child.loggedClockHours || 0}/${child.requiredClockHours || 900} hrs</p>
             <div style="display:flex; gap:0.4rem; margin-top:0.55rem; flex-wrap:wrap;">
@@ -2481,7 +2486,7 @@
       <div class="child-selector-card" data-open-add-student style="border:2px dashed var(--gold-500); background:var(--bg-ivory); justify-content:center; align-items:center; text-align:center; cursor:pointer;">
         <div>
           <div style="font-size:1.35rem; color:var(--navy-900); font-weight:700;">+ Add Another Child</div>
-          <p style="font-size:0.8rem; color:var(--text-secondary); margin:0.25rem 0 0;">Pick grade (6–12) &amp; customize courses</p>
+          <p style="font-size:0.8rem; color:var(--text-secondary); margin:0.25rem 0 0;">Pick grade (K–12) &amp; customize courses</p>
         </div>
       </div>
       `;
@@ -2490,7 +2495,7 @@
     if (!child) return;
     activeParentChildId = child.id;
     document.getElementById("parentSelectedChildHeading").textContent =
-      `${child.name} (Grade ${child.grade}) — Official Academic & State Compliance Standing`;
+      `${child.name} (${Number(child.grade) === 0 ? "Kindergarten" : `Grade ${child.grade}`}) — Official Academic & State Compliance Standing`;
     document.getElementById("parentChildStandingBadge").textContent =
       `${child.standing || "Good Standing"} · ${child.gpa || "4.00"} GPA`;
 
@@ -2705,8 +2710,8 @@
       kpiGrid.innerHTML = `
         <div class="kpi-card">
           <div class="kpi-card-top">
-            <span class="mono-label">ACCREDITED COURSES (6–12)</span>
-            <span class="badge badge-navy">7 Pathways</span>
+            <span class="mono-label">ACCREDITED COURSES (K–12)</span>
+            <span class="badge badge-navy">13 Grade Levels</span>
           </div>
           <div class="kpi-value">${totalCourses}</div>
           <div class="kpi-sub">State &amp; Private Core Roster</div>
@@ -4241,6 +4246,19 @@
         return;
       }
 
+      const openLibBookBtn = e.target.closest("[data-open-library-book]");
+      if (openLibBookBtn) {
+        const bookId = openLibBookBtn.getAttribute("data-open-library-book");
+        if (bookId) {
+          activeLibraryBookId = bookId;
+          activeLibraryChapterIdx = 0;
+          switchView("library");
+          renderLibraryView();
+          window.scrollTo({ top: 80, behavior: "smooth" });
+        }
+        return;
+      }
+
       const resetDayBtn = e.target.closest("[data-reset-lesson-day]");
       if (resetDayBtn) {
         const [cid, lid] = (resetDayBtn.getAttribute("data-reset-lesson-day") || "").split("|");
@@ -5232,11 +5250,11 @@
           id: studentId,
           name: nameVal,
           grade: gradeVal,
-          division: gradeVal >= 9 ? "high" : "middle",
+          division: gradeVal <= 5 ? "elementary" : gradeVal >= 9 ? "high" : "middle",
           track: trackVal,
-          gpa: existing ? existing.gpa : "4.00",
+          gpa: existing ? existing.gpa : "0.00",
           standing: existing ? existing.standing : "Good Standing · Enrolled",
-          weeklyTargetHours: gradeVal >= 9 ? 25 : 20,
+          weeklyTargetHours: gradeVal <= 5 ? 15 : gradeVal >= 9 ? 25 : 20,
           weeklyLoggedHours: existing ? existing.weeklyLoggedHours : 0,
           attendanceDays: existing ? existing.attendanceDays : 0,
           requiredDays: 180,
@@ -5259,7 +5277,7 @@
                 {
                   instructor: "Christ Infinity Academy Admissions",
                   date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-                  note: `Welcome, ${nameVal}! Enrolled in ${courseIds.length} Grade ${gradeVal} courses on the ${trackVal} track.`
+                  note: `Welcome, ${nameVal}! Enrolled in ${courseIds.length} ${gradeVal === 0 ? "Kindergarten" : `Grade ${gradeVal}`} courses on the ${trackVal} track.`
                 }
               ]
         };
@@ -5274,17 +5292,22 @@
           activeParentGuideCourseId = courseIds[0];
         }
 
+        // Save and close the modal IMMEDIATELY so the UI never gets stuck open!
         saveState(true);
-        syncStudentDropdowns();
-        renderParentDashboard();
-        renderStudentDashboard();
-        renderLessonStudio();
-        renderScheduleView();
         closeModal();
+
+        // Safely refresh all views even if one panel is hidden or empty
+        try { syncStudentDropdowns(); } catch (err) { console.warn("syncStudentDropdowns:", err); }
+        try { renderParentDashboard(); } catch (err) { console.warn("renderParentDashboard:", err); }
+        try { renderStudentDashboard(); } catch (err) { console.warn("renderStudentDashboard:", err); }
+        try { renderLessonStudio(); } catch (err) { console.warn("renderLessonStudio:", err); }
+        try { renderScheduleView(); } catch (err) { console.warn("renderScheduleView:", err); }
+        try { updateAuthHeaderUI(); } catch (err) { console.warn("updateAuthHeaderUI:", err); }
+
         showToast(
           editId
             ? `✓ Updated ${nameVal}'s courses (${courseIds.length} enrolled) & synced to cloud!`
-            : `🎉 Added ${nameVal} (Grade ${gradeVal}, ${courseIds.length} courses) & synced to your private vault!`
+            : `🎉 Added ${nameVal} (${gradeVal === 0 ? "Kindergarten" : `Grade ${gradeVal}`}, ${courseIds.length} courses) & synced to your private vault!`
         );
         return;
       }

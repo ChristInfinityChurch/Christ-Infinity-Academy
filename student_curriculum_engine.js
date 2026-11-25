@@ -1517,30 +1517,92 @@
         baseQuiz: []
       };
     }
-    // 6. CODING & AI
+    // 6. CODING & AI — AUTOMATICALLY SCALES TO STUDENT'S EXACT GRADE LEVEL (K–2 vs. 3–5 vs. 6–12!)
     else if (code.startsWith("CS") || dept.includes("computer")) {
       category = "coding";
-      pack = {
-        objectives: [`Understand "${cleanTopic}" by breaking problems into clear logical steps`, "Practice Algorithms, Variables, Loops, Conditionals, and Debugging", "Build safe, responsible digital habits"],
-        anchorVerse: "Proverbs 24:3 — Through wisdom is an house builded.",
-        bigIdea: "Coding is giving a computer clear, step-by-step instructions so you can build games, websites, and helpful apps!",
-        sections: [
-          { stepBadge: "PART 1 · THINKING LIKE A CODER", heading: `How "${cleanTopic}" Works`, body: `Coders write <strong>Algorithms</strong> (step-by-step recipes), use <strong>Variables</strong> (boxes storing score/names), <strong>Loops</strong> (repeat cleanly), and <strong>Conditionals</strong> (<code>if / else</code> decisions).`, keyTakeaway: "Break every big project into tiny, testable steps." },
-          { stepBadge: "PART 2 · DEBUGGING", heading: "Errors Are Helpful Clues!", body: `When code doesn't run as expected, read the line, fix one bug at a time, and test again!`, keyTakeaway: "Plan → Build → Test & Debug → Polish." }
-        ],
-        workedExamples: [
-          { badge: "GAME LOGIC EXAMPLE", title: "Simple Score Win Rule", problem: "How does a game know when you win?", step1: "Start with score = 0.", step2: "Collect a star → score = score + 10.", step3: "IF score >= 100 → show 'You Win!' ELSE keep playing.", pitfall: "Check exact spelling of variable names!" }
-        ],
-        wordBank: ["Algorithm", "Variable", "Loop", "Debugging", "Conditional"],
-        blanks: [
-          { before: "1. A step-by-step list of instructions for a computer is an ", answer: "Algorithm", after: ".", hint: "Starts with A" },
-          { before: "2. A labeled container storing score or player name is a ", answer: "Variable", after: ".", hint: "Starts with V" },
-          { before: "3. Finding and fixing mistakes in code is called ", answer: "Debugging", after: ".", hint: "Starts with D" }
-        ],
-        writingPrompt: `In 1–3 sentences, explain what a Variable or If/Else rule would do in a game you'd love to build.`,
-        writingExemplar: `A Variable stores the player's score, and an If/Else conditional checks if score reaches 100 to unlock the next level!`,
-        baseQuiz: []
-      };
+      const stuObj = typeof window.getAcademyActiveStudent === "function" ? window.getAcademyActiveStudent() : null;
+      const effGrade = course.gradeLevels && course.gradeLevels.length > 1 && stuObj && stuObj.grade !== undefined
+        ? Number(stuObj.grade)
+        : grade;
+      if (effGrade <= 2) {
+        pack = {
+          objectives: [
+            `Explore "${cleanTopic}" with fun K–2 arrow directions (⬆️ ➡️ ⬇️ ⬅️) & robot games!`,
+            "Give step-by-step instructions in the right order (an Algorithm) and fix silly mix-ups (Bugs)",
+            "Practice staying safe and kind whenever using a tablet or computer"
+          ],
+          anchorVerse: "Proverbs 24:3 — Through wisdom is an house builded!",
+          bigIdea: "Coding for Grades K–2 is like giving a friendly robot clear arrow steps (Forward, Turn, Jump!) in the exact right order—no tricky typing needed!",
+          sections: [
+            { stepBadge: "K–2 JUNIOR CODING · ROBOT STEPS", heading: `Robot Directions for "${cleanTopic}"`, body: `Pretend Mom or Dad is a silly robot! Give them exact step-by-step commands (an <strong>Algorithm</strong>): <em>"Step 1: Take 2 steps forward. Step 2: Turn right. Step 3: High-five!"</em> If the robot bumps into a pillow, you found a <strong>Bug</strong>—just fix the step and try again!`, keyTakeaway: "Algorithm = step-by-step recipe · Bug = a silly mistake we can fix!" },
+            { stepBadge: "K–2 JUNIOR CODING · REPEAT LOOPS & SAFETY", heading: "Repeat Loops Save Time!", body: `Instead of saying <em>"Clap, Clap, Clap, Clap"</em> four times, a coder says <strong>"REPEAT 4 TIMES: Clap!"</strong> That's a <strong>Loop</strong>! And remember our #1 digital rule: always ask a parent before clicking new links!`, keyTakeaway: "Loops repeat steps neatly · Always check with a parent online!" }
+          ],
+          workedExamples: [
+            { badge: "K–2 ROBOT GAME", title: "Guide the Griffin to the Star ⭐", problem: "The star is 3 squares straight ahead.", step1: "Step 1: Move Forward 1.", step2: "Step 2: Move Forward 1, Move Forward 1 (or REPEAT 3×: Move Forward!).", step3: "You reached the star!", pitfall: "Put steps in the exact right order!" }
+          ],
+          wordBank: ["Algorithm", "Loop", "Bug", "Step", "Safe"],
+          blanks: [
+            { before: "1. A step-by-step list of directions for a robot is an ", answer: "Algorithm", after: ".", hint: "Starts with A" },
+            { before: "2. Repeating the same move over and over uses a ", answer: "Loop", after: ".", hint: "Starts with L" },
+            { before: "3. A silly mistake in robot directions is called a ", answer: "Bug", after: ".", hint: "3 letters, starts with B" }
+          ],
+          writingPrompt: "Tell a parent 3 robot steps to walk from your chair to the door (or type 'Algorithm')!",
+          writingExemplar: "Step 1 stand up, Step 2 walk forward 4 steps, Step 3 touch the door—that is an algorithm!",
+          baseQuiz: []
+        };
+      } else if (effGrade <= 5) {
+        pack = {
+          objectives: [
+            `Build "${cleanTopic}" using Grades 3–5 visual block-coding concepts (Scratch-style!)`,
+            "Use Variables (score, lives), Loops, X/Y Coordinates, and IF/ELSE Game Rules",
+            "Debug errors step by step like a real junior game designer"
+          ],
+          anchorVerse: "Proverbs 24:3 — Through wisdom is an house builded; and by understanding it is established.",
+          bigIdea: "In Grades 3–5 Coding, you snap visual logic blocks together—using Variables to track score, Loops to animate movement, and IF/ELSE blocks so your game reacts when players collect stars!",
+          sections: [
+            { stepBadge: "GRADES 3–5 GAME DESIGN · BLOCK LOGIC", heading: `Building "${cleanTopic}" With Visual Blocks`, body: `Every fun 2D game runs on 4 core blocks:<br/>• <strong>Events:</strong> <code>When Green Flag Clicked</code> or <code>When Spacebar Pressed</code><br/>• <strong>Variables:</strong> A labeled box holding <code>score = 0</code> or <code>lives = 3</code><br/>• <strong>Loops:</strong> <code>Forever</code> or <code>Repeat 10 times</code><br/>• <strong>Conditionals:</strong> <code>IF touching Coin → change score by +10!</code>`, keyTakeaway: "Events start actions · Variables hold scores · Conditionals make game rules!" },
+            { stepBadge: "GRADES 3–5 GAME DESIGN · X/Y COORDINATES & DEBUGGING", heading: "Moving Sprites & Squashing Bugs", body: `Changing <strong>X</strong> moves your sprite left/right; changing <strong>Y</strong> moves it up/down! When a game glitches, trace one block at a time to <strong>Debug</strong> it.`, keyTakeaway: "Plan → Snap a small block group → Test → Debug → Polish!" }
+          ],
+          workedExamples: [
+            { badge: "BLOCK-CODE WALKTHROUGH", title: "Coin-Collector Score Rule", problem: "How does a game award points and win at 100?", step1: "When Game Starts → set score = 0.", step2: "IF touching Gold Coin → score = score + 10.", step3: "IF score >= 100 → show 'You Win!'", pitfall: "Remember to reset score = 0 at the start of every new game!" }
+          ],
+          wordBank: ["Algorithm", "Variable", "Loop", "Debugging", "Conditional"],
+          blanks: [
+            { before: "1. A step-by-step list of instructions for a computer is an ", answer: "Algorithm", after: ".", hint: "Starts with A" },
+            { before: "2. A labeled box storing score or lives in a game is a ", answer: "Variable", after: ".", hint: "Starts with V" },
+            { before: "3. Finding and fixing glitches in your game blocks is ", answer: "Debugging", after: ".", hint: "Starts with D" }
+          ],
+          writingPrompt: "In 2–3 sentences, describe a video game you'd like to design and what Variable and IF/ELSE rule it would use!",
+          writingExemplar: "My game would use a Variable called score starting at 0, and an IF/ELSE conditional so if the player catches 10 stars they unlock Level 2.",
+          baseQuiz: []
+        };
+      } else {
+        pack = {
+          objectives: [
+            `Apply "${cleanTopic}" at Middle/High School depth (Python, HTML/CSS & Logic)`,
+            "Trace real `for` loops, `if/elif/else` branches, functions, lists, and debugging logs",
+            "Practice responsible AI verification and strong cybersecurity habits"
+          ],
+          anchorVerse: "Proverbs 24:3 — Through wisdom is an house builded; and by understanding it is established.",
+          bigIdea: "In Grades 6–8+ Coding, you transition from visual blocks into real text-based programming (Python & HTML/CSS)—writing clean functions, loops, conditionals, and structured data!",
+          sections: [
+            { stepBadge: "GRADES 6–8+ TEXT CODING · PYTHON & WEB", heading: `Engineering "${cleanTopic}" in Real Code`, body: `Compare how real Python expresses logic cleanly:<br/><code>score = 0</code><br/><code>for star in range(5):</code><br/><code>&nbsp;&nbsp;score += 20</code><br/><code>if score >= 100: print("Level Cleared!")</code><br/><br/>On the web, <strong>HTML</strong> builds page structure, <strong>CSS</strong> styles colors/layouts, and <strong>JavaScript</strong> adds live interactivity!`, keyTakeaway: "Modular functions + exact syntax + step-by-step tracing produce clean software." },
+            { stepBadge: "DEBUGGING & CYBERSECURITY", heading: "Reading Tracebacks & Protecting Accounts", body: `Read error line numbers calmly—90% of bugs are misspelled variable names, missing colons/brackets, or off-by-one loops. Pair coding skill with strong unique passwords and critical fact-checking of AI outputs.`, keyTakeaway: "Error tracebacks are diagnostic clues—trace variable values line by line!" }
+          ],
+          workedExamples: [
+            { badge: "PYTHON TRACE WALKTHROUGH", title: "Tracing a Python Loop & Conditional", problem: "What does `total = 0; for n in [10, 20, 30]: total += n; print(total)` output?", step1: "Iteration 1: total = 0 + 10 = 10.", step2: "Iteration 2: total = 10 + 20 = 30.", step3: "Iteration 3: total = 30 + 30 = 60 → prints 60!", pitfall: "Watch Python indentation—lines inside a loop must indent evenly!" }
+          ],
+          wordBank: ["Algorithm", "Variable", "Loop", "Debugging", "Function"],
+          blanks: [
+            { before: "1. A step-by-step set of instructions solving a problem is an ", answer: "Algorithm", after: ".", hint: "Starts with A" },
+            { before: "2. A reusable named block of code you can call anytime is a ", answer: "Function", after: ".", hint: "Starts with F" },
+            { before: "3. Tracing errors and fixing broken code is called ", answer: "Debugging", after: ".", hint: "Starts with D" }
+          ],
+          writingPrompt: "In 2–4 sentences, explain how HTML, CSS, and Python/JavaScript each play a different role—or trace how an `if/else` statement works in a program.",
+          writingExemplar: "HTML defines the semantic structure of a webpage, CSS controls visual styling and layout, and Python or JavaScript drives logic using variables, loops, and if/else conditionals.",
+          baseQuiz: []
+        };
+      }
     }
     // 7. ART & MUSIC
     else if (code.startsWith("ART") || code.startsWith("MUS") || dept.includes("art") || dept.includes("music")) {
@@ -1622,7 +1684,11 @@
 
     const wNum = Math.max(1, Math.min(36, parseInt(weekNum, 10) || 1));
     const qtr = Math.ceil(wNum / 9);
-    const grade = (course.gradeLevels && course.gradeLevels[0]) ?? 6;
+    const activeStu = typeof window.getAcademyActiveStudent === "function" ? window.getAcademyActiveStudent() : null;
+    const isMultiGradeElective = Array.isArray(course.gradeLevels) && course.gradeLevels.length > 1;
+    const grade = isMultiGradeElective && activeStu && activeStu.grade !== undefined
+      ? Number(activeStu.grade)
+      : (course.gradeLevels && course.gradeLevels[0]) ?? 6;
 
     if (Array.isArray(course.syllabus36Weeks)) {
       course.syllabus36Weeks.forEach((w) => {
@@ -1717,13 +1783,24 @@
         ? (grade === 0 ? 10 : grade <= 2 ? 15 : 20)
         : (grade === 0 ? 5 : grade <= 2 ? 8 : 12);
 
-      const pack = isMath
-        ? buildMathPack(course, wNum, idx, cleanTopic, quizTargetCount)
-        : buildSubjectPack(course, wNum, idx, cleanTopic, quizTargetCount);
+      // Check for a dedicated deep Grade-Level Curriculum Module first (grade_k_curriculum.js, grade_1_curriculum.js, etc.)!
+      const gradeBuilder = window.ACADEMY_GRADE_CURRICULA && window.ACADEMY_GRADE_CURRICULA[grade];
+      const customGradePack =
+        typeof gradeBuilder === "function"
+          ? gradeBuilder(course, wNum, idx, cleanTopic, quizTargetCount, { isMath, shuffleQuestionOptions })
+          : null;
+
+      const pack =
+        customGradePack ||
+        (isMath
+          ? buildMathPack(course, wNum, idx, cleanTopic, quizTargetCount)
+          : buildSubjectPack(course, wNum, idx, cleanTopic, quizTargetCount));
 
       // Prepend a Day-Specific Focus Card so Day 1 Monday through Day 5 Friday each deliver genuinely distinct daily guidance!
-      const dayFocusCard = buildDaySpecificSection(idx, cleanTopic, grade, course.title);
-      pack.sections = [dayFocusCard, ...(pack.sections || [])];
+      if (!pack._hasOwnDayFocusCard) {
+        const dayFocusCard = buildDaySpecificSection(idx, cleanTopic, grade, course.title);
+        pack.sections = [dayFocusCard, ...(pack.sections || [])];
+      }
 
       lesson.isMathProblemSet = isMath;
       lesson.isWeeklyUnitTest = isWeeklyUnitTest;
