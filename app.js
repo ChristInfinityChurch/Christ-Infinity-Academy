@@ -4,6 +4,10 @@
   const STORAGE_KEY = "christ_infinity_academy_state_v16";
   // Permanent unversioned backup vault so family children are NEVER wiped across website updates
   const PERMANENT_ROSTER_KEY = "cia_permanent_family_roster_v1";
+  const OLD_BUNDLED_ELEM_IDS = [
+    "theo-k2", "math-k2", "lit-k2", "sci-k2", "hist-k2",
+    "theo-35", "math-35", "lit-35", "sci-35", "hist-35"
+  ];
 
   let state = loadState();
   let currentView = "home";
@@ -141,11 +145,6 @@
     }
     return null;
   }
-
-  const OLD_BUNDLED_ELEM_IDS = [
-    "theo-k2", "math-k2", "lit-k2", "sci-k2", "hist-k2",
-    "theo-35", "math-35", "lit-35", "sci-35", "hist-35"
-  ];
 
   function migrateBundledElementaryCourses(st) {
     if (!st) return;
