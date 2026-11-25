@@ -144,22 +144,6 @@
       btn.classList.toggle("active", btn.getAttribute("data-nav") === viewName);
     });
 
-    const nameEl = document.getElementById("headerProfileName");
-    const roleEl = document.getElementById("headerProfileRole");
-    if (nameEl && roleEl) {
-      if (viewName === "parent") {
-        nameEl.textContent = "David & Claire Vance";
-        roleEl.textContent = "Parent Oversight Portal";
-      } else if (viewName === "teacher") {
-        nameEl.textContent = "Dr. Alistair Sterling";
-        roleEl.textContent = "Dean of Academics · Faculty";
-      } else {
-        const stu = state.students[activeStudentId] || state.students.micah;
-        nameEl.textContent = stu.name;
-        roleEl.textContent = `Grade ${stu.grade} · ${stu.division === "high" ? "Honors Scholar" : "Pathway Scholar"}`;
-      }
-    }
-
     const mainNav = document.getElementById("mainNav");
     if (mainNav) mainNav.classList.remove("open");
 
@@ -3005,17 +2989,27 @@
     const role = state.authConfig.currentRole || "parent";
     const authBtn = document.getElementById("openAuthModalBtn");
     const quickSignOutBtn = document.getElementById("headerQuickSignOutBtn");
+    const profileChip = document.getElementById("activeProfileChip");
     const roleEl = document.getElementById("headerProfileRole");
     const nameEl = document.getElementById("headerProfileName");
+    const parentHeading = document.getElementById("parentPortalHeading");
     const cloudSess = window.ACADEMY_CLOUD ? window.ACADEMY_CLOUD.getSession() : null;
 
     if (quickSignOutBtn) {
       quickSignOutBtn.style.display = cloudSess ? "inline-flex" : "none";
     }
+    if (profileChip) {
+      profileChip.style.display = cloudSess ? "flex" : "none";
+    }
+    if (parentHeading) {
+      parentHeading.textContent = cloudSess && cloudSess.family_name
+        ? `${cloudSess.family_name} — Parent Portal`
+        : "Parent Co-Teacher Portal";
+    }
 
     if (authBtn) {
       if (cloudSess) {
-        authBtn.textContent = `☁️ ${cloudSess.family_name || "Cloud Family"} (${role === "student" ? "Student" : role === "teacher" ? "Admin" : "Parent"})`;
+        authBtn.textContent = `☁️ ${cloudSess.family_name || "My Account"}`;
       } else {
         authBtn.textContent = "🔒 Sign In / Enroll";
       }
@@ -3023,11 +3017,11 @@
     if (nameEl && roleEl) {
       if (cloudSess) {
         const handle = window.ACADEMY_CLOUD?.getDisplayUsername?.() || cloudSess.username || "";
-        nameEl.textContent = cloudSess.family_name || (handle ? `@${handle}` : "Cloud Family");
-        roleEl.textContent = `☁️ Cloud Synced${handle ? ` · @${handle}` : ""} · ${role.toUpperCase()}`;
+        nameEl.textContent = cloudSess.family_name || (handle ? `@${handle}` : "Signed In");
+        roleEl.textContent = `${handle ? `@${handle} · ` : ""}${role === "student" ? "Student" : role === "teacher" ? "Admin" : "Parent"}`;
       } else {
-        nameEl.textContent = "Guest Preview";
-        roleEl.textContent = "Not Signed In · Click to Sign In";
+        nameEl.textContent = "";
+        roleEl.textContent = "";
       }
     }
   }
@@ -3092,29 +3086,23 @@
         </form>
 
         <form id="cloudSignUpInviteForm" class="quiz-q-card" style="background:var(--bg-ivory); margin:0; border:1px solid var(--gold-400);">
-          <span class="mono-label" style="color:var(--gold-600);">NEW FAMILY? INVITE-ONLY ENROLLMENT</span>
+          <span class="mono-label" style="color:var(--gold-600);">NEW ACCOUNT? INVITE-ONLY ENROLLMENT</span>
           <h4 style="margin:0.2rem 0 0.6rem;">Redeem Invite Code &amp; Pick Username</h4>
           <div class="form-group" style="margin-bottom:0.45rem;">
-            <label>Family Invite Code (Required)</label>
-            <input type="text" id="cloudSignupCode" class="input-control" value="CIA-2026-PILOT1" placeholder="e.g., CIA-2026-PILOT1" required />
+            <label>Invite Code (Required)</label>
+            <input type="text" id="cloudSignupCode" class="input-control" placeholder="Enter your Academy Invite Code" required />
           </div>
           <div class="form-group" style="margin-bottom:0.45rem;">
-            <label>Family / Display Name</label>
+            <label>Display Name</label>
             <input type="text" id="cloudSignupFamilyName" class="input-control" placeholder="e.g., The Johnson Family" required />
           </div>
           <div class="form-group" style="margin-bottom:0.45rem;">
             <label>Choose a Username (No Email Needed)</label>
-            <input type="text" id="cloudSignupUsername" class="input-control" placeholder="e.g., johnson_family" autocomplete="username" required />
+            <input type="text" id="cloudSignupUsername" class="input-control" placeholder="e.g., johnson-family" autocomplete="username" required />
           </div>
-          <div style="display:grid; grid-template-columns:1.3fr 0.7fr; gap:0.45rem; margin-bottom:0.5rem;">
-            <div class="form-group">
-              <label>Password (6+ chars)</label>
-              <input type="password" id="cloudSignupPassword" class="input-control" minlength="6" placeholder="Create password" autocomplete="new-password" required />
-            </div>
-            <div class="form-group">
-              <label>Parent PIN</label>
-              <input type="text" id="cloudSignupPin" class="input-control" value="2026" maxlength="4" required />
-            </div>
+          <div class="form-group" style="margin-bottom:0.55rem;">
+            <label>Password (6+ chars)</label>
+            <input type="password" id="cloudSignupPassword" class="input-control" minlength="6" placeholder="Create password" autocomplete="new-password" required />
           </div>
           <p style="font-size:0.74rem; color:var(--text-secondary); margin:0 0 0.5rem;">🔒 Privacy First: No email address is collected or stored.</p>
           <div id="cloudSignupMsg" style="font-size:0.8rem; margin-bottom:0.5rem;"></div>
@@ -3122,12 +3110,10 @@
         </form>
       </div>
       `
-          : ""
-      }
-
-      <!-- 3. LOCAL ROLE SWITCHER (FOR INSTANT TESTING ON THIS DEVICE) -->
+          : `
+      <!-- 3. ACCOUNT ROLE SWITCHER (SHOWN ONLY WHEN SIGNED IN) -->
       <div style="border-top:1px solid var(--border-subtle); padding-top:0.85rem;">
-        <span class="mono-label" style="display:block; margin-bottom:0.55rem; color:var(--text-secondary);">QUICK ROLE SWITCHER ON THIS DEVICE (TEST STUDENT VS. PARENT EXPERIENCE)</span>
+        <span class="mono-label" style="display:block; margin-bottom:0.55rem; color:var(--text-secondary);">SWITCH ACTIVE VIEW FOR THIS SESSION</span>
         <div class="assignments-stack" style="gap:0.55rem;">
           <div class="quiz-q-card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; padding:0.75rem 0.9rem;">
             <div>
@@ -3141,7 +3127,7 @@
 
           <div class="quiz-q-card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; padding:0.75rem 0.9rem;">
             <div>
-              <span class="badge badge-gold">PARENT MODE (PIN: ${cloudSess?.parent_pin || "2026"})</span>
+              <span class="badge badge-gold">PARENT MODE</span>
               <strong style="margin-left:0.35rem;">Parent Co-Teacher &amp; Exclusive Answer Keys Portal</strong>
             </div>
             <button type="button" class="btn ${role === "parent" ? "btn-emerald" : "btn-primary"} btn-sm" data-switch-auth-role="parent">
@@ -3160,6 +3146,8 @@
           </div>
         </div>
       </div>
+      `
+      }
     `
     );
   }
@@ -4931,7 +4919,7 @@
             <div>
               <span class="mono-label">TOTAL CREDITS CERTIFIED: ${totalCredits} CARNEGIE UNITS</span>
               <p style="font-size:0.82rem; color:var(--text-secondary); margin-top:0.2rem;">
-                Signed &amp; Sealed: <strong>Dr. Alistair Sterling, Dean of Academics</strong> · <strong>David &amp; Sarah Vance, Home Administrators</strong>
+                Signed &amp; Sealed: <strong>Dr. Alistair Sterling, Dean of Academics</strong> · <strong>${window.ACADEMY_CLOUD?.getSession()?.family_name || "Parent / Home Administrator"}</strong>
               </p>
             </div>
             <div class="no-print" style="display:flex; gap:0.5rem;">

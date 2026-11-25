@@ -2124,8 +2124,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.25rem;
+  padding: 1rem;
   z-index: 200;
+  overflow-y: auto;
 }
 
 .modal-card {
@@ -2133,7 +2134,10 @@ body {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   width: 100%;
-  max-width: 540px;
+  max-width: 720px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
   box-shadow: var(--shadow-lg);
   overflow: hidden;
 }
@@ -2142,9 +2146,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.15rem 1.4rem;
+  padding: 1rem 1.35rem;
   background: var(--navy-900);
   color: #FFFFFF;
+  flex-shrink: 0;
 }
 
 .modal-header h3 {
@@ -2162,7 +2167,10 @@ body {
 }
 
 .modal-body {
-  padding: 1.4rem;
+  padding: 1.25rem 1.35rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1 1 auto;
 }
 
 .toast-container {
