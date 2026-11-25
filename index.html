@@ -68,7 +68,7 @@
 
   <!-- Primary Navigation Header -->
   <header class="site-header">
-    <div class="container header-inner">
+    <div class="container header-inner header-top-row">
       <a href="#home" class="brand-logo" data-nav="home">
         <div class="crest-mark" aria-hidden="true">
           <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -83,22 +83,12 @@
         </div>
       </a>
 
-      <nav class="main-nav" id="mainNav" aria-label="Main Navigation">
-        <button class="nav-link active" data-nav="home">Overview</button>
-        <button class="nav-link" data-nav="pathways">6–12 Pathways</button>
-        <button class="nav-link" data-nav="catalog">Course Catalog</button>
-        <button class="nav-link" data-nav="library">Academy Library</button>
-        <button class="nav-link" data-nav="bible">Scripture Hub</button>
-        <button class="nav-link" data-nav="student">Student Hub</button>
-        <button class="nav-link" data-nav="lesson">Lesson Studio</button>
-        <button class="nav-link" data-nav="schedule">Schedule</button>
-        <button class="nav-link" data-nav="parent">Parent Portal</button>
-        <button class="nav-link" data-nav="teacher">Faculty Studio</button>
-      </nav>
-
       <div class="header-actions">
         <button class="btn btn-secondary btn-sm" id="openAuthModalBtn" title="Sign In, Verify Invite Code, or Switch Role Access">
           🔒 Sign In / Role Gate
+        </button>
+        <button class="btn btn-outline btn-sm" id="headerQuickSignOutBtn" style="display:none; border-color:#DC2626; color:#B91C1C; font-weight:600;" title="Sign out of your account">
+          ↪ Sign Out
         </button>
         <button class="btn btn-outline btn-sm" id="openPlacementAdvisorBtn" title="Find the right grade pathway">
           Placement Advisor
@@ -118,6 +108,21 @@
           </svg>
         </button>
       </div>
+    </div>
+
+    <div class="header-nav-bar">
+      <nav class="container main-nav" id="mainNav" aria-label="Main Navigation">
+        <button class="nav-link active" data-nav="home">Overview</button>
+        <button class="nav-link" data-nav="pathways">6–12 Pathways</button>
+        <button class="nav-link" data-nav="catalog">Course Catalog</button>
+        <button class="nav-link" data-nav="library">Academy Library</button>
+        <button class="nav-link" data-nav="bible">Scripture Hub</button>
+        <button class="nav-link" data-nav="student">Student Hub</button>
+        <button class="nav-link" data-nav="lesson">Lesson Studio</button>
+        <button class="nav-link" data-nav="schedule">Schedule</button>
+        <button class="nav-link" data-nav="parent">Parent Portal</button>
+        <button class="nav-link" data-nav="teacher">Faculty Studio</button>
+      </nav>
     </div>
   </header>
 

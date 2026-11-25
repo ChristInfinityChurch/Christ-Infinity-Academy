@@ -3004,9 +3004,14 @@
     if (!state.authConfig) return;
     const role = state.authConfig.currentRole || "parent";
     const authBtn = document.getElementById("openAuthModalBtn");
+    const quickSignOutBtn = document.getElementById("headerQuickSignOutBtn");
     const roleEl = document.getElementById("headerProfileRole");
     const nameEl = document.getElementById("headerProfileName");
     const cloudSess = window.ACADEMY_CLOUD ? window.ACADEMY_CLOUD.getSession() : null;
+
+    if (quickSignOutBtn) {
+      quickSignOutBtn.style.display = cloudSess ? "inline-flex" : "none";
+    }
 
     if (authBtn) {
       if (cloudSess) {
@@ -3072,7 +3077,7 @@
             cloudSess
               ? `<div style="display:flex; gap:0.45rem;">
                    <button type="button" class="btn btn-primary btn-sm" id="cloudSyncNowBtn">↻ Sync Cloud Now</button>
-                   <button type="button" class="btn btn-outline btn-sm" id="cloudSignOutBtn">Sign Out</button>
+                   <button type="button" class="btn btn-outline btn-sm" id="cloudSignOutBtn" style="border-color:#DC2626; color:#B91C1C; font-weight:600;">↪ Sign Out</button>
                  </div>`
               : ""
           }
@@ -4336,12 +4341,16 @@
         return;
       }
 
-      if (e.target.closest("#cloudSignOutBtn")) {
+      if (e.target.closest("#cloudSignOutBtn") || e.target.closest("#headerQuickSignOutBtn")) {
         if (window.ACADEMY_CLOUD) {
           window.ACADEMY_CLOUD.signOut().then(() => {
+            if (state.authConfig) {
+              state.authConfig.parentPinVerified = false;
+            }
             updateAuthHeaderUI();
+            renderLessonStudio();
             closeModal();
-            showToast("Signed out of Supabase Cloud session.");
+            showToast("↪ Signed out cleanly.");
           });
         }
         return;
