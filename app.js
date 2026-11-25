@@ -1321,9 +1321,16 @@
                         const tCount = (dt.blankDone ? 1 : 0) + (dt.writingDone ? 1 : 0) + (dt.quizDone ? 1 : 0);
                         return `
                         <td>
-                          <button class="btn ${mod.completed || tCount === 3 ? "btn-emerald" : "btn-outline"} btn-sm" style="padding:0.28rem 0.55rem; font-size:0.73rem;" data-open-specific-lesson="${c.id}|${mod.id}">
-                            ${mod.completed || tCount === 3 ? "✓ 3/3 Done" : `Day ${idx + 1} (${tCount}/3) →`}
-                          </button>
+                          <div style="display:flex; gap:0.25rem; align-items:center; flex-wrap:nowrap;">
+                            <button class="btn ${mod.completed || tCount === 3 ? "btn-emerald" : "btn-outline"} btn-sm" style="padding:0.28rem 0.55rem; font-size:0.73rem;" data-open-specific-lesson="${c.id}|${mod.id}">
+                              ${mod.completed || tCount === 3 ? "✓ 3/3 Done" : `Day ${idx + 1} (${tCount}/3) →`}
+                            </button>
+                            ${
+                              mod.completed || tCount > 0
+                                ? `<button type="button" class="btn btn-outline btn-sm" title="Reset & Redo Day ${idx + 1}" style="padding:0.24rem 0.42rem; font-size:0.72rem;" data-reset-lesson-day="${c.id}|${mod.id}">🔄</button>`
+                                : ""
+                            }
+                          </div>
                         </td>
                       `;
                       })
@@ -1610,10 +1617,13 @@
     const lesson = course.lessons.find((l) => l.id === activeLessonId) || course.lessons[0];
     activeLessonId = lesson.id;
 
+    const fmtGradeShort = (g) => (Number(g) === 0 ? "K" : String(g));
     const gradesLabel =
       course.gradeLevels.length > 1
-        ? `GRADES ${course.gradeLevels[0]}–${course.gradeLevels[course.gradeLevels.length - 1]}`
-        : `GRADE ${course.gradeLevels[0]}`;
+        ? `GRADES ${fmtGradeShort(course.gradeLevels[0])}–${fmtGradeShort(course.gradeLevels[course.gradeLevels.length - 1])}`
+        : Number(course.gradeLevels[0]) === 0
+          ? "KINDERGARTEN"
+          : `GRADE ${course.gradeLevels[0]}`;
     document.getElementById("lessonSidebarCode").textContent = `${course.code} · ${gradesLabel} · WEEK ${activeLessonWeekNum} OF 36`;
     document.getElementById("lessonSidebarCourseTitle").textContent = `${course.title}`;
 
@@ -4231,6 +4241,76 @@
         return;
       }
 
+      const resetDayBtn = e.target.closest("[data-reset-lesson-day]");
+      if (resetDayBtn) {
+        const [cid, lid] = (resetDayBtn.getAttribute("data-reset-lesson-day") || "").split("|");
+        const course = state.courses.find((c) => c.id === cid);
+        const lesson = course && (course.lessons || []).find((l) => l.id === lid);
+        if (course && lesson) {
+          const dayNum = (course.lessons || []).indexOf(lesson) + 1;
+          if (window.confirm(`Reset Day ${dayNum} of "${course.title}" so your student can redo all practice and quiz questions fresh?`)) {
+            lesson.completed = false;
+            lesson.masteryScore = null;
+            lesson.dailyTasks = { blankDone: false, writingDone: false, quizDone: false };
+            if (lesson.dailyWriting) lesson.dailyWriting.savedResponse = "";
+            const completedNow = (course.lessons || []).filter((l) => l.completed).length;
+            course.progress = Math.round((completedNow / Math.max(1, (course.lessons || []).length)) * 100);
+            if (Array.isArray(course.syllabus36Weeks)) {
+              const wObj = course.syllabus36Weeks.find((w) => w.weekNum === activeLessonWeekNum);
+              if (wObj) {
+                wObj.daysCompleted = completedNow;
+                wObj._earnedByStudent = completedNow > 0;
+                wObj.status = completedNow >= 5 ? "Completed (5/5)" : "Current Week";
+              }
+            }
+            activeCourseIdForLesson = course.id;
+            activeLessonId = lesson.id;
+            activeGuidedStep = 1;
+            saveState(true);
+            renderStudentDashboard();
+            renderLessonStudio();
+            renderParentDashboard();
+            if (currentView !== "lesson") switchView("lesson");
+            showToast(`🔄 Day ${dayNum} reset! Ready to redo "${course.code}" from Step 1.`);
+          }
+        }
+        return;
+      }
+
+      const resetWeekBtn = e.target.closest("[data-reset-course-week]");
+      if (resetWeekBtn) {
+        const [cid, wStr] = (resetWeekBtn.getAttribute("data-reset-course-week") || "").split("|");
+        const wNum = parseInt(wStr, 10) || activeLessonWeekNum || 1;
+        const course = state.courses.find((c) => c.id === cid);
+        if (course && window.confirm(`Reset ALL 5 days of Week ${wNum} in "${course.title}" for fresh practice?`)) {
+          (course.lessons || []).forEach((l) => {
+            l.completed = false;
+            l.masteryScore = null;
+            l.dailyTasks = { blankDone: false, writingDone: false, quizDone: false };
+            if (l.dailyWriting) l.dailyWriting.savedResponse = "";
+          });
+          course.progress = 0;
+          if (Array.isArray(course.syllabus36Weeks)) {
+            const wObj = course.syllabus36Weeks.find((w) => w.weekNum === wNum);
+            if (wObj) {
+              wObj.daysCompleted = 0;
+              wObj.masteryScore = null;
+              wObj._earnedByStudent = false;
+              wObj.status = "Current Week";
+            }
+          }
+          activeCourseIdForLesson = course.id;
+          activeLessonId = (course.lessons && course.lessons[0] && course.lessons[0].id) || activeLessonId;
+          activeGuidedStep = 1;
+          saveState(true);
+          renderStudentDashboard();
+          renderLessonStudio();
+          renderParentDashboard();
+          showToast(`↺ Week ${wNum} (Days 1–5) reset cleanly! Ready for a fresh start.`);
+        }
+        return;
+      }
+
       const setGuidedStepBtn = e.target.closest("[data-set-guided-step]");
       if (setGuidedStepBtn) {
         activeGuidedStep = parseInt(setGuidedStepBtn.getAttribute("data-set-guided-step"), 10) || 1;
@@ -4654,8 +4734,14 @@
 
         const text = box.value.trim();
         const wc = countWords(text);
-        if (wc < 8) {
-          showToast("Please write at least 1–2 complete sentences (or click 'Insert Model Draft') before submitting.");
+        const courseGrade = (course.gradeLevels && course.gradeLevels[0]) ?? 6;
+        const minWords = courseGrade <= 2 ? 1 : 8;
+        if (wc < minWords) {
+          showToast(
+            courseGrade <= 2
+              ? "Please type at least 1 word (or 'Done' after sharing out loud with a parent) before submitting!"
+              : "Please write at least 1–2 complete sentences (8+ words) before submitting."
+          );
           return;
         }
 

@@ -551,8 +551,8 @@
     const stepPills = [
       { num: 1, icon: "🎯", label: "1. Today’s Goal", sub: "What You'll Learn" },
       { num: 2, icon: "📘", label: "2. Guided Lesson", sub: "Clear Teaching" },
-      { num: 3, icon: lesson.isMathProblemSet ? "🔢" : "✍️", label: lesson.isMathProblemSet ? "3. Math Problems" : "3. Practice", sub: lesson.isMathProblemSet ? "Solve 5 Problems" : "Try It Yourself" },
-      { num: 4, icon: lesson.isWeeklyUnitTest ? "📝" : "🎟️", label: lesson.isWeeklyUnitTest ? "4. Weekly Unit Test" : "4. Exit Quiz", sub: `${quiz.length} Qs · ≥85%` }
+      { num: 3, icon: lesson.isMathProblemSet ? "🔢" : "✍️", label: lesson.isMathProblemSet ? "3. Math Problems" : "3. Practice", sub: lesson.isMathProblemSet ? `Solve ${blanks.length} Problems` : "Try It Yourself" },
+      { num: 4, icon: lesson.isWeeklyUnitTest ? "📝" : "🎟️", label: lesson.isWeeklyUnitTest ? "4. Weekly Check" : "4. Exit Quiz", sub: `${quiz.length} Qs · ≥85%` }
     ];
 
     let stepBodyHtml = "";
@@ -596,7 +596,7 @@
             </div>
             <div style="background:rgba(255,255,255,0.08); padding:0.7rem 0.9rem; border-radius:6px; border-left:3px solid #4FD1C5;">
               <div style="font-family:var(--font-mono); font-size:0.7rem; color:#4FD1C5;">TODAY'S ASSESSMENT</div>
-              <div style="font-size:0.86rem; margin-top:0.2rem; color:#FFFFFF;">${lesson.isWeeklyUnitTest ? "📝 20-Question Weekly Unit Test" : `🎟️ ${quiz.length}-Question Daily Quiz`} (≥85%)</div>
+              <div style="font-size:0.86rem; margin-top:0.2rem; color:#FFFFFF;">${lesson.isWeeklyUnitTest ? `📝 ${quiz.length}-Question Weekly Check` : `🎟️ ${quiz.length}-Question Daily Quiz`} (≥85%)</div>
             </div>
             <div style="background:rgba(255,255,255,0.08); padding:0.7rem 0.9rem; border-radius:6px; border-left:3px solid #68D391;">
               <div style="font-family:var(--font-mono); font-size:0.7rem; color:#68D391;">ESTIMATED TIME</div>
@@ -758,9 +758,9 @@
               <span class="badge ${tasks.writingDone ? "badge-emerald" : "badge-navy"}">${tasks.writingDone ? "✓ Submitted" : "Required"}</span>
             </div>
             <p style="font-size:0.88rem; color:var(--text-primary); margin-bottom:0.6rem;">${writing.prompt || "Explain today's key concept in your own words."}</p>
-            <textarea id="dailyWritingInput" class="notes-textarea" rows="3" placeholder="Write 2–4 clear sentences showing how today's concept works...">${writing.savedResponse || ""}</textarea>
+            <textarea id="dailyWritingInput" class="notes-textarea" rows="${isEarlyReader ? "2" : "3"}" placeholder="${isEarlyReader ? "With a parent's help, type 1 short word or sentence (or share out loud and type 'Done')..." : "Write 2–4 clear sentences showing how today's concept works..."}">${writing.savedResponse || ""}</textarea>
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-top:0.55rem;">
-              <span id="dailyWritingWordCount" class="mono-label">${(writing.savedResponse || "").trim() ? (writing.savedResponse || "").trim().split(/\s+/).length : 0} words (Target: 20–65 words)</span>
+              <span id="dailyWritingWordCount" class="mono-label">${(writing.savedResponse || "").trim() ? (writing.savedResponse || "").trim().split(/\s+/).length : 0} words (${isEarlyReader ? "K–2 Friendly: 1+ word or oral check with parent" : "Target: 20–65 words"})</span>
               <div style="display:flex; gap:0.45rem; align-items:center;">
                 <span style="font-size:0.76rem; color:var(--text-secondary);">🔒 Parent Rubric in Parent Portal</span>
                 <button type="button" class="btn btn-emerald btn-sm" data-submit-daily-writing="true">✓ Submit Practice Response</button>
@@ -839,10 +839,13 @@
           </div>
 
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.65rem; padding-top:0.85rem; border-top:1px solid var(--border-subtle);">
-            <button type="button" class="btn btn-outline" data-set-guided-step="2">📘 Review Step 2 Lesson</button>
+            <div style="display:flex; gap:0.45rem; flex-wrap:wrap;">
+              <button type="button" class="btn btn-outline" data-set-guided-step="2">📘 Review Step 2 Lesson</button>
+              <button type="button" class="btn btn-secondary" data-reset-lesson-day="${course.id}|${lesson.id}">🔄 Redo Day ${dayIdx}</button>
+            </div>
             <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
               <button type="button" class="btn btn-emerald btn-lg" data-submit-guided-exit-ticket="true">
-                ${isUnitTest ? "📝 Submit 20-Question Unit Test" : `🎟️ Submit ${quiz.length}-Question Quiz`}
+                ${isUnitTest ? `📝 Submit ${quiz.length}-Question Weekly Check` : `🎟️ Submit ${quiz.length}-Question Quiz`}
               </button>
               <button
                 type="button"
@@ -866,8 +869,24 @@
       `;
     }
 
+    const hasAnyProgress = !!(lesson.completed || tasks.blankDone || tasks.writingDone || tasks.quizDone);
+    const redoBarHtml = hasAnyProgress
+      ? `
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.55rem; padding:0.65rem 0.95rem; margin-bottom:0.85rem; border-radius:var(--radius-sm); background:#FFFBEB; border:1.5px solid var(--gold-500);">
+          <div style="font-size:0.85rem; color:var(--navy-900);">
+            <strong>${lesson.completed ? `✓ Day ${dayIdx} Checked Off` : `Day ${dayIdx} In Progress`}</strong> — Want extra practice or not 100% confident yet? Reset and redo anytime!
+          </div>
+          <div style="display:flex; gap:0.45rem; flex-wrap:wrap;">
+            <button type="button" class="btn btn-secondary btn-sm" data-reset-lesson-day="${course.id}|${lesson.id}">🔄 Reset &amp; Redo Day ${dayIdx}</button>
+            <button type="button" class="btn btn-outline btn-sm" data-reset-course-week="${course.id}|${weekObj?.weekNum || 1}">↺ Reset Whole Week ${weekObj?.weekNum || 1}</button>
+          </div>
+        </div>
+      `
+      : "";
+
     return `
       <div style="margin-bottom:1.25rem;">
+        ${redoBarHtml}
         <!-- Clean 4-Step Sequential Progress Stepper -->
         <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:0.55rem; margin-bottom:1rem;">
           ${stepPills

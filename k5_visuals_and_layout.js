@@ -168,8 +168,45 @@
     const dept = (course.department || "").toLowerCase();
     const code = (course.code || "").toUpperCase();
 
-    // K–2 MATH VISUAL: Ten-Frame Making-10 + Coin Values
-    if ((dept.includes("math") || code.startsWith("MATH")) && g <= 2) {
+    // KINDERGARTEN MATH VISUAL: Counting 1 to 5 + Basic Shapes (100% Kindergarten-Appropriate!)
+    if ((dept.includes("math") || code.startsWith("MATH")) && g === 0) {
+      return `
+        <div class="card-panel" style="margin-top:0.9rem; background:linear-gradient(180deg,#FFFDF6 0%,#FFFFFF 100%); border:2px solid var(--gold-400); border-radius:14px;">
+          <span class="mono-label" style="color:var(--gold-600);">🌟 KINDERGARTEN VISUAL MATH HELPER · COUNTING 1 TO 5 &amp; FRIENDLY SHAPES</span>
+          <h4 style="margin:0.2rem 0 0.7rem; color:var(--navy-900); font-size:1.1rem;">Point and Count One by One!</h4>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap:0.5rem; text-align:center;">
+            <div style="background:#EFF6FF; border:2px solid #3B82F6; border-radius:12px; padding:0.65rem;">
+              <div style="font-size:1.4rem; font-weight:800; color:#1D4ED8;">1</div>
+              <div style="font-size:1.2rem; margin-top:0.15rem;">🍎</div>
+              <div style="font-size:0.75rem; font-weight:700; color:#1E3A8A;">One</div>
+            </div>
+            <div style="background:#F0FDF4; border:2px solid #10B981; border-radius:12px; padding:0.65rem;">
+              <div style="font-size:1.4rem; font-weight:800; color:#047857;">2</div>
+              <div style="font-size:1.2rem; margin-top:0.15rem;">🍎🍎</div>
+              <div style="font-size:0.75rem; font-weight:700; color:#065F46;">Two</div>
+            </div>
+            <div style="background:#FFFBEB; border:2px solid #F59E0B; border-radius:12px; padding:0.65rem;">
+              <div style="font-size:1.4rem; font-weight:800; color:#B45309;">3</div>
+              <div style="font-size:1.2rem; margin-top:0.15rem;">🍎🍎🍎</div>
+              <div style="font-size:0.75rem; font-weight:700; color:#78350F;">Three</div>
+            </div>
+            <div style="background:#FAF5FF; border:2px solid #8B5CF6; border-radius:12px; padding:0.65rem;">
+              <div style="font-size:1.4rem; font-weight:800; color:#6D28D9;">4</div>
+              <div style="font-size:1.2rem; margin-top:0.15rem;">🍎🍎🍎🍎</div>
+              <div style="font-size:0.75rem; font-weight:700; color:#4C1D95;">Four</div>
+            </div>
+            <div style="background:#FDF2F8; border:2px solid #EC4899; border-radius:12px; padding:0.65rem;">
+              <div style="font-size:1.4rem; font-weight:800; color:#BE185D;">5</div>
+              <div style="font-size:1.15rem; margin-top:0.15rem;">🍎🍎🍎🍎🍎</div>
+              <div style="font-size:0.75rem; font-weight:700; color:#831843;">Five</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // GRADES 1–2 MATH VISUAL: Ten-Frame Making-10 + Coin Values
+    if ((dept.includes("math") || code.startsWith("MATH")) && (g === 1 || g === 2)) {
       return `
         <div class="card-panel" style="margin-top:0.9rem; background:linear-gradient(180deg,#FFFDF6 0%,#FFFFFF 100%); border:2px solid var(--gold-400); border-radius:14px;">
           <span class="mono-label" style="color:var(--gold-600);">🎨 VISUAL MATH HELPER · MAKING 10 &amp; COUNTING COINS</span>
@@ -499,6 +536,16 @@
       };
     }
     if (dept.includes("math") || code.startsWith("MATH")) {
+      // Kindergarten–Grade 2 Math: NEVER show Grades 3–5 Fractions! Use age-appropriate Numberblocks / Jack Hartmann search + Parent Pin!
+      if (g <= 2) {
+        return {
+          videoId: null,
+          title: `Kid-Friendly Math Video for ${(weekObj && weekObj.title) || course.title}`,
+          channel: g === 0 ? "Numberblocks Jack Hartmann kindergarten counting" : "Numberblocks Scratch Garden elementary math",
+          isCustom: false,
+          recommendedChannel: g === 0 ? "Numberblocks & Jack Hartmann (Kindergarten)" : "Numberblocks & Scratch Garden (Grades 1–2)"
+        };
+      }
       if (topicText.includes("pythagor") || topicText.includes("geometry") || g === 8 || g === 10) {
         return {
           videoId: "AAkEkMjCrBI",
