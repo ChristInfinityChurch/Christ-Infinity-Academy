@@ -79,7 +79,7 @@
           parsed.students &&
           typeof parsed.students === "object"
         ) {
-          // Automatically merge any newly added K–12 & Elective courses into saved state
+          // Automatically merge any newly added K–12 & Elective courses and K–5 Library Books into saved state
           if (Array.isArray(INITIAL_ACADEMY_DATA.courses)) {
             if (!Array.isArray(parsed.courses)) parsed.courses = [];
             INITIAL_ACADEMY_DATA.courses.forEach((freshCourse) => {
@@ -88,6 +88,14 @@
                 parsed.courses.push(JSON.parse(JSON.stringify(freshCourse)));
               } else if (Array.isArray(freshCourse.gradeLevels)) {
                 existingC.gradeLevels = freshCourse.gradeLevels;
+              }
+            });
+          }
+          if (Array.isArray(INITIAL_ACADEMY_DATA.libraryBooks)) {
+            if (!Array.isArray(parsed.libraryBooks)) parsed.libraryBooks = [];
+            INITIAL_ACADEMY_DATA.libraryBooks.forEach((freshBook) => {
+              if (!parsed.libraryBooks.some((b) => b.id === freshBook.id)) {
+                parsed.libraryBooks.push(JSON.parse(JSON.stringify(freshBook)));
               }
             });
           }
@@ -1004,14 +1012,23 @@
     const selectEl = document.getElementById("activeStudentSelect");
     if (selectEl) selectEl.value = activeStudentId;
 
+    // Age-Adaptive Theme: Activate friendly K–5 Griffin Junior Explorers theme for Grades K–5!
+    const isK5Stu = Number(stu.grade) >= 0 && Number(stu.grade) <= 5;
+    document.body.classList.toggle("mode-k5-explorers", isK5Stu);
+
     const eyebrowEl = document.getElementById("studentBannerEyebrow");
     const greetingEl = document.getElementById("studentGreeting");
     const subGreetingEl = document.getElementById("studentSubGreeting");
 
-    if (eyebrowEl) eyebrowEl.textContent = `SCHOLAR WORKSPACE · GRADE ${stu.grade} (${stu.track.toUpperCase()})`;
-    if (greetingEl) greetingEl.textContent = `Welcome back, ${stu.name}`;
+    const stuGradeStr = Number(stu.grade) === 0 ? "Kindergarten" : `Grade ${stu.grade}`;
+    if (eyebrowEl) eyebrowEl.textContent = `${isK5Stu ? "🌟 GRIFFIN JUNIOR EXPLORERS" : "SCHOLAR WORKSPACE"} · ${stuGradeStr.toUpperCase()} (${(stu.track || "Core").toUpperCase()})`;
+    if (greetingEl) greetingEl.textContent = isK5Stu ? `Hi, ${stu.name}!` : `Welcome back, ${stu.name}`;
 
     const enrolledCourses = state.courses.filter((c) => stu.enrolledCourseIds.includes(c.id));
+    const checklistMount = document.getElementById("studentTodaysChecklistMount");
+    if (checklistMount && typeof window.renderStudentTodaysChecklist === "function") {
+      checklistMount.innerHTML = window.renderStudentTodaysChecklist(stu, enrolledCourses, activeLessonWeekNum);
+    }
     const pendingAssignments = state.assignments.filter(
       (a) => a.studentId === stu.id && a.status === "pending"
     );
@@ -2667,7 +2684,7 @@
 
     const totalBadge = document.getElementById("libraryTotalBooksBadge");
     if (totalBadge) {
-      totalBadge.textContent = `📚 ${books.length} Full Digital Textbooks, Adventure, Mystery & Puzzle Books · Grades 6–12`;
+      totalBadge.textContent = `📚 ${books.length} Full Digital Books, K–5 Storybooks, Adventure, Mystery & Textbooks · Grades K–12`;
     }
 
     document.querySelectorAll("#libraryGenreQuickChips .chip").forEach((c) => {
@@ -2713,6 +2730,7 @@
               .join("")}
           </div>
 
+          ${typeof window.renderK5StorybookSceneBanner === "function" ? window.renderK5StorybookSceneBanner(activeBook) : ""}
           <article class="lesson-reading-body" style="background:var(--bg-ivory); padding:1.35rem 1.5rem; border-radius:var(--radius-md); border:1px solid var(--border-subtle);">
             <h3 style="margin-top:0; font-family:var(--font-serif); font-size:1.35rem; color:var(--navy-900);">${ch.title}</h3>
             ${ch.content}
@@ -2730,7 +2748,10 @@
         b.shelf.toLowerCase().includes(searchVal) ||
         b.courseCode.toLowerCase().includes(searchVal);
       const matchShelf = shelfVal === "all" || b.shelf === shelfVal;
-      const matchGrade = gradeVal === "all" || b.readingLevel === gradeVal;
+      const rl = String(b.readingLevel || "");
+      const matchGrade =
+        gradeVal === "all" ||
+        (gradeVal === "k5" ? ["K", "0", "1", "2", "3", "4", "5"].includes(rl) : rl === gradeVal);
       return matchSearch && matchShelf && matchGrade;
     });
 
@@ -2740,7 +2761,7 @@
         gridEl.innerHTML = `
           <div class="card-panel" style="grid-column: 1 / -1; text-align:center; padding:2rem;">
             <h3>No books match that filter</h3>
-            <p style="color:var(--text-secondary);">Try selecting "All Library Shelves &amp; Genres" or "All Reading Levels (Grades 6–12)".</p>
+            <p style="color:var(--text-secondary);">Try selecting "All Library Shelves &amp; Genres" or "All Reading Levels (Grades K–12)".</p>
           </div>
         `;
       } else {
@@ -3429,6 +3450,20 @@
         roleEl.textContent = "";
       }
     }
+
+    // Role-Clean Navigation (Canvas / Khan Academy Pattern): Show only tabs relevant to who is logged in!
+    const navAllowedByRole = !cloudSess
+      ? new Set(["home", "pathways", "catalog", "library", "bible"])
+      : role === "student"
+        ? new Set(["student", "lesson", "library", "bible", "schedule"])
+        : role === "parent"
+          ? new Set(["parent", "student", "lesson", "catalog", "library", "bible", "schedule", "pathways"])
+          : new Set(["home", "pathways", "catalog", "library", "bible", "student", "lesson", "schedule", "parent", "teacher"]);
+
+    document.querySelectorAll("#mainNav .nav-link").forEach((btn) => {
+      const target = btn.getAttribute("data-nav");
+      btn.style.display = navAllowedByRole.has(target) ? "" : "none";
+    });
   }
 
   function openAuthGateModal() {

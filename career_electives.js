@@ -527,12 +527,18 @@
   window.renderStudentGuidedStepView = function (course, lesson, weekObj, dayIdx, activeStep, studentTrackLevel) {
     const step = Math.max(1, Math.min(4, parseInt(activeStep, 10) || 1));
     const track = studentTrackLevel || "standard";
-    const trackBadge =
-      track === "honors"
-        ? "Honors Track (4.5 Weighted · Deep Proofs & Primary Sources)"
-        : track === "ap"
-        ? "AP / Dual-Credit Track (5.0 Weighted · Collegiate Pace)"
-        : "Standard / College-Prep Track (4.0 Scale · Clear Scaffolding)";
+    const cGrade = (course.gradeLevels && course.gradeLevels[0]) ?? 6;
+    const isEarlyReader = cGrade >= 0 && cGrade <= 2;
+    const isK5 = cGrade >= 0 && cGrade <= 5;
+    const trackBadge = isEarlyReader
+      ? "🌟 Griffin Junior Explorers (Grades K–2 · Easy Reader)"
+      : isK5
+        ? `🌟 Griffin Explorers (Grade ${cGrade} · Kid-Friendly Mode)`
+        : track === "honors"
+          ? "Honors Track (4.5 Weighted · Deep Proofs & Primary Sources)"
+          : track === "ap"
+            ? "AP / Dual-Credit Track (5.0 Weighted · Collegiate Pace)"
+            : "Standard / College-Prep Track (4.0 Scale · Clear Scaffolding)";
 
     const cleanWeekTopic = (weekObj?.title || lesson.title).replace(/^Week\s+\d+\s*(\([^)]*\))?:\s*/i, "").trim();
     const dt = lesson.deepTeaching || {};
@@ -567,10 +573,15 @@
             <span class="badge badge-emerald">${trackBadge}</span>
           </div>
           <h2 style="font-family:var(--font-serif); font-size:1.75rem; color:#FFFFFF; margin:0.2rem 0 0.55rem;">
-            🎯 Today’s Lesson: ${cleanWeekTopic}
+            ${isK5 ? "🌟 Today’s Adventure:" : "🎯 Today’s Lesson:"} ${cleanWeekTopic}
           </h2>
-          <p style="font-size:0.98rem; line-height:1.65; color:#E2E8F0; max-width:860px; margin-bottom:0.85rem;">
-            <strong>Big Idea:</strong> ${dt.bigIdea || `Let's learn ${cleanWeekTopic} step by step in plain, clear language!`}
+          ${
+            isK5
+              ? `<div style="margin-bottom:0.75rem;"><button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('readLessonAloudBtn')?.click()">🔊 Listen to Today's Lesson Aloud</button></div>`
+              : ""
+          }
+          <p style="font-size:${isEarlyReader ? "1.06rem" : "0.98rem"}; line-height:1.7; color:#E2E8F0; max-width:860px; margin-bottom:0.85rem;">
+            <strong>${isK5 ? "What You'll Discover Today:" : "Big Idea:"}</strong> ${dt.bigIdea || `Let's learn ${cleanWeekTopic} step by step in plain, clear language!`}
           </p>
           <div style="background:rgba(255,255,255,0.09); padding:0.9rem 1.1rem; border-radius:8px; border-left:3px solid var(--gold-400); margin-bottom:1rem;">
             <div style="font-family:var(--font-mono); font-size:0.72rem; color:var(--gold-400); margin-bottom:0.4rem;">BY THE END OF TODAY, YOU WILL BE ABLE TO:</div>

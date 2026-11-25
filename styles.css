@@ -2679,3 +2679,25 @@ body {
     box-shadow: none !important;
   }
 }
+
+/* ==================== AGE-ADAPTIVE K–5 "GRIFFIN JUNIOR EXPLORERS" THEME ==================== */
+body.mode-k5-explorers {
+  background-color: #FFFDF7;
+}
+
+body.mode-k5-explorers .card-panel,
+body.mode-k5-explorers .quiz-q-card,
+body.mode-k5-explorers .course-card {
+  border-radius: 14px;
+}
+
+body.mode-k5-explorers .lesson-reading-body,
+body.mode-k5-explorers .quiz-q-card p,
+body.mode-k5-explorers .quiz-option-label span {
+  font-size: 1.03rem;
+  line-height: 1.75;
+}
+
+body.mode-k5-explorers .btn {
+  border-radius: 10px;
+}
