@@ -3,7 +3,7 @@
   const SUPABASE_URL = "https://qvrdbnawpzojyfmvbdkj.supabase.co";
   const SUPABASE_KEY = "sb_publishable_ilZKsuKswv0XZ_9sQa6GSg_lpUXfSGI";
   const SESSION_KEY = "cia_supabase_cloud_session_v1";
-  const INTERNAL_AUTH_DOMAIN = "private.christinfinity.org";
+  const INTERNAL_AUTH_DOMAIN = "christinfinityacademy.com";
 
   let session = loadStoredSession();
   let lastSyncTime = null;
@@ -17,9 +17,13 @@
       const localPart = raw.split("@")[0].replace(/[^a-z0-9._-]/g, "");
       return { ok: true, username: localPart || raw, authEmail: raw };
     }
-    const clean = raw.replace(/\s+/g, "_").replace(/[^a-z0-9._-]/g, "");
+    const clean = raw
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9._-]/g, "")
+      .replace(/\.{2,}/g, ".")
+      .replace(/^[._-]+|[._-]+$/g, "");
     if (clean.length < 3) {
-      return { ok: false, error: "Username must be at least 3 letters or numbers (e.g., johnson_family)." };
+      return { ok: false, error: "Username must be at least 3 letters or numbers (e.g., johnson-family)." };
     }
     if (!/[a-z0-9]/.test(clean)) {
       return { ok: false, error: "Username must include letters or numbers." };
@@ -157,7 +161,9 @@
         const rawErr = data.msg || data.error_description || data.message || "Sign-up failed.";
         const friendlyErr = /already registered/i.test(rawErr)
           ? `Username "@${norm.username}" is already taken. Try a different username or sign in.`
-          : rawErr.replace(/email/gi, "username");
+          : /is invalid|not authorized/i.test(rawErr)
+            ? "Supabase is still checking email delivery. In Supabase → Authentication → Providers → Email, turn OFF 'Confirm email', click Save, and try again."
+            : rawErr.replace(/email/gi, "username");
         return { ok: false, error: friendlyErr };
       }
 
