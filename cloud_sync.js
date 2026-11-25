@@ -316,10 +316,22 @@
 
   function applyCompactSnapshotToState(fullState, snap) {
     if (!fullState || !snap) return false;
-    if (snap.students) fullState.students = snap.students;
-    if (Array.isArray(snap.assignments)) fullState.assignments = snap.assignments;
-    if (snap.schedules) fullState.schedules = snap.schedules;
-    if (snap.courseProgressMap && Array.isArray(fullState.courses)) {
+    if (snap.students && typeof snap.students === "object") {
+      const keys = Object.keys(snap.students);
+      const isOldVanceDemo = keys.length > 0 && keys.every((k) => ["micah", "hannah", "lucas"].includes(k));
+      fullState.students = isOldVanceDemo ? {} : snap.students;
+      if (isOldVanceDemo) {
+        fullState.schedules = {};
+        fullState.assignments = [];
+      }
+    }
+    if (Array.isArray(snap.assignments) && Object.keys(fullState.students || {}).length > 0) {
+      fullState.assignments = snap.assignments;
+    }
+    if (snap.schedules && Object.keys(fullState.students || {}).length > 0) {
+      fullState.schedules = snap.schedules;
+    }
+    if (snap.courseProgressMap && Array.isArray(fullState.courses) && Object.keys(fullState.students || {}).length > 0) {
       fullState.courses.forEach((c) => {
         const savedC = snap.courseProgressMap[c.id];
         if (!savedC) return;
@@ -351,41 +363,85 @@
     return true;
   }
 
+  async function refreshAuthSession() {
+    if (!session || !session.refresh_token) return false;
+    try {
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
+        method: "POST",
+        headers: getHeaders(false),
+        body: JSON.stringify({ refresh_token: session.refresh_token })
+      });
+      if (!res.ok) return false;
+      const data = await res.json();
+      if (data && data.access_token) {
+        session.access_token = data.access_token;
+        if (data.refresh_token) session.refresh_token = data.refresh_token;
+        if (data.user) session.user = data.user;
+        saveStoredSession(session);
+        return true;
+      }
+    } catch (e) {
+      // ignore
+    }
+    return false;
+  }
+
   let syncDebounceTimer = null;
-  function saveCloudSnapshot(fullState) {
+  async function pushSnapshotNow(fullState) {
+    if (!session || !session.access_token || !session.user) return false;
+    const compact = buildCompactFamilySnapshot(fullState);
+    const doPost = () =>
+      fetch(`${SUPABASE_URL}/rest/v1/family_state_snapshots?on_conflict=user_id`, {
+        method: "POST",
+        headers: { ...getHeaders(true), Prefer: "resolution=merge-duplicates,return=minimal" },
+        body: JSON.stringify({
+          user_id: session.user.id,
+          state_json: compact,
+          updated_at: new Date().toISOString()
+        })
+      });
+    try {
+      let res = await doPost();
+      if (res.status === 401 && (await refreshAuthSession())) {
+        res = await doPost();
+      }
+      if (res.ok) {
+        lastSyncTime = new Date().toLocaleTimeString();
+        cloudConnected = true;
+        const badge = document.getElementById("cloudSyncStatusBadge");
+        if (badge) badge.textContent = `☁️ Cloud Synced (${lastSyncTime})`;
+        return true;
+      }
+    } catch (e) {
+      // Silently retain localStorage copy if offline
+    }
+    return false;
+  }
+
+  function saveCloudSnapshot(fullState, immediate) {
     if (!session || !session.access_token || !session.user) return;
     if (syncDebounceTimer) clearTimeout(syncDebounceTimer);
-    syncDebounceTimer = setTimeout(async () => {
-      try {
-        const compact = buildCompactFamilySnapshot(fullState);
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/family_state_snapshots`, {
-          method: "POST",
-          headers: { ...getHeaders(true), Prefer: "resolution=merge-duplicates" },
-          body: JSON.stringify({
-            user_id: session.user.id,
-            state_json: compact,
-            updated_at: new Date().toISOString()
-          })
-        });
-        if (res.ok) {
-          lastSyncTime = new Date().toLocaleTimeString();
-          cloudConnected = true;
-          const badge = document.getElementById("cloudSyncStatusBadge");
-          if (badge) badge.textContent = `☁️ Cloud Synced (${lastSyncTime})`;
-        }
-      } catch (e) {
-        // Silently retain localStorage copy if offline
-      }
-    }, 650);
+    if (immediate) {
+      pushSnapshotNow(fullState);
+      return;
+    }
+    syncDebounceTimer = setTimeout(() => {
+      pushSnapshotNow(fullState);
+    }, 350);
   }
 
   async function loadCloudSnapshot() {
     if (!session || !session.access_token || !session.user) return null;
-    try {
-      const res = await fetch(
+    const doGet = () =>
+      fetch(
         `${SUPABASE_URL}/rest/v1/family_state_snapshots?user_id=eq.${session.user.id}&select=state_json,updated_at`,
         { headers: getHeaders(true) }
       );
+    try {
+      let res = await doGet();
+      if (res.status === 401 && (await refreshAuthSession())) {
+        res = await doGet();
+      }
       if (res.ok) {
         const rows = await res.json();
         if (rows && rows[0] && rows[0].state_json) {

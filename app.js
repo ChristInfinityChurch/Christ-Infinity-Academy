@@ -1,13 +1,13 @@
 // Christ Infinity Academy — Flagship Interactive Platform Controller (Grades 6–12)
 
 (function () {
-  const STORAGE_KEY = "christ_infinity_academy_state_v15";
+  const STORAGE_KEY = "christ_infinity_academy_state_v16";
 
   let state = loadState();
   let currentView = "home";
   let activePathwayGrade = "6";
-  let activeStudentId = "micah";
-  let activeParentChildId = "micah";
+  let activeStudentId = "";
+  let activeParentChildId = "";
   let activeParentGuideCourseId = "";
   let activeParentGuideDayIdx = 2; // Default to Day 3 (active work day)
   let activeAssignmentFilter = "pending";
@@ -34,6 +34,35 @@
   let videoTimer = null;
   let videoSeconds = 494; // 08:14
 
+  function createFreshAcademyState() {
+    const fresh = JSON.parse(JSON.stringify(INITIAL_ACADEMY_DATA));
+    // Start 100% blank — zero sample Vance students, zero fake clock hours, zero pre-filled grades
+    fresh.students = {};
+    fresh.schedules = {};
+    fresh.assignments = [];
+    if (Array.isArray(fresh.courses)) {
+      fresh.courses.forEach((c) => {
+        c.progress = 0;
+        c.termGrade = 0;
+        c.quizAvg = 0;
+        if (Array.isArray(c.lessons)) {
+          c.lessons.forEach((l) => {
+            l.completed = false;
+            l.masteryScore = null;
+            l.dailyTasks = { blankDone: false, writingDone: false, quizDone: false };
+          });
+        }
+        if (Array.isArray(c.quarterExams)) {
+          c.quarterExams.forEach((q) => {
+            q.completed = false;
+            q.score = null;
+          });
+        }
+      });
+    }
+    return fresh;
+  }
+
   function loadState() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -48,7 +77,7 @@
           parsed.accreditationStandards &&
           parsed.gradePathways &&
           parsed.students &&
-          parsed.students.micah
+          typeof parsed.students === "object"
         ) {
           return parsed;
         }
@@ -56,14 +85,14 @@
     } catch (e) {
       console.warn("Could not read localStorage state:", e);
     }
-    return JSON.parse(JSON.stringify(INITIAL_ACADEMY_DATA));
+    return createFreshAcademyState();
   }
 
-  function saveState() {
+  function saveState(immediate) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       if (window.ACADEMY_CLOUD && window.ACADEMY_CLOUD.getSession()) {
-        window.ACADEMY_CLOUD.saveCloudSnapshot(state);
+        window.ACADEMY_CLOUD.saveCloudSnapshot(state, !!immediate);
       }
     } catch (e) {
       console.warn("Could not persist localStorage state:", e);
@@ -179,7 +208,7 @@
                 <input type="checkbox" name="studentCourseIds" value="${c.id}" ${selectedSet.has(c.id) ? "checked" : ""} style="margin-top:0.2rem;" />
                 <span>
                   <strong style="color:var(--navy-900);">${c.code}</strong>: ${c.title}
-                  <span style="display:block; font-size:0.72rem; color:var(--text-muted);">${c.department} · Grade ${(c.gradeLevels || [g]).join(", ")}</span>
+                  <span style="display:block; font-size:0.72rem; color:var(--text-muted);">${c.department || "Academy"} · Grade ${Array.isArray(c.gradeLevels) ? c.gradeLevels.join(", ") : c.gradeLevels || g}</span>
                 </span>
               </label>
             `
@@ -281,6 +310,7 @@
       `
     );
   }
+  window.openAcademyAddStudentModal = openAddStudentModal;
 
   function showToast(message) {
     const container = document.getElementById("toastContainer");
@@ -2309,12 +2339,12 @@
           <td>${c.instructor}</td>
           <td>
             <div class="progress-bar-bg" style="width:110px;">
-              <div class="progress-bar-fill" style="width:${c.progress}%"></div>
+              <div class="progress-bar-fill" style="width:${c.progress || 0}%"></div>
             </div>
-            <span style="font-size:0.72rem; font-family:var(--font-mono);">${c.progress}% (5 Days/Wk)</span>
+            <span style="font-size:0.72rem; font-family:var(--font-mono);">${c.progress || 0}% (5 Days/Wk)</span>
           </td>
-          <td><span class="badge badge-emerald">${c.termGrade}% (A)</span></td>
-          <td>Mastery Gate: ${c.quizAvg}% (≥85%)</td>
+          <td><span class="badge ${c.termGrade > 0 ? "badge-emerald" : "badge-navy"}">${c.termGrade > 0 ? `${c.termGrade}%` : "Not Started"}</span></td>
+          <td>${c.quizAvg > 0 ? `Mastery Gate: ${c.quizAvg}% (≥85%)` : "Awaiting First Quiz (≥85%)"}</td>
         </tr>
       `
         )
@@ -2322,11 +2352,14 @@
     }
 
     const auditBox = document.getElementById("parentAssignmentsAudit");
-    const childAssigns = state.assignments.filter((a) => a.studentId === child.id);
+    const childAssigns = (state.assignments || []).filter((a) => a.studentId === child.id);
     if (auditBox) {
-      auditBox.innerHTML = childAssigns
-        .map(
-          (a) => `
+      auditBox.innerHTML =
+        childAssigns.length === 0
+          ? `<p style="color:var(--text-muted); font-size:0.86rem; margin:0;">No submitted assignments yet — completed daily lessons and quizzes will appear here automatically.</p>`
+          : childAssigns
+              .map(
+                (a) => `
         <div class="assignment-card ${a.status === "completed" ? "completed" : ""}">
           <div>
             <span class="badge ${a.status === "completed" ? "badge-emerald" : "badge-amber"}">
@@ -2340,20 +2373,22 @@
           </div>
         </div>
       `
-        )
-        .join("");
+              )
+              .join("");
     }
 
     const compBox = document.getElementById("parentComplianceBox");
     if (compBox) {
-      const pctDays = Math.round((child.attendanceDays / child.requiredDays) * 100);
-      const clockHrs = child.loggedClockHours || 364;
-      const reqHrs = child.requiredClockHours || 900;
+      const attDays = Number(child.attendanceDays ?? 0);
+      const reqDays = Number(child.requiredDays ?? 180) || 180;
+      const pctDays = Math.round((attDays / reqDays) * 100);
+      const clockHrs = Number(child.loggedClockHours ?? 0);
+      const reqHrs = Number(child.requiredClockHours ?? 900) || 900;
       const pctHrs = Math.round((clockHrs / reqHrs) * 100);
       compBox.innerHTML = `
         <div class="compliance-stat-row">
           <span>Statutory Attendance Days</span>
-          <strong>${child.attendanceDays} / ${child.requiredDays} Days (${pctDays}%)</strong>
+          <strong>${attDays} / ${reqDays} Days (${pctDays}%)</strong>
         </div>
         <div class="compliance-stat-row">
           <span>Annual State Clock Hours</span>
@@ -4037,7 +4072,7 @@
         return;
       }
 
-      if (e.target.closest("#openAddStudentModalBtn") || e.target.closest("[data-open-add-student]")) {
+      if (e.target.closest("[data-open-add-student]")) {
         openAddStudentModal(null, false);
         return;
       }
@@ -4060,7 +4095,7 @@
           const remaining = getStudentList();
           activeStudentId = remaining[0] ? remaining[0].id : "";
           activeParentChildId = remaining[0] ? remaining[0].id : "";
-          saveState();
+          saveState(true);
           syncStudentDropdowns();
           renderParentDashboard();
           renderStudentDashboard();
@@ -4739,7 +4774,7 @@
           standing: existing ? existing.standing : "Good Standing · Enrolled",
           weeklyTargetHours: gradeVal >= 9 ? 25 : 20,
           weeklyLoggedHours: existing ? existing.weeklyLoggedHours : 0,
-          attendanceDays: existing ? existing.attendanceDays : 1,
+          attendanceDays: existing ? existing.attendanceDays : 0,
           requiredDays: 180,
           loggedClockHours: existing ? existing.loggedClockHours : 0,
           requiredClockHours: 900,
@@ -4775,7 +4810,7 @@
           activeParentGuideCourseId = courseIds[0];
         }
 
-        saveState();
+        saveState(true);
         syncStudentDropdowns();
         renderParentDashboard();
         renderStudentDashboard();
@@ -4873,7 +4908,7 @@
                 state.authConfig.currentRole = res.session.role || "parent";
                 state.authConfig.parentPin = parentPin;
                 state.authConfig.parentPinVerified = true;
-                saveState();
+                saveState(true);
                 syncStudentDropdowns();
                 updateAuthHeaderUI();
                 closeModal();

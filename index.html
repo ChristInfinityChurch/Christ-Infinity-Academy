@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=20261125c" />
 </head>
 <body>
   <!-- Top Institutional Banner -->
@@ -1128,7 +1128,7 @@
             <p class="page-subtitle" id="parentPortalSubtitle">Add and manage your children, choose their courses, view daily Parent Co-Teacher Answer Keys, and download official transcripts.</p>
           </div>
           <div class="parent-actions-top">
-            <button class="btn btn-emerald btn-sm" id="openAddStudentModalBtn">+ Add Child &amp; Choose Courses</button>
+            <button type="button" class="btn btn-emerald btn-sm" id="openAddStudentModalBtn" onclick="window.openAcademyAddStudentModal && window.openAcademyAddStudentModal()">+ Add Child &amp; Choose Courses</button>
             <button class="btn btn-secondary btn-sm" id="approvePacingBtn">✓ Approve Weekly Pacing Log</button>
             <button class="btn btn-outline btn-sm" id="openPrintableCertificateBtn">🖨️ Print Official Certificate &amp; Transcript</button>
             <button class="btn btn-primary btn-sm" id="downloadTranscriptBtn">Download Official Transcript (.txt)</button>
@@ -1408,7 +1408,7 @@
   <script src="bible_offline_bbe.js"></script>
   <script src="bible_full_chapters.js"></script>
   <script src="visuals.js"></script>
-  <script src="cloud_sync.js"></script>
-  <script src="app.js"></script>
+  <script src="cloud_sync.js?v=20261125c"></script>
+  <script src="app.js?v=20261125c"></script>
 </body>
 </html>
