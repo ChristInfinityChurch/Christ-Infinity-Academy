@@ -70,6 +70,218 @@
     }
   }
 
+  // ==================== FAMILY STUDENT & COURSE ENROLLMENT HELPERS ====================
+  function getStudentList() {
+    return Object.values(state.students || {});
+  }
+
+  function getActiveStudent(preferredId) {
+    const id = preferredId || activeStudentId;
+    if (state.students && state.students[id]) return state.students[id];
+    const list = getStudentList();
+    if (list.length > 0) {
+      activeStudentId = list[0].id;
+      return list[0];
+    }
+    return null;
+  }
+
+  function isOnlyDemoVanceStudents() {
+    const keys = Object.keys(state.students || {});
+    if (keys.length === 0) return false;
+    return keys.every((k) => ["micah", "hannah", "lucas"].includes(k));
+  }
+
+  function syncStudentDropdowns() {
+    const list = getStudentList();
+    if (list.length > 0) {
+      if (!state.students[activeStudentId]) activeStudentId = list[0].id;
+      if (!state.students[activeParentChildId]) activeParentChildId = list[0].id;
+    }
+
+    const stuSelect = document.getElementById("activeStudentSelect");
+    if (stuSelect) {
+      if (list.length === 0) {
+        stuSelect.innerHTML = `<option value="">No students enrolled yet</option>`;
+      } else {
+        stuSelect.innerHTML = list
+          .map((s) => `<option value="${s.id}">${s.name} (Grade ${s.grade} · ${s.track})</option>`)
+          .join("");
+        stuSelect.value = activeStudentId;
+      }
+    }
+
+    const schedSelect = document.getElementById("scheduleStudentSelect");
+    if (schedSelect) {
+      if (list.length === 0) {
+        schedSelect.innerHTML = `<option value="">No students enrolled yet</option>`;
+      } else {
+        schedSelect.innerHTML = list
+          .map((s) => `<option value="${s.id}">${s.name} (Grade ${s.grade} Schedule)</option>`)
+          .join("");
+        schedSelect.value = activeStudentId;
+      }
+    }
+  }
+
+  function getRecommendedCourseIdsForGrade(gradeNum) {
+    const g = Number(gradeNum) || 6;
+    const core = (state.courses || []).filter(
+      (c) =>
+        Array.isArray(c.gradeLevels) &&
+        c.gradeLevels.includes(g) &&
+        c.department !== "Career, Finance & Trades" &&
+        c.department !== "Computer Science & AI" &&
+        c.department !== "Modern Languages"
+    );
+    if (core.length > 0) return core.slice(0, 7).map((c) => c.id);
+    return (state.courses || []).slice(0, 6).map((c) => c.id);
+  }
+
+  function renderCourseChecklistHtml(gradeNum, preselectedIds) {
+    const g = Number(gradeNum) || 6;
+    const selectedSet = new Set(
+      Array.isArray(preselectedIds) && preselectedIds.length > 0
+        ? preselectedIds
+        : getRecommendedCourseIdsForGrade(g)
+    );
+    const coreCourses = (state.courses || []).filter(
+      (c) =>
+        Array.isArray(c.gradeLevels) &&
+        c.gradeLevels.includes(g) &&
+        c.department !== "Career, Finance & Trades" &&
+        c.department !== "Computer Science & AI" &&
+        c.department !== "Modern Languages"
+    );
+    const coreIds = new Set(coreCourses.map((c) => c.id));
+    const electivesAndCareers = (state.courses || []).filter(
+      (c) =>
+        !coreIds.has(c.id) &&
+        (c.department === "Career, Finance & Trades" ||
+          c.department === "Computer Science & AI" ||
+          c.department === "Modern Languages" ||
+          c.id === "pe-612")
+    );
+    const otherGradeCourses = (state.courses || []).filter(
+      (c) => !coreIds.has(c.id) && !electivesAndCareers.some((e) => e.id === c.id)
+    );
+
+    const renderGroup = (title, items) => {
+      if (!items.length) return "";
+      return `
+        <div style="margin-bottom:0.75rem;">
+          <div class="mono-label" style="color:var(--navy-800); margin-bottom:0.4rem;">${title}</div>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:0.4rem;">
+            ${items
+              .map(
+                (c) => `
+              <label style="display:flex; align-items:flex-start; gap:0.45rem; padding:0.45rem 0.6rem; border:1px solid var(--border-subtle); border-radius:8px; background:#FFFFFF; cursor:pointer; font-size:0.8rem;">
+                <input type="checkbox" name="studentCourseIds" value="${c.id}" ${selectedSet.has(c.id) ? "checked" : ""} style="margin-top:0.2rem;" />
+                <span>
+                  <strong style="color:var(--navy-900);">${c.code}</strong>: ${c.title}
+                  <span style="display:block; font-size:0.72rem; color:var(--text-muted);">${c.department} · Grade ${(c.gradeLevels || [g]).join(", ")}</span>
+                </span>
+              </label>
+            `
+              )
+              .join("")}
+          </div>
+        </div>
+      `;
+    };
+
+    return (
+      renderGroup(`RECOMMENDED CORE COURSES FOR GRADE ${g}`, coreCourses) +
+      renderGroup("CAREER LICENSING, STOCKS/CRYPTO, TRADES, TECH & ELECTIVES", electivesAndCareers) +
+      (otherGradeCourses.length
+        ? `<details style="margin-top:0.35rem;"><summary style="cursor:pointer; font-size:0.8rem; font-weight:600; color:var(--navy-800);">+ Browse Additional Grades 6–12 Courses (${otherGradeCourses.length})</summary><div style="margin-top:0.5rem;">${renderGroup("ALL OTHER ACADEMY COURSES", otherGradeCourses)}</div></details>`
+        : "")
+    );
+  }
+
+  function buildDefaultScheduleForStudent(courseIds) {
+    const enrolled = (state.courses || []).filter((c) => courseIds.includes(c.id));
+    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+    const times = ["8:30 AM", "9:30 AM", "10:30 AM", "11:30 AM", "1:00 PM", "2:00 PM"];
+    const colors = ["navy", "gold", "emerald", "navy", "gold", "emerald"];
+    const sched = {};
+    days.forEach((day, dIdx) => {
+      sched[day] = enrolled.slice(0, 6).map((c, idx) => ({
+        time: times[idx] || "3:00 PM",
+        title: `${c.title.split(":")[0]} — Day ${dIdx + 1}`,
+        course: c.code,
+        color: colors[idx % colors.length]
+      }));
+    });
+    return sched;
+  }
+
+  function openAddStudentModal(editStudentId, isFirstSignup) {
+    const existing = editStudentId && state.students ? state.students[editStudentId] : null;
+    const defaultGrade = existing ? existing.grade : 6;
+    const defaultTrack = existing ? existing.track : "Standard / College-Prep (4.0)";
+    const preselectedIds = existing ? existing.enrolledCourseIds : null;
+    const cloudSess = window.ACADEMY_CLOUD ? window.ACADEMY_CLOUD.getSession() : null;
+    const familyLabel = cloudSess?.family_name ? `${cloudSess.family_name} · ` : "";
+
+    openModal(
+      existing
+        ? `Manage Student & Courses — ${existing.name}`
+        : isFirstSignup
+          ? `${familyLabel}Add Your First Child & Choose Courses`
+          : `${familyLabel}Add Child & Choose Courses`,
+      `
+      <form id="addEditStudentForm" data-edit-student-id="${existing ? existing.id : ""}">
+        ${
+          isFirstSignup
+            ? `<div class="quiz-q-card" style="background:#F4FAF7; border:1px solid var(--emerald-600); margin-bottom:0.85rem; padding:0.75rem 0.9rem;">
+                 <strong style="color:var(--emerald-700);">🎉 Your private family vault is ready!</strong>
+                 <p style="margin:0.2rem 0 0; font-size:0.82rem; color:var(--text-secondary);">Add your first child below and pick their grade and courses. You can add more children or change courses anytime from the Parent Portal.</p>
+               </div>`
+            : ""
+        }
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:0.65rem; margin-bottom:0.85rem;">
+          <div class="form-group">
+            <label>Child's Name</label>
+            <input type="text" id="addStudentNameInput" class="input-control" value="${existing ? existing.name : ""}" placeholder="e.g., Jordan Miller" required />
+          </div>
+          <div class="form-group">
+            <label>Grade Level</label>
+            <select id="addStudentGradeSelect" class="select-control">
+              ${[6, 7, 8, 9, 10, 11, 12]
+                .map((g) => `<option value="${g}" ${Number(defaultGrade) === g ? "selected" : ""}>Grade ${g}</option>`)
+                .join("")}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Academic Track</label>
+            <select id="addStudentTrackSelect" class="select-control">
+              <option value="Standard / College-Prep (4.0)" ${defaultTrack.includes("Standard") ? "selected" : ""}>Standard / College-Prep (4.0)</option>
+              <option value="Honors Classical & STEM (4.5)" ${defaultTrack.includes("Honors") ? "selected" : ""}>Honors Classical &amp; STEM (4.5)</option>
+              <option value="AP / Dual-Credit & Career Fast-Track (5.0)" ${defaultTrack.includes("AP") || defaultTrack.includes("Career") ? "selected" : ""}>AP / Dual-Credit &amp; Career Fast-Track (5.0)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-bottom:0.85rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+            <label style="font-weight:700; color:var(--navy-900);">Select Enrolled Courses</label>
+            <span style="font-size:0.75rem; color:var(--text-muted);">Core courses auto-selected by grade — customize freely</span>
+          </div>
+          <div id="addStudentCourseChecklist" style="max-height:260px; overflow-y:auto; padding:0.65rem; border:1px solid var(--border-subtle); border-radius:10px; background:var(--bg-ivory);">
+            ${renderCourseChecklistHtml(defaultGrade, preselectedIds)}
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:0.55rem; flex-wrap:wrap;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('modalCloseBtn')?.click()">Cancel</button>
+          <button type="submit" class="btn btn-emerald btn-sm">✓ ${existing ? "Save Course Changes" : "Add Student & Sync to Cloud"}</button>
+        </div>
+      </form>
+      `
+    );
+  }
+
   function showToast(message) {
     const container = document.getElementById("toastContainer");
     if (!container) return;
@@ -668,8 +880,27 @@
 
   // ==================== 3. STUDENT DASHBOARD RENDERER ====================
   function renderStudentDashboard() {
-    const stu = state.students[activeStudentId] || state.students.micah;
-    if (!stu) return;
+    syncStudentDropdowns();
+    const stu = getActiveStudent();
+    if (!stu) {
+      const greetingEl = document.getElementById("studentGreeting");
+      const subGreetingEl = document.getElementById("studentSubGreeting");
+      const courseGrid = document.getElementById("studentCoursesGrid");
+      if (greetingEl) greetingEl.textContent = "Welcome to Your Student Hub";
+      if (subGreetingEl) {
+        subGreetingEl.textContent = "No students have been added yet. Open the Parent Portal to add your child and pick their courses.";
+      }
+      if (courseGrid) {
+        courseGrid.innerHTML = `
+          <div class="card-panel" style="grid-column:1 / -1; text-align:center; padding:2rem;">
+            <h3>Ready to Enroll Your First Scholar?</h3>
+            <p style="color:var(--text-secondary); margin:0.4rem 0 1rem;">Add your child's name, grade (6–12), and courses to populate their Student Hub and Daily Lesson Studio.</p>
+            <button type="button" class="btn btn-emerald" data-open-add-student>+ Add Child &amp; Choose Courses</button>
+          </div>
+        `;
+      }
+      return;
+    }
 
     const selectEl = document.getElementById("activeStudentSelect");
     if (selectEl) selectEl.value = activeStudentId;
@@ -1805,10 +2036,12 @@
 
   // ==================== 5. WEEKLY SCHEDULE & CALENDAR RENDERER ====================
   function renderScheduleView() {
+    syncStudentDropdowns();
+    const stu = getActiveStudent();
     const stuSelect = document.getElementById("scheduleStudentSelect");
-    if (stuSelect) stuSelect.value = activeStudentId;
+    if (stuSelect && stu) stuSelect.value = stu.id;
 
-    const scheduleData = state.schedules[activeStudentId] || state.schedules.micah;
+    const scheduleData = (stu && state.schedules[stu.id]) || {};
     const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
     const visibleDays = activeScheduleDay === "all" ? days : [activeScheduleDay];
 
@@ -1862,40 +2095,110 @@
 
   // ==================== 6. PARENT PORTAL RENDERER ====================
   function renderParentDashboard() {
+    syncStudentDropdowns();
     const childrenGrid = document.getElementById("parentChildrenGrid");
     if (!childrenGrid) return;
 
-    childrenGrid.innerHTML = Object.values(state.students)
-      .map((child) => {
-        const isSelected = child.id === activeParentChildId;
-        const cList = state.courses.filter((c) => child.enrolledCourseIds.includes(c.id));
-        const avgProgress =
-          cList.length > 0
-            ? Math.round(cList.reduce((acc, c) => acc + c.progress, 0) / cList.length)
-            : 88;
-        return `
+    const cloudSess = window.ACADEMY_CLOUD ? window.ACADEMY_CLOUD.getSession() : null;
+    const studentList = getStudentList();
+    const bannerEl = document.getElementById("parentOnboardingBanner");
+
+    if (bannerEl) {
+      if (cloudSess && isOnlyDemoVanceStudents()) {
+        bannerEl.innerHTML = `
+          <div class="quiz-q-card" style="background:#FFFDF6; border:2px solid var(--gold-500); margin-bottom:1.15rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
+            <div>
+              <span class="badge badge-gold">PRIVATE FAMILY SETUP · ${cloudSess.family_name || "YOUR HOUSEHOLD"}</span>
+              <h3 style="margin:0.3rem 0 0.15rem; color:var(--navy-900);">Replace the sample profiles with your own child(ren)</h3>
+              <p style="font-size:0.84rem; color:var(--text-secondary); margin:0;">Adding your first child will automatically clear the sample Vance profiles and sync your real family roster to your private cloud vault.</p>
+            </div>
+            <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+              <button type="button" class="btn btn-emerald btn-sm" data-open-add-student>+ Add My Child &amp; Choose Courses</button>
+              <button type="button" class="btn btn-outline btn-sm" data-clear-demo-students>Clear Sample Profiles</button>
+            </div>
+          </div>
+        `;
+      } else {
+        bannerEl.innerHTML = "";
+      }
+    }
+
+    if (studentList.length === 0) {
+      childrenGrid.innerHTML = `
+        <div class="card-panel" style="grid-column: 1 / -1; text-align:center; padding:2.2rem; border:2px dashed var(--gold-500); background:var(--bg-ivory);">
+          <span class="badge badge-emerald" style="margin-bottom:0.5rem;">PRIVATE HOUSEHOLD VAULT READY</span>
+          <h2 style="margin:0.25rem 0 0.45rem; color:var(--navy-900);">Add Your First Child &amp; Choose Their Courses</h2>
+          <p style="max-width:560px; margin:0 auto 1.15rem; color:var(--text-secondary); font-size:0.9rem;">
+            Create a profile for each of your children (Grades 6–12), customize their core classes and career electives, and everything will sync privately to your account.
+          </p>
+          <button type="button" class="btn btn-emerald" data-open-add-student>+ Add Child &amp; Choose Courses</button>
+        </div>
+      `;
+      const hubEl = document.getElementById("parentCoTeacherHub");
+      if (hubEl) {
+        hubEl.innerHTML = `<p style="color:var(--text-secondary); margin:0; text-align:center; padding:1rem;">Add a child above to unlock their daily Parent Co-Teacher Guides and exclusive Answer Keys.</p>`;
+      }
+      const headEl = document.getElementById("parentSelectedChildHeading");
+      if (headEl) headEl.textContent = "No Student Selected Yet";
+      const badgeEl = document.getElementById("parentChildStandingBadge");
+      if (badgeEl) badgeEl.textContent = "Add a child to begin";
+      const tbody = document.querySelector("#parentCourseTable tbody");
+      if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:1.25rem;">Enrolled courses will appear here once you add a child.</td></tr>`;
+      const auditBox = document.getElementById("parentAssignmentsAudit");
+      if (auditBox) auditBox.innerHTML = `<p style="color:var(--text-muted); font-size:0.86rem;">No assignments yet.</p>`;
+      const compBox = document.getElementById("parentComplianceBox");
+      if (compBox) compBox.innerHTML = `<p style="color:var(--text-muted); font-size:0.86rem;">Attendance &amp; hour tracking starts once your first child is enrolled.</p>`;
+      const notesBox = document.getElementById("parentFacultyNotes");
+      if (notesBox) notesBox.innerHTML = `<p style="color:var(--text-muted); font-size:0.86rem;">Faculty notes for your student will appear here.</p>`;
+      return;
+    }
+
+    childrenGrid.innerHTML =
+      studentList
+        .map((child) => {
+          const isSelected = child.id === activeParentChildId;
+          const cList = state.courses.filter((c) => (child.enrolledCourseIds || []).includes(c.id));
+          const avgProgress =
+            cList.length > 0
+              ? Math.round(cList.reduce((acc, c) => acc + c.progress, 0) / cList.length)
+              : 0;
+          return `
         <div class="child-selector-card ${isSelected ? "active" : ""}" data-select-parent-child="${child.id}">
           <div>
-            <span class="mono-label">GRADE ${child.grade} · ${child.track.toUpperCase()}</span>
+            <span class="mono-label">GRADE ${child.grade} · ${(child.track || "Standard").toUpperCase()}</span>
             <h3>${child.name}</h3>
-            <p style="font-size:0.84rem; color:var(--text-secondary);">Enrolled in ${cList.length} Courses (${cList.length * 5} Weekly Modules) · Clock Hours: ${child.loggedClockHours || 364}/${child.requiredClockHours || 900} hrs</p>
+            <p style="font-size:0.84rem; color:var(--text-secondary);">Enrolled in ${cList.length} Courses (${cList.length * 5} Weekly Modules) · Clock Hours: ${child.loggedClockHours || 0}/${child.requiredClockHours || 900} hrs</p>
+            <div style="display:flex; gap:0.4rem; margin-top:0.55rem; flex-wrap:wrap;">
+              <button type="button" class="btn btn-outline btn-sm" style="padding:0.25rem 0.55rem; font-size:0.74rem;" data-edit-student-courses="${child.id}">📚 Edit Courses</button>
+              <button type="button" class="btn btn-outline btn-sm" style="padding:0.25rem 0.55rem; font-size:0.74rem; border-color:#DC2626; color:#B91C1C;" data-remove-student="${child.id}">Remove</button>
+            </div>
           </div>
           <div style="text-align:right;">
-            <span class="badge badge-gold">${child.gpa} GPA</span>
+            <span class="badge badge-gold">${child.gpa || "4.00"} GPA</span>
             <div style="margin-top:0.4rem; font-family:var(--font-mono); font-size:0.78rem; color:var(--emerald-600);">${avgProgress}% Term Mastery</div>
           </div>
         </div>
       `;
-      })
-      .join("");
+        })
+        .join("") +
+      `
+      <div class="child-selector-card" data-open-add-student style="border:2px dashed var(--gold-500); background:var(--bg-ivory); justify-content:center; align-items:center; text-align:center; cursor:pointer;">
+        <div>
+          <div style="font-size:1.35rem; color:var(--navy-900); font-weight:700;">+ Add Another Child</div>
+          <p style="font-size:0.8rem; color:var(--text-secondary); margin:0.25rem 0 0;">Pick grade (6–12) &amp; customize courses</p>
+        </div>
+      </div>
+      `;
 
-    const child = state.students[activeParentChildId] || state.students.micah;
+    const child = state.students[activeParentChildId] || studentList[0];
+    if (!child) return;
+    activeParentChildId = child.id;
     document.getElementById("parentSelectedChildHeading").textContent =
       `${child.name} (Grade ${child.grade}) — Official Academic & State Compliance Standing`;
     document.getElementById("parentChildStandingBadge").textContent =
-      `${child.standing} · ${child.gpa} GPA`;
+      `${child.standing || "Good Standing"} · ${child.gpa || "4.00"} GPA`;
 
-    const enrolled = state.courses.filter((c) => child.enrolledCourseIds.includes(c.id));
+    const enrolled = state.courses.filter((c) => (child.enrolledCourseIds || []).includes(c.id));
 
     // Render Parent Co-Teacher & Home Facilitation Guide Hub (#parentCoTeacherHub)
     const hubEl = document.getElementById("parentCoTeacherHub");
@@ -3734,6 +4037,53 @@
         return;
       }
 
+      if (e.target.closest("#openAddStudentModalBtn") || e.target.closest("[data-open-add-student]")) {
+        openAddStudentModal(null, false);
+        return;
+      }
+
+      const editCoursesBtn = e.target.closest("[data-edit-student-courses]");
+      if (editCoursesBtn) {
+        const sid = editCoursesBtn.getAttribute("data-edit-student-courses");
+        openAddStudentModal(sid, false);
+        return;
+      }
+
+      const removeStudentBtn = e.target.closest("[data-remove-student]");
+      if (removeStudentBtn) {
+        const sid = removeStudentBtn.getAttribute("data-remove-student");
+        const stuObj = state.students && state.students[sid];
+        if (stuObj && window.confirm(`Remove ${stuObj.name} from your family roster?`)) {
+          delete state.students[sid];
+          if (state.schedules) delete state.schedules[sid];
+          state.assignments = (state.assignments || []).filter((a) => a.studentId !== sid);
+          const remaining = getStudentList();
+          activeStudentId = remaining[0] ? remaining[0].id : "";
+          activeParentChildId = remaining[0] ? remaining[0].id : "";
+          saveState();
+          syncStudentDropdowns();
+          renderParentDashboard();
+          renderStudentDashboard();
+          renderScheduleView();
+          showToast(`Removed ${stuObj.name} from your family roster.`);
+        }
+        return;
+      }
+
+      if (e.target.closest("[data-clear-demo-students]")) {
+        state.students = {};
+        state.schedules = {};
+        state.assignments = [];
+        activeStudentId = "";
+        activeParentChildId = "";
+        saveState();
+        syncStudentDropdowns();
+        renderParentDashboard();
+        renderStudentDashboard();
+        openAddStudentModal(null, true);
+        return;
+      }
+
       const parentChildCard = e.target.closest("[data-select-parent-child]");
       if (parentChildCard) {
         activeParentChildId = parentChildCard.getAttribute("data-select-parent-child");
@@ -4340,7 +4690,106 @@
       }
     });
 
+    document.addEventListener("change", (e) => {
+      if (e.target && e.target.id === "addStudentGradeSelect") {
+        const gradeVal = Number(e.target.value) || 6;
+        const checklistEl = document.getElementById("addStudentCourseChecklist");
+        if (checklistEl) {
+          checklistEl.innerHTML = renderCourseChecklistHtml(gradeVal, null);
+        }
+      }
+    });
+
     document.addEventListener("submit", (e) => {
+      if (e.target && e.target.id === "addEditStudentForm") {
+        e.preventDefault();
+        const editId = e.target.getAttribute("data-edit-student-id") || "";
+        const nameVal = (document.getElementById("addStudentNameInput")?.value || "").trim();
+        const gradeVal = Number(document.getElementById("addStudentGradeSelect")?.value) || 6;
+        const trackVal = document.getElementById("addStudentTrackSelect")?.value || "Standard / College-Prep (4.0)";
+        const checkedBoxes = Array.from(e.target.querySelectorAll('input[name="studentCourseIds"]:checked'));
+        let courseIds = checkedBoxes.map((b) => b.value);
+        if (!nameVal) {
+          showToast("Please enter your child's name.");
+          return;
+        }
+        if (courseIds.length === 0) {
+          courseIds = getRecommendedCourseIdsForGrade(gradeVal);
+        }
+
+        // If signed into Cloud and still holding sample Vance profiles, replace them automatically on first real child
+        if (!editId && window.ACADEMY_CLOUD && window.ACADEMY_CLOUD.getSession() && isOnlyDemoVanceStudents()) {
+          state.students = {};
+          state.schedules = {};
+          state.assignments = [];
+        }
+
+        const studentId =
+          editId ||
+          `stu-${nameVal.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "scholar"}-${Date.now().toString().slice(-4)}`;
+
+        const existing = state.students[studentId];
+        state.students[studentId] = {
+          id: studentId,
+          name: nameVal,
+          grade: gradeVal,
+          division: gradeVal >= 9 ? "high" : "middle",
+          track: trackVal,
+          gpa: existing ? existing.gpa : "4.00",
+          standing: existing ? existing.standing : "Good Standing · Enrolled",
+          weeklyTargetHours: gradeVal >= 9 ? 25 : 20,
+          weeklyLoggedHours: existing ? existing.weeklyLoggedHours : 0,
+          attendanceDays: existing ? existing.attendanceDays : 1,
+          requiredDays: 180,
+          loggedClockHours: existing ? existing.loggedClockHours : 0,
+          requiredClockHours: 900,
+          stateRegulationTier: "high",
+          dailyHours: existing
+            ? existing.dailyHours
+            : [
+                { day: "Mon", hours: 0, target: 4.0 },
+                { day: "Tue", hours: 0, target: 4.0 },
+                { day: "Wed", hours: 0, target: 4.0 },
+                { day: "Thu", hours: 0, target: 4.0 },
+                { day: "Fri", hours: 0, target: 4.0 }
+              ],
+          enrolledCourseIds: courseIds,
+          facultyNotes: existing
+            ? existing.facultyNotes
+            : [
+                {
+                  instructor: "Christ Infinity Academy Admissions",
+                  date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+                  note: `Welcome, ${nameVal}! Enrolled in ${courseIds.length} Grade ${gradeVal} courses on the ${trackVal} track.`
+                }
+              ]
+        };
+
+        if (!state.schedules) state.schedules = {};
+        state.schedules[studentId] = buildDefaultScheduleForStudent(courseIds);
+
+        activeStudentId = studentId;
+        activeParentChildId = studentId;
+        if (courseIds[0]) {
+          activeCourseIdForLesson = courseIds[0];
+          activeParentGuideCourseId = courseIds[0];
+        }
+
+        saveState();
+        syncStudentDropdowns();
+        renderParentDashboard();
+        renderStudentDashboard();
+        renderLessonStudio();
+        renderScheduleView();
+        closeModal();
+        showToast(
+          editId
+            ? `✓ Updated ${nameVal}'s courses (${courseIds.length} enrolled) & synced to cloud!`
+            : `🎉 Added ${nameVal} (Grade ${gradeVal}, ${courseIds.length} courses) & synced to your private vault!`
+        );
+        return;
+      }
+
       if (e.target && e.target.id === "cloudSignInForm") {
         e.preventDefault();
         const username = document.getElementById("cloudLoginUsername")?.value || "";
@@ -4357,14 +4806,28 @@
             if (snap) {
               window.ACADEMY_CLOUD.applyCompactSnapshotToState(state, snap);
               localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            } else {
+              // Fresh account with no saved snapshot yet — clear sample Vance profiles!
+              state.students = {};
+              state.schedules = {};
+              state.assignments = [];
             }
             state.authConfig.currentRole = res.session.role || "parent";
             state.authConfig.parentPinVerified = res.session.role !== "student";
+            syncStudentDropdowns();
             updateAuthHeaderUI();
-            renderStudentDashboard();
-            renderLessonStudio();
-            renderParentDashboard();
             closeModal();
+            const isParentOrAdmin = (res.session.role || "parent") !== "student";
+            if (isParentOrAdmin && (getStudentList().length === 0 || isOnlyDemoVanceStudents())) {
+              switchView("parent");
+              if (getStudentList().length === 0) {
+                openAddStudentModal(null, true);
+              }
+            } else {
+              renderStudentDashboard();
+              renderLessonStudio();
+              renderParentDashboard();
+            }
             showToast(`☁️ Signed in as ${res.session.family_name || "@" + (res.session.username || username)}!`);
           });
         }
@@ -4401,13 +4864,22 @@
                 }
                 showToast("Action needed: Turn OFF 'Confirm email' in Supabase Auth Providers.");
               } else {
+                // Brand-new family account: wipe sample Vance demo profiles so their vault starts 100% clean!
+                state.students = {};
+                state.schedules = {};
+                state.assignments = [];
+                activeStudentId = "";
+                activeParentChildId = "";
                 state.authConfig.currentRole = res.session.role || "parent";
                 state.authConfig.parentPin = parentPin;
                 state.authConfig.parentPinVerified = true;
                 saveState();
+                syncStudentDropdowns();
                 updateAuthHeaderUI();
                 closeModal();
-                showToast(`☁️ Welcome, ${familyName}! Signed in as @${res.session.username}.`);
+                switchView("parent");
+                openAddStudentModal(null, true);
+                showToast(`☁️ Welcome, ${familyName}! Add your first child & choose their courses.`);
               }
             });
         }
@@ -5052,9 +5524,11 @@
       window.ACADEMY_CLOUD.loadCloudSnapshot().then((snap) => {
         if (snap && window.ACADEMY_CLOUD.applyCompactSnapshotToState(state, snap)) {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          syncStudentDropdowns();
           updateAuthHeaderUI();
           renderStudentDashboard();
           renderLessonStudio();
+          renderScheduleView();
           renderParentDashboard();
           showToast("☁️ Synced latest family progress from Supabase Cloud.");
         }

@@ -1125,9 +1125,10 @@
           <div>
             <span class="section-eyebrow">FAMILY STEWARDSHIP &amp; ACADEMIC OVERSIGHT</span>
             <h1 class="page-title" id="parentPortalHeading">Parent Co-Teacher Portal</h1>
-            <p class="page-subtitle">Monitor Micah (Grade 6), Hannah (Grade 7), and Lucas (Grade 10), verify completed coursework, and download official transcripts.</p>
+            <p class="page-subtitle" id="parentPortalSubtitle">Add and manage your children, choose their courses, view daily Parent Co-Teacher Answer Keys, and download official transcripts.</p>
           </div>
           <div class="parent-actions-top">
+            <button class="btn btn-emerald btn-sm" id="openAddStudentModalBtn">+ Add Child &amp; Choose Courses</button>
             <button class="btn btn-secondary btn-sm" id="approvePacingBtn">✓ Approve Weekly Pacing Log</button>
             <button class="btn btn-outline btn-sm" id="openPrintableCertificateBtn">🖨️ Print Official Certificate &amp; Transcript</button>
             <button class="btn btn-primary btn-sm" id="downloadTranscriptBtn">Download Official Transcript (.txt)</button>
@@ -1136,6 +1137,9 @@
       </div>
 
       <div class="container section-pad">
+        <!-- Cloud Family Onboarding / Sample Reset Banner -->
+        <div id="parentOnboardingBanner"></div>
+
         <!-- Parent Student Switcher Cards -->
         <div class="parent-children-grid" id="parentChildrenGrid"></div>
 
@@ -1149,7 +1153,7 @@
               <div class="panel-header">
                 <div>
                   <span class="mono-label">COURSE-BY-COURSE PERFORMANCE</span>
-                  <h2 class="panel-title" id="parentSelectedChildHeading">Micah Vance (Grade 6) — Academic Standing</h2>
+                  <h2 class="panel-title" id="parentSelectedChildHeading">Student Academic Standing</h2>
                 </div>
                 <span class="badge badge-emerald" id="parentChildStandingBadge">Headmaster’s Commendation · 4.00 GPA</span>
               </div>
