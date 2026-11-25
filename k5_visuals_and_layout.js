@@ -122,7 +122,8 @@
             </div>
             <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
               <button type="button" class="btn btn-secondary btn-sm" data-nav="library" style="flex:1;">📚 ${isK5 ? "K–5 Books" : "Library"}</button>
-              <button type="button" class="btn btn-outline btn-sm" onclick="window.openEogEocExamCenter && window.openEogEocExamCenter()" style="flex:1; color:#FFFFFF; border-color:rgba(255,255,255,0.45);">🏛️ EOG/EOC</button>
+              <a href="${window.getIxlPracticeUrl ? window.getIxlPracticeUrl(courses[0], g) : "https://www.ixl.com/"}" target="_blank" rel="noopener noreferrer" class="btn btn-emerald btn-sm" style="flex:1; text-align:center; text-decoration:none;">🚀 IXL Practice</a>
+              <button type="button" class="btn btn-sm" onclick="window.openEogEocExamCenter && window.openEogEocExamCenter()" style="flex:1; background:#F59E0B; color:#0A192F; border:2px solid #FDE68A; font-weight:800; box-shadow:0 2px 6px rgba(0,0,0,0.2);">🏛️ ${isK5 ? "Grade " + (g === 0 ? "K" : g) + " EOG/EOC" : "EOG / EOC Exams"}</button>
             </div>
           </div>
         </div>
@@ -364,5 +365,267 @@
       return previousDiagramFn(course, lesson, weekNum);
     }
     return "";
+  };
+
+  // ==================== 4. IXL EXTRA PRACTICE LAUNCHER (GRADES K–12) ====================
+  function getIxlGradeSlug(gradeNum, subjectSlug) {
+    const g = Number.isFinite(Number(gradeNum)) ? Number(gradeNum) : 6;
+    if (subjectSlug === "spanish") return "";
+    if (g <= 0) return "kindergarten";
+    if (g >= 1 && g <= 8) return `grade-${g}`;
+    if (subjectSlug === "math") {
+      if (g === 9) return "algebra-1";
+      if (g === 10) return "geometry";
+      if (g === 11) return "algebra-2";
+      return "precalculus";
+    }
+    if (subjectSlug === "ela") {
+      return `grade-${Math.min(12, Math.max(9, g))}`;
+    }
+    if (subjectSlug === "science") {
+      if (g === 9 || g === 10) return "biology";
+      if (g === 11) return "chemistry";
+      return "physics";
+    }
+    if (subjectSlug === "social-studies") {
+      return "grade-8";
+    }
+    return `grade-${Math.min(8, Math.max(1, g))}`;
+  }
+
+  window.getIxlPracticeUrl = function (course, gradeOverride) {
+    const g = gradeOverride !== undefined && gradeOverride !== null
+      ? Number(gradeOverride)
+      : (course && Array.isArray(course.gradeLevels) && course.gradeLevels.length > 0 ? Number(course.gradeLevels[0]) : 6);
+    const title = ((course && course.title) || "").toLowerCase();
+    const dept = ((course && course.department) || "").toLowerCase();
+    const code = ((course && course.code) || "").toUpperCase();
+
+    if (code.startsWith("SPAN") || title.includes("spanish")) {
+      return "https://www.ixl.com/spanish";
+    }
+    if (dept.includes("math") || code.startsWith("MATH")) {
+      if (title.includes("calculus")) return "https://www.ixl.com/math/calculus";
+      if (title.includes("precalculus")) return "https://www.ixl.com/math/precalculus";
+      if (title.includes("algebra ii") || title.includes("algebra 2")) return "https://www.ixl.com/math/algebra-2";
+      if (title.includes("geometry")) return "https://www.ixl.com/math/geometry";
+      if (title.includes("algebra i") || title.includes("algebra 1")) return "https://www.ixl.com/math/algebra-1";
+      return `https://www.ixl.com/math/${getIxlGradeSlug(g, "math")}`;
+    }
+    if (dept.includes("literature") || dept.includes("reading") || code.startsWith("ELA") || code.startsWith("LIT") || code.startsWith("RHET")) {
+      return `https://www.ixl.com/ela/${getIxlGradeSlug(g, "ela")}`;
+    }
+    if (dept.includes("science") || code.startsWith("SCI")) {
+      if (title.includes("chemistry")) return "https://www.ixl.com/science/chemistry";
+      if (title.includes("physics")) return "https://www.ixl.com/science/physics";
+      if (title.includes("biology")) return "https://www.ixl.com/science/biology";
+      return `https://www.ixl.com/science/${getIxlGradeSlug(g, "science")}`;
+    }
+    if (dept.includes("history") || code.startsWith("HIST") || title.includes("civics") || title.includes("history")) {
+      return `https://www.ixl.com/social-studies/${getIxlGradeSlug(g, "social-studies")}`;
+    }
+    return `https://www.ixl.com/math/${getIxlGradeSlug(g, "math")}`;
+  };
+
+  window.renderIxlExtraPracticeCard = function (course, student) {
+    const g = student && student.grade !== undefined
+      ? Number(student.grade)
+      : (course && Array.isArray(course.gradeLevels) && course.gradeLevels.length > 0 ? Number(course.gradeLevels[0]) : 6);
+    const gradeLabel = g === 0 ? "Kindergarten" : `Grade ${g}`;
+    const primaryUrl = window.getIxlPracticeUrl(course, g);
+    const mathUrl = `https://www.ixl.com/math/${getIxlGradeSlug(g, "math")}`;
+    const elaUrl = `https://www.ixl.com/ela/${getIxlGradeSlug(g, "ela")}`;
+    const sciUrl = `https://www.ixl.com/science/${getIxlGradeSlug(g, "science")}`;
+    const histUrl = `https://www.ixl.com/social-studies/${getIxlGradeSlug(g, "social-studies")}`;
+    const courseShort = course ? course.title.split(":")[0] : `${gradeLabel} Skills`;
+
+    return `
+      <div class="quiz-q-card" style="margin-top:1rem; background:linear-gradient(135deg, #F0FDF4 0%, #ECFDF5 60%, #EFF6FF 100%); border:2px solid #10B981; border-radius:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
+          <div style="flex:1; min-width:240px;">
+            <span class="mono-label" style="color:#047857;">🚀 EXTRA SKILL DRILLS · IXL LEARNING PARTNER LINK (${gradeLabel.toUpperCase()})</span>
+            <h4 style="font-family:var(--font-serif); font-size:1.18rem; color:var(--navy-900); margin:0.2rem 0 0.25rem;">
+              Want Extra Practice? Drill ${courseShort} on IXL!
+            </h4>
+            <p style="font-size:0.84rem; color:#334155; margin:0;">
+              Build speed and confidence with adaptive ${gradeLabel} questions on IXL. Opens safely in a new tab while keeping your Christ Infinity lesson right here.
+            </p>
+          </div>
+          <a href="${primaryUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-emerald" style="text-decoration:none; white-space:nowrap;">
+            🚀 Open IXL ${gradeLabel} Practice ↗
+          </a>
+        </div>
+        <div style="display:flex; gap:0.45rem; flex-wrap:wrap; margin-top:0.75rem; padding-top:0.65rem; border-top:1px solid rgba(16,185,129,0.25);">
+          <a href="${mathUrl}" target="_blank" rel="noopener noreferrer" class="chip" style="text-decoration:none; background:#FFFFFF;">🔢 IXL ${gradeLabel} Math ↗</a>
+          <a href="${elaUrl}" target="_blank" rel="noopener noreferrer" class="chip" style="text-decoration:none; background:#FFFFFF;">📚 IXL ${gradeLabel} Reading/ELA ↗</a>
+          <a href="${sciUrl}" target="_blank" rel="noopener noreferrer" class="chip" style="text-decoration:none; background:#FFFFFF;">🔬 IXL Science ↗</a>
+          <a href="${histUrl}" target="_blank" rel="noopener noreferrer" class="chip" style="text-decoration:none; background:#FFFFFF;">🗺️ IXL Social Studies ↗</a>
+          <a href="https://www.ixl.com/spanish" target="_blank" rel="noopener noreferrer" class="chip" style="text-decoration:none; background:#FFFFFF;">🇪🇸 IXL Spanish ↗</a>
+        </div>
+      </div>
+    `;
+  };
+
+  // ==================== 5. APPROPRIATE EDUCATIONAL YOUTUBE VIDEO HELPER ====================
+  function getCuratedLessonVideo(course, lesson, weekNum) {
+    if (!course) return null;
+    const dept = (course.department || "").toLowerCase();
+    const code = (course.code || "").toUpperCase();
+    const title = (course.title || "").toLowerCase();
+    const weekObj = (course.syllabus36Weeks || []).find((w) => w.weekNum === weekNum);
+    const topicText = `${(weekObj && weekObj.title) || ""} ${(lesson && lesson.title) || ""} ${title}`.toLowerCase();
+    const g = (course.gradeLevels && course.gradeLevels[0]) ?? 6;
+
+    // 1. Check Parent-Pinned Custom YouTube Video first!
+    const customId = window.getAcademyCustomVideo ? window.getAcademyCustomVideo(course.id, weekNum) : null;
+    if (customId) {
+      return {
+        videoId: customId,
+        title: "Family-Pinned Educational Lesson Video",
+        channel: "Parent-Selected YouTube Video",
+        isCustom: true,
+        recommendedChannel: "BibleProject, Math Antics, or Crash Course Kids"
+      };
+    }
+
+    // 2. Curated, Real, Verified Educational Video IDs (Safe & Kid-Appropriate)
+    if (dept.includes("theology") || code.startsWith("THEO")) {
+      return {
+        videoId: "Gmt_KlBmFtk",
+        title: "Genesis 1 — Creation & God's Orderly Design",
+        channel: "BibleProject (Verified Kid- & Family-Safe)",
+        isCustom: false,
+        recommendedChannel: "BibleProject"
+      };
+    }
+    if (dept.includes("math") || code.startsWith("MATH")) {
+      if (topicText.includes("pythagor") || topicText.includes("geometry") || g === 8 || g === 10) {
+        return {
+          videoId: "AAkEkMjCrBI",
+          title: "The Pythagorean Theorem & Geometry Foundations",
+          channel: "Math Antics (Verified Educational Channel)",
+          isCustom: false,
+          recommendedChannel: "Math Antics"
+        };
+      }
+      if (topicText.includes("algebra") || topicText.includes("equation") || g >= 7) {
+        return {
+          videoId: "NybHckSEQBI",
+          title: "Algebra Basics: What Is Algebra & Solving Equations",
+          channel: "Math Antics (Verified Educational Channel)",
+          isCustom: false,
+          recommendedChannel: "Math Antics"
+        };
+      }
+      if (topicText.includes("division") || topicText.includes("divide")) {
+        return {
+          videoId: "HdU_rf7kVmk",
+          title: "Long Division Made Clear Step-by-Step",
+          channel: "Math Antics (Verified Educational Channel)",
+          isCustom: false,
+          recommendedChannel: "Math Antics"
+        };
+      }
+      if (topicText.includes("order of operations") || topicText.includes("pemdas") || g === 6) {
+        return {
+          videoId: "dAgfrkyOeAU",
+          title: "Order of Operations (PEMDAS) Step-by-Step",
+          channel: "Math Antics (Verified Educational Channel)",
+          isCustom: false,
+          recommendedChannel: "Math Antics"
+        };
+      }
+      return {
+        videoId: "JNv9GXgJXy8",
+        title: "Fractions & Number Sense Visualized",
+        channel: "Math Antics (Verified Educational Channel)",
+        isCustom: false,
+        recommendedChannel: "Math Antics"
+      };
+    }
+
+    // For other subjects, recommend a curated trusted educational YouTube channel search + Parent Pin option
+    let recChannel = "Crash Course Kids";
+    if (code.startsWith("ASL")) recChannel = "Learn How to Sign ASL for kids";
+    else if (code.startsWith("CS")) recChannel = "Code.org computer science basics";
+    else if (code.startsWith("ART")) recChannel = "Art for Kids Hub";
+    else if (code.startsWith("MUS")) recChannel = "Prodigies Music Lesson";
+    else if (dept.includes("science") || code.startsWith("SCI")) recChannel = g <= 5 ? "Crash Course Kids science" : "Amoeba Sisters Crash Course";
+    else if (dept.includes("history") || code.startsWith("HIST")) recChannel = g <= 5 ? "FreeSchool history for kids" : "Crash Course History";
+    else if (dept.includes("literature") || code.startsWith("ELA") || code.startsWith("LIT")) recChannel = g <= 5 ? "Scratch Garden grammar reading" : "Crash Course Literature";
+    else if (dept.includes("career") || code.startsWith("FIN") || code.startsWith("REAL") || code.startsWith("BUS") || code.startsWith("TRD")) recChannel = "Khan Academy personal finance careers";
+
+    return {
+      videoId: null,
+      title: `Trusted Educational Video Guide for ${(weekObj && weekObj.title) || course.title}`,
+      channel: recChannel,
+      isCustom: false,
+      recommendedChannel: recChannel
+    };
+  }
+
+  window.renderLessonVideoHelperCard = function (course, lesson, weekNum) {
+    if (!course) return "";
+    const info = getCuratedLessonVideo(course, lesson, weekNum || 1);
+    if (!info) return "";
+
+    const weekObj = (course.syllabus36Weeks || []).find((w) => w.weekNum === (weekNum || 1));
+    const cleanTopic = ((weekObj && weekObj.title) || course.title || "").replace(/^Week\s+\d+:\s*/i, "");
+    const safeQuery = encodeURIComponent(`${info.recommendedChannel} ${cleanTopic.slice(0, 60)}`);
+    const ytSearchUrl = `https://www.youtube.com/results?search_query=${safeQuery}`;
+
+    const embedHtml = info.videoId
+      ? `
+        <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:10px; border:2px solid var(--navy-800); background:#0A192F; margin:0.7rem 0;">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/${info.videoId}?rel=0&modestbranding=1"
+            title="${info.title}"
+            style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            loading="lazy"
+          ></iframe>
+        </div>
+        <div style="font-size:0.78rem; color:var(--text-secondary); margin-bottom:0.65rem;">
+          📺 <strong>Now Playing:</strong> ${info.title} · <em>${info.channel}</em> · Privacy-enhanced embed (no tracking cookies).
+        </div>
+      `
+      : `
+        <div style="background:#FFFFFF; border:1px dashed var(--navy-700); border-radius:10px; padding:0.85rem 1rem; margin:0.65rem 0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
+          <div style="flex:1; min-width:220px;">
+            <strong style="color:var(--navy-900); font-size:0.9rem;">Watch an Appropriate Video on "${cleanTopic}"</strong>
+            <div style="font-size:0.82rem; color:var(--text-secondary); margin-top:0.2rem;">
+              Open a kid-safe search on <strong>${info.recommendedChannel}</strong>, or paste any approved YouTube link using the <strong>Pin YouTube Link</strong> button to play it right inside this lesson!
+            </div>
+          </div>
+          <a href="${ytSearchUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" style="text-decoration:none; white-space:nowrap;">
+            ▶️ Find Video on YouTube ↗
+          </a>
+        </div>
+      `;
+
+    return `
+      <div class="quiz-q-card" style="margin-bottom:1.05rem; background:linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%); border:2px solid var(--navy-700); border-radius:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+          <div>
+            <span class="mono-label" style="color:var(--navy-700);">🎬 VIDEO LESSON HELPER · FAMILY-SAFE YOUTUBE EMBED</span>
+            <h4 style="font-family:var(--font-serif); font-size:1.15rem; color:var(--navy-900); margin:0.15rem 0 0;">
+              Watch &amp; Understand: ${cleanTopic}
+            </h4>
+          </div>
+          <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+            <button type="button" class="btn btn-secondary btn-sm" data-pin-lesson-video="${course.id}|${weekNum || 1}">
+              🔗 ${info.isCustom ? "Change Pinned YouTube Link" : "Pin YouTube Link"}
+            </button>
+            ${
+              info.isCustom
+                ? `<button type="button" class="btn btn-outline btn-sm" data-clear-lesson-video="${course.id}|${weekNum || 1}">↺ Reset Default</button>`
+                : `<a href="${ytSearchUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" style="text-decoration:none;">🔎 More Safe Videos ↗</a>`
+            }
+          </div>
+        </div>
+        ${embedHtml}
+      </div>
+    `;
   };
 })();

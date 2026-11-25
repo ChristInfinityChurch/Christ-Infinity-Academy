@@ -308,30 +308,52 @@
       students: fullState.students,
       assignments: fullState.assignments,
       schedules: fullState.schedules,
+      customVideos: fullState.customVideos || {},
       authConfig: fullState.authConfig,
       courseProgressMap,
       syncedAt: new Date().toISOString()
     };
   }
 
+  function extractRealStudents(studentsObj) {
+    const clean = {};
+    if (!studentsObj || typeof studentsObj !== "object") return clean;
+    const keys = Object.keys(studentsObj);
+    const isOldVanceDemo = keys.length > 0 && keys.every((k) => ["micah", "hannah", "lucas"].includes(k));
+    if (isOldVanceDemo) return clean;
+    keys.forEach((k) => {
+      if (studentsObj[k] && typeof studentsObj[k] === "object" && studentsObj[k].name) {
+        clean[k] = studentsObj[k];
+      }
+    });
+    return clean;
+  }
+
   function applyCompactSnapshotToState(fullState, snap) {
     if (!fullState || !snap) return false;
-    if (snap.students && typeof snap.students === "object") {
-      const keys = Object.keys(snap.students);
-      const isOldVanceDemo = keys.length > 0 && keys.every((k) => ["micah", "hannah", "lucas"].includes(k));
-      fullState.students = isOldVanceDemo ? {} : snap.students;
-      if (isOldVanceDemo) {
-        fullState.schedules = {};
-        fullState.assignments = [];
+    const localReal = extractRealStudents(fullState.students);
+    const cloudReal = extractRealStudents(snap.students);
+
+    // NEVER overwrite non-empty local children with an empty cloud snapshot.
+    // Merge both so cloud updates sync cleanly while newly added local children are never lost.
+    const mergedStudents = { ...localReal, ...cloudReal };
+    const localHadUnsyncedChildren = Object.keys(localReal).some((k) => !cloudReal[k]);
+    fullState.students = mergedStudents;
+
+    if (snap.customVideos && typeof snap.customVideos === "object") {
+      fullState.customVideos = { ...(fullState.customVideos || {}), ...snap.customVideos };
+    }
+
+    const hasAnyStudents = Object.keys(fullState.students || {}).length > 0;
+    if (Array.isArray(snap.assignments) && hasAnyStudents) {
+      if (snap.assignments.length > 0 || !Array.isArray(fullState.assignments) || fullState.assignments.length === 0) {
+        fullState.assignments = snap.assignments;
       }
     }
-    if (Array.isArray(snap.assignments) && Object.keys(fullState.students || {}).length > 0) {
-      fullState.assignments = snap.assignments;
+    if (snap.schedules && typeof snap.schedules === "object" && hasAnyStudents) {
+      fullState.schedules = { ...(fullState.schedules || {}), ...snap.schedules };
     }
-    if (snap.schedules && Object.keys(fullState.students || {}).length > 0) {
-      fullState.schedules = snap.schedules;
-    }
-    if (snap.courseProgressMap && Array.isArray(fullState.courses) && Object.keys(fullState.students || {}).length > 0) {
+    if (snap.courseProgressMap && Array.isArray(fullState.courses) && hasAnyStudents) {
       fullState.courses.forEach((c) => {
         const savedC = snap.courseProgressMap[c.id];
         if (!savedC) return;
@@ -359,6 +381,11 @@
           });
         }
       });
+    }
+
+    // If local device had children that weren't in Supabase yet, immediately push merged roster to cloud!
+    if (localHadUnsyncedChildren && session && session.access_token) {
+      saveCloudSnapshot(fullState, true);
     }
     return true;
   }

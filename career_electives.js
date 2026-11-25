@@ -636,6 +636,8 @@
             <strong>Wisdom &amp; Anchor:</strong> <em>${dt.anchorVerse || "Proverbs 2:6 — For the LORD giveth wisdom."}</em>
           </div>
 
+          ${window.renderLessonVideoHelperCard ? window.renderLessonVideoHelperCard(course, lesson, weekObj?.weekNum || 1) : ""}
+
           <div class="assignments-stack" style="gap:0.85rem; margin-bottom:1.15rem;">
             ${sections
               .map(
@@ -765,6 +767,8 @@
               </div>
             </div>
           </div>
+
+          ${window.renderIxlExtraPracticeCard ? window.renderIxlExtraPracticeCard(course, window.getAcademyActiveStudent ? window.getAcademyActiveStudent() : null) : ""}
 
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem; margin-top:1.1rem; padding-top:0.85rem; border-top:1px solid var(--border-subtle);">
             <button type="button" class="btn btn-outline" data-set-guided-step="2">← Back to Step 2 (Lesson)</button>

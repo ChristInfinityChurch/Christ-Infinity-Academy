@@ -2,6 +2,8 @@
 
 (function () {
   const STORAGE_KEY = "christ_infinity_academy_state_v16";
+  // Permanent unversioned backup vault so family children are NEVER wiped across website updates
+  const PERMANENT_ROSTER_KEY = "cia_permanent_family_roster_v1";
 
   let state = loadState();
   let currentView = "home";
@@ -40,6 +42,7 @@
     fresh.students = {};
     fresh.schedules = {};
     fresh.assignments = [];
+    fresh.customVideos = {};
     if (Array.isArray(fresh.courses)) {
       fresh.courses.forEach((c) => {
         c.progress = 0;
@@ -63,7 +66,118 @@
     return fresh;
   }
 
+  function extractCleanFamilyStudents(studentsObj) {
+    const clean = {};
+    if (!studentsObj || typeof studentsObj !== "object") return clean;
+    const keys = Object.keys(studentsObj);
+    const isOldVanceDemo = keys.length > 0 && keys.every((k) => ["micah", "hannah", "lucas"].includes(k));
+    if (isOldVanceDemo) return clean;
+    keys.forEach((k) => {
+      if (studentsObj[k] && typeof studentsObj[k] === "object" && studentsObj[k].name) {
+        clean[k] = studentsObj[k];
+      }
+    });
+    return clean;
+  }
+
+  function backupPermanentFamilyRoster(st, allowEmptyOverwrite) {
+    if (!st) return;
+    try {
+      const realStudents = extractCleanFamilyStudents(st.students);
+      if (Object.keys(realStudents).length > 0 || allowEmptyOverwrite) {
+        localStorage.setItem(
+          PERMANENT_ROSTER_KEY,
+          JSON.stringify({
+            students: realStudents,
+            schedules: st.schedules || {},
+            assignments: Array.isArray(st.assignments) ? st.assignments : [],
+            customVideos: st.customVideos || {},
+            updatedAt: new Date().toISOString()
+          })
+        );
+      }
+    } catch (e) {
+      // ignore storage quota errors
+    }
+  }
+
+  function recoverPermanentFamilyRoster() {
+    try {
+      const rawVault = localStorage.getItem(PERMANENT_ROSTER_KEY);
+      if (rawVault) {
+        const parsedVault = JSON.parse(rawVault);
+        const clean = extractCleanFamilyStudents(parsedVault && parsedVault.students);
+        if (Object.keys(clean).length > 0) {
+          return {
+            students: clean,
+            schedules: parsedVault.schedules || {},
+            assignments: Array.isArray(parsedVault.assignments) ? parsedVault.assignments : [],
+            customVideos: parsedVault.customVideos || {}
+          };
+        }
+      }
+      // Fallback: recover real children from any prior christ_infinity_academy_state_v* key
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith("christ_infinity_academy_state_v") && k !== STORAGE_KEY) {
+          try {
+            const oldObj = JSON.parse(localStorage.getItem(k));
+            const clean = extractCleanFamilyStudents(oldObj && oldObj.students);
+            if (Object.keys(clean).length > 0) {
+              return {
+                students: clean,
+                schedules: oldObj.schedules || {},
+                assignments: Array.isArray(oldObj.assignments) ? oldObj.assignments : [],
+                customVideos: oldObj.customVideos || {}
+              };
+            }
+          } catch (innerErr) {
+            // ignore malformed legacy key
+          }
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+    return null;
+  }
+
+  const OLD_BUNDLED_ELEM_IDS = [
+    "theo-k2", "math-k2", "lit-k2", "sci-k2", "hist-k2",
+    "theo-35", "math-35", "lit-35", "sci-35", "hist-35"
+  ];
+
+  function migrateBundledElementaryCourses(st) {
+    if (!st) return;
+    // Remove retired K-2 and 3-5 bundled courses from catalog so separate K, 1, 2, 3, 4, 5 courses show cleanly
+    if (Array.isArray(st.courses)) {
+      st.courses = st.courses.filter((c) => !OLD_BUNDLED_ELEM_IDS.includes(c.id));
+    }
+    // Seamlessly upgrade any existing student's enrolledCourseIds from old K-2 / 3-5 IDs to their exact individual grade ID
+    if (st.students && typeof st.students === "object") {
+      Object.values(st.students).forEach((stu) => {
+        if (!stu || !Array.isArray(stu.enrolledCourseIds)) return;
+        const g = Math.max(0, Math.min(5, Number(stu.grade) || 0));
+        const suffix = g === 0 ? "k" : `${g}01`;
+        const mapOld = {
+          "theo-k2": `theo-${suffix}`, "theo-35": `theo-${suffix}`,
+          "math-k2": `math-${suffix}`, "math-35": `math-${suffix}`,
+          "lit-k2": `lit-${suffix}`, "lit-35": `lit-${suffix}`,
+          "sci-k2": `sci-${suffix}`, "sci-35": `sci-${suffix}`,
+          "hist-k2": `hist-${suffix}`, "hist-35": `hist-${suffix}`
+        };
+        const upgraded = [];
+        stu.enrolledCourseIds.forEach((cid) => {
+          const target = mapOld[cid] || cid;
+          if (!upgraded.includes(target)) upgraded.push(target);
+        });
+        stu.enrolledCourseIds = upgraded;
+      });
+    }
+  }
+
   function loadState() {
+    let loaded = null;
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
@@ -79,7 +193,7 @@
           parsed.students &&
           typeof parsed.students === "object"
         ) {
-          // Automatically merge any newly added K–12 & Elective courses and K–5 Library Books into saved state
+          // Automatically merge any newly added K–12 & Elective courses and K–12 Library Books into saved state
           if (Array.isArray(INITIAL_ACADEMY_DATA.courses)) {
             if (!Array.isArray(parsed.courses)) parsed.courses = [];
             INITIAL_ACADEMY_DATA.courses.forEach((freshCourse) => {
@@ -99,24 +213,75 @@
               }
             });
           }
-          return parsed;
+          if (!parsed.customVideos || typeof parsed.customVideos !== "object") {
+            parsed.customVideos = {};
+          }
+          loaded = parsed;
         }
       }
     } catch (e) {
       console.warn("Could not read localStorage state:", e);
     }
-    return createFreshAcademyState();
+
+    if (!loaded) {
+      loaded = createFreshAcademyState();
+    }
+
+    // If loaded state has no real children, check the permanent family roster backup vault!
+    const currentReal = extractCleanFamilyStudents(loaded.students);
+    if (Object.keys(currentReal).length === 0) {
+      const recovered = recoverPermanentFamilyRoster();
+      if (recovered && Object.keys(recovered.students).length > 0) {
+        loaded.students = recovered.students;
+        loaded.schedules = { ...(loaded.schedules || {}), ...(recovered.schedules || {}) };
+        if (Array.isArray(recovered.assignments) && recovered.assignments.length > 0) {
+          loaded.assignments = recovered.assignments;
+        }
+        loaded.customVideos = { ...(loaded.customVideos || {}), ...(recovered.customVideos || {}) };
+      }
+    } else {
+      // Ensure permanent vault stays updated with real family children
+      backupPermanentFamilyRoster(loaded, false);
+    }
+
+    // Ensure retired bundled K-2 / 3-5 IDs are migrated cleanly to separate K, 1, 2, 3, 4, 5 courses
+    migrateBundledElementaryCourses(loaded);
+
+    return loaded;
   }
 
-  function saveState(immediate) {
+  function saveState(immediate, allowEmptyRosterOverwrite) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      backupPermanentFamilyRoster(state, !!allowEmptyRosterOverwrite);
       if (window.ACADEMY_CLOUD && window.ACADEMY_CLOUD.getSession()) {
         window.ACADEMY_CLOUD.saveCloudSnapshot(state, !!immediate);
       }
     } catch (e) {
       console.warn("Could not persist localStorage state:", e);
     }
+  }
+
+  window.getAcademyCustomVideo = function (courseId, weekNum) {
+    if (!state || !state.customVideos) return null;
+    return state.customVideos[`${courseId}_w${weekNum || 1}`] || null;
+  };
+
+  function parseYouTubeVideoId(rawInput) {
+    const str = String(rawInput || "").trim();
+    if (!str) return null;
+    if (/^[a-zA-Z0-9_-]{11}$/.test(str)) return str;
+    const patterns = [
+      /[?&]v=([a-zA-Z0-9_-]{11})/,
+      /youtu\.be\/([a-zA-Z0-9_-]{11})/,
+      /youtube(?:-nocookie)?\.com\/embed\/([a-zA-Z0-9_-]{11})/,
+      /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/
+    ];
+    for (let i = 0; i < patterns.length; i++) {
+      const m = str.match(patterns[i]);
+      if (m && m[1]) return m[1];
+    }
+    return null;
   }
 
   // ==================== FAMILY STUDENT & COURSE ENROLLMENT HELPERS ====================
@@ -1051,29 +1216,37 @@
       });
     });
 
+    const currentWeekDisplay = activeLessonWeekNum || 1;
+    const nextWeekDisplay = Math.min(36, currentWeekDisplay + 1);
+
     if (subGreetingEl) {
-      subGreetingEl.textContent = `Week 11 Progress: ${completedDailyTasks} of ${totalDailyTasks} Daily Assignments completed (3 per day: Fill-in-the-Blank + Writing + Quiz across ${enrolledCourses.length} courses) · ≥85% Mastery Gatekeeper active.`;
+      subGreetingEl.textContent = isK5Stu
+        ? `Week ${currentWeekDisplay} of 36 Progress: ${completedDailyTasks} of ${totalDailyTasks} Daily Tasks completed across ${enrolledCourses.length} courses · ≥85% Mastery Check active.`
+        : `Week ${currentWeekDisplay} of 36 Progress: ${completedDailyTasks} of ${totalDailyTasks} Daily Assignments completed (3 per day: Practice + Writing + Quiz across ${enrolledCourses.length} courses) · ≥85% Mastery Gatekeeper active.`;
     }
 
     const avgGrade =
       enrolledCourses.length > 0
         ? (enrolledCourses.reduce((acc, c) => acc + c.termGrade, 0) / enrolledCourses.length).toFixed(1)
-        : "98.0";
+        : "0.0";
     const avgProgress =
       enrolledCourses.length > 0
         ? Math.round(enrolledCourses.reduce((acc, c) => acc + c.progress, 0) / enrolledCourses.length)
-        : 88;
+        : 0;
 
     const kpiGrid = document.getElementById("studentKpiGrid");
     if (kpiGrid) {
+      const weeklyPct = stu.weeklyTargetHours
+        ? Math.round(((Number(stu.weeklyLoggedHours) || 0) / Number(stu.weeklyTargetHours)) * 100)
+        : 0;
       kpiGrid.innerHTML = `
         <div class="kpi-card">
           <div class="kpi-card-top">
-            <span class="mono-label">DAILY 3-TASK TRIADS</span>
+            <span class="mono-label">WEEK ${currentWeekDisplay} DAILY TRIADS</span>
             <span class="badge badge-gold">3 Tasks/Day × 5 Days</span>
           </div>
           <div class="kpi-value">${completedDailyTasks}/${totalDailyTasks}</div>
-          <div class="kpi-sub">Blanks, Writings &amp; Quizzes (${completedWeekModules}/${totalWeekModules} Days)</div>
+          <div class="kpi-sub">Practice, Writing &amp; Quizzes (${completedWeekModules}/${totalWeekModules} Days)</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-card-top">
@@ -1081,23 +1254,23 @@
             <span class="badge badge-emerald">≥ 85% Required</span>
           </div>
           <div class="kpi-value">${avgGrade}%</div>
-          <div class="kpi-sub">Cumulative GPA: ${stu.gpa}</div>
+          <div class="kpi-sub">Cumulative GPA: ${stu.gpa || "0.00"}</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-card-top">
             <span class="mono-label">STATE CLOCK HOURS</span>
-            <span class="badge badge-navy">${stu.attendanceDays}/180 Days</span>
+            <span class="badge badge-navy">${Number(stu.attendanceDays ?? 0)}/180 Days</span>
           </div>
-          <div class="kpi-value">${stu.loggedClockHours || 364}h</div>
+          <div class="kpi-value">${Number(stu.loggedClockHours ?? 0)}h</div>
           <div class="kpi-sub">Annual Requirement: ${stu.requiredClockHours || 900}+ hrs</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-card-top">
-            <span class="mono-label">WEEKLY SEMINAR HOURS</span>
-            <span class="badge badge-emerald">${Math.round((stu.weeklyLoggedHours / stu.weeklyTargetHours) * 100)}%</span>
+            <span class="mono-label">WEEK ${currentWeekDisplay} HOURS</span>
+            <span class="badge badge-emerald">${weeklyPct}%</span>
           </div>
-          <div class="kpi-value">${stu.weeklyLoggedHours}h</div>
-          <div class="kpi-sub">Target: ${stu.weeklyTargetHours} hrs / week</div>
+          <div class="kpi-value">${Number(stu.weeklyLoggedHours ?? 0)}h</div>
+          <div class="kpi-sub">Target: ${stu.weeklyTargetHours || 20} hrs / week</div>
         </div>
       `;
     }
@@ -1108,25 +1281,25 @@
       matrixBox.innerHTML = `
         <div class="panel-header">
           <div>
-            <span class="mono-label">WEEK 11 WORKLOAD · 3 ASSIGNMENTS PER DAY (${totalDailyTasks} WEEKLY ASSIGNMENTS ACROSS ${enrolledCourses.length} COURSES)</span>
-            <h2 class="panel-title">5-Day Course Pacing · Daily Triad (1. Fill-in-Blank · 2. Writing · 3. Quiz)</h2>
+            <span class="mono-label">WEEK ${currentWeekDisplay} OF 36 WORKLOAD · 3 ASSIGNMENTS PER DAY (${totalDailyTasks} WEEKLY ASSIGNMENTS ACROSS ${enrolledCourses.length} COURSES)</span>
+            <h2 class="panel-title">Week ${currentWeekDisplay} Pacing · 5 Days (1. Practice · 2. Writing · 3. Daily Quiz)</h2>
             <p style="font-size:0.84rem; color:var(--text-secondary);">
-              Every day requires <strong>3 graded assignments</strong>: (1) Fill-in-the-Blank Cloze, (2) Daily Classical Writing/Analysis, and (3) Daily Mastery Quiz (≥85%). Click any Day button below to open that day's 3 assignments.
+              Every day requires <strong>3 graded steps</strong>: (1) Guided Practice Check, (2) Short Written Explanation, and (3) Mastery Quiz (≥85%). Click any Day button below to begin.
             </p>
           </div>
-          <span class="badge badge-gold">15 Assignments / Course / Week · ≥85% Mastery Gate</span>
+          <span class="badge badge-gold">Week ${currentWeekDisplay} · 15 Tasks / Course · ≥85% Mastery</span>
         </div>
         <div class="table-responsive">
           <table class="data-table">
             <thead>
               <tr>
                 <th>Course (15 Tasks/Wk)</th>
-                <th>Mon · Day 1<br/><span style="font-weight:400; font-size:0.65rem;">Blank + Write + Quiz</span></th>
-                <th>Tue · Day 2<br/><span style="font-weight:400; font-size:0.65rem;">Blank + Write + Quiz</span></th>
-                <th>Wed · Day 3<br/><span style="font-weight:400; font-size:0.65rem;">Blank + Write + Quiz</span></th>
-                <th>Thu · Day 4<br/><span style="font-weight:400; font-size:0.65rem;">Blank + Write + Quiz</span></th>
-                <th>Fri · Day 5<br/><span style="font-weight:400; font-size:0.65rem;">Blank + Write + Gate</span></th>
-                <th>Week 12 Gate</th>
+                <th>Mon · Day 1<br/><span style="font-weight:400; font-size:0.65rem;">Practice + Write + Quiz</span></th>
+                <th>Tue · Day 2<br/><span style="font-weight:400; font-size:0.65rem;">Practice + Write + Quiz</span></th>
+                <th>Wed · Day 3<br/><span style="font-weight:400; font-size:0.65rem;">Practice + Write + Quiz</span></th>
+                <th>Thu · Day 4<br/><span style="font-weight:400; font-size:0.65rem;">Practice + Write + Quiz</span></th>
+                <th>Fri · Day 5<br/><span style="font-weight:400; font-size:0.65rem;">Practice + Write + Test</span></th>
+                <th>Week ${nextWeekDisplay} Gate</th>
               </tr>
             </thead>
             <tbody>
@@ -1158,7 +1331,7 @@
                       .join("")}
                     <td>
                       <span class="badge ${allDone ? "badge-emerald" : "badge-amber"}">
-                        ${allDone ? "✓ Week 12 Unlocked (15/15)" : "🔒 Complete Days 3–5"}
+                        ${allDone ? `✓ Week ${nextWeekDisplay} Unlocked (15/15)` : `🔒 Complete Days 1–5`}
                       </span>
                     </td>
                   </tr>
@@ -1282,7 +1455,7 @@
       course.lessons = [
         {
           id: `${course.id}-l1`,
-          unit: "WEEK 11 · DAY 1 OF 5",
+          unit: `WEEK ${activeLessonWeekNum || 1} · DAY 1 OF 5`,
           title: `Introduction to ${course.title}`,
           duration: "50 mins",
           completed: false,
@@ -1312,7 +1485,7 @@
       thread = {
         id: "disc-" + course.id,
         courseId: course.id,
-        week: "Week 11 Socratic Seminar Discussion",
+        week: `Week ${activeLessonWeekNum || 1} Socratic Seminar Discussion`,
         prompt: `How do the foundational principles studied in ${course.title} (${course.code}) demonstrate rational order, and how should a scholar apply them in written argument?`,
         posts: [
           {
@@ -2535,7 +2708,7 @@
             <span class="badge badge-gold">Interactive</span>
           </div>
           <div class="kpi-value">${totalLessons}</div>
-          <div class="kpi-sub">Active Week 11 Modules</div>
+          <div class="kpi-sub">Active Week ${activeLessonWeekNum || 1} Modules</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-card-top">
@@ -3751,7 +3924,7 @@
         </div>
         <div class="form-group">
           <label>Unit Header</label>
-          <input type="text" name="unit" class="input-control" value="WEEK 12 · DAY 1 MODULE" required />
+          <input type="text" name="unit" class="input-control" value="WEEK ${activeLessonWeekNum || 1} · DAY 1 MODULE" required />
         </div>
         <div class="form-group">
           <label>Duration</label>
@@ -4067,6 +4240,41 @@
         return;
       }
 
+      const pinVideoBtn = e.target.closest("[data-pin-lesson-video]");
+      if (pinVideoBtn) {
+        const [cid, wStr] = (pinVideoBtn.getAttribute("data-pin-lesson-video") || "").split("|");
+        const wNum = parseInt(wStr, 10) || 1;
+        const rawUrl = window.prompt(
+          "Paste an appropriate YouTube video link (e.g., https://www.youtube.com/watch?v=... or https://youtu.be/...):",
+          ""
+        );
+        if (rawUrl === null) return;
+        const vidId = parseYouTubeVideoId(rawUrl);
+        if (!vidId) {
+          showToast("Please paste a valid YouTube video URL (youtube.com/watch?v=... or youtu.be/...).");
+          return;
+        }
+        if (!state.customVideos || typeof state.customVideos !== "object") state.customVideos = {};
+        state.customVideos[`${cid}_w${wNum}`] = vidId;
+        saveState(true);
+        renderLessonStudio();
+        showToast("🎬 Pinned custom YouTube lesson video! Saved permanently for your family.");
+        return;
+      }
+
+      const clearVideoBtn = e.target.closest("[data-clear-lesson-video]");
+      if (clearVideoBtn) {
+        const [cid, wStr] = (clearVideoBtn.getAttribute("data-clear-lesson-video") || "").split("|");
+        const wNum = parseInt(wStr, 10) || 1;
+        if (state.customVideos) {
+          delete state.customVideos[`${cid}_w${wNum}`];
+          saveState(true);
+          renderLessonStudio();
+          showToast("Restored default educational lesson video.");
+        }
+        return;
+      }
+
       const toggleLessonModeBtn = e.target.closest("[data-toggle-lesson-mode]");
       if (toggleLessonModeBtn) {
         lessonViewMode = lessonViewMode === "guided" ? "full" : "guided";
@@ -4257,7 +4465,7 @@
           const remaining = getStudentList();
           activeStudentId = remaining[0] ? remaining[0].id : "";
           activeParentChildId = remaining[0] ? remaining[0].id : "";
-          saveState(true);
+          saveState(true, true);
           syncStudentDropdowns();
           renderParentDashboard();
           renderStudentDashboard();
@@ -5011,12 +5219,20 @@
             const snap = await window.ACADEMY_CLOUD.loadCloudSnapshot();
             if (snap) {
               window.ACADEMY_CLOUD.applyCompactSnapshotToState(state, snap);
+              migrateBundledElementaryCourses(state);
               localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+              backupPermanentFamilyRoster(state, false);
             } else {
-              // Fresh account with no saved snapshot yet — clear sample Vance profiles!
-              state.students = {};
-              state.schedules = {};
-              state.assignments = [];
+              // Preserve any real non-Vance local children and push them straight to Supabase Cloud!
+              const localReal = extractCleanFamilyStudents(state.students);
+              if (Object.keys(localReal).length > 0) {
+                state.students = localReal;
+                saveState(true);
+              } else {
+                state.students = {};
+                state.schedules = {};
+                state.assignments = [];
+              }
             }
             state.authConfig.currentRole = res.session.role || "parent";
             state.authConfig.parentPinVerified = res.session.role !== "student";
@@ -5733,7 +5949,9 @@
     if (window.ACADEMY_CLOUD && window.ACADEMY_CLOUD.getSession()) {
       window.ACADEMY_CLOUD.loadCloudSnapshot().then((snap) => {
         if (snap && window.ACADEMY_CLOUD.applyCompactSnapshotToState(state, snap)) {
+          migrateBundledElementaryCourses(state);
           localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          backupPermanentFamilyRoster(state, false);
           syncStudentDropdowns();
           updateAuthHeaderUI();
           renderStudentDashboard();
@@ -5741,6 +5959,9 @@
           renderScheduleView();
           renderParentDashboard();
           showToast("☁️ Synced latest family progress from Supabase Cloud.");
+        } else if (Object.keys(extractCleanFamilyStudents(state.students)).length > 0) {
+          // Local device has real children not yet uploaded — push to Supabase immediately
+          window.ACADEMY_CLOUD.saveCloudSnapshot(state, true);
         }
       });
     }
