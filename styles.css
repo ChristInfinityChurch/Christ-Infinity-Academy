@@ -40,14 +40,14 @@
 
 html {
   scroll-behavior: smooth;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 body {
   font-family: var(--font-sans);
   background-color: var(--bg-ivory);
   color: var(--text-primary);
-  line-height: 1.6;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
   display: flex;
@@ -57,7 +57,7 @@ body {
 
 .container {
   width: 100%;
-  max-width: 1340px;
+  max-width: 1380px;
   margin: 0 auto;
   padding: 0 1.5rem;
 }
@@ -2680,6 +2680,28 @@ body {
   }
 }
 
+/* ==================== GLOBAL ENHANCED READABILITY (LESSONS, LIBRARY & K–5) ==================== */
+.lesson-reading-body,
+.lesson-reading-body p,
+.library-chapter-body,
+.library-chapter-body p,
+.reader-chapter-content,
+.reader-chapter-content p,
+.quiz-q-card p {
+  font-size: 1.02rem;
+  line-height: 1.78;
+}
+
+.quiz-q-prompt {
+  font-size: 1.04rem;
+  line-height: 1.55;
+}
+
+.quiz-option-label {
+  font-size: 0.98rem;
+  padding: 0.7rem 0.95rem;
+}
+
 /* ==================== AGE-ADAPTIVE K–5 "GRIFFIN JUNIOR EXPLORERS" THEME ==================== */
 body.mode-k5-explorers {
   background-color: #FFFDF7;
@@ -2692,10 +2714,14 @@ body.mode-k5-explorers .course-card {
 }
 
 body.mode-k5-explorers .lesson-reading-body,
+body.mode-k5-explorers .lesson-reading-body p,
+body.mode-k5-explorers .library-chapter-body,
+body.mode-k5-explorers .library-chapter-body p,
 body.mode-k5-explorers .quiz-q-card p,
+body.mode-k5-explorers .quiz-q-prompt,
 body.mode-k5-explorers .quiz-option-label span {
-  font-size: 1.03rem;
-  line-height: 1.75;
+  font-size: 1.1rem;
+  line-height: 1.82;
 }
 
 body.mode-k5-explorers .btn {
